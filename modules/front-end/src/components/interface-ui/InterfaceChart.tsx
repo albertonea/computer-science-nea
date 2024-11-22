@@ -4,7 +4,7 @@ import {PriceData, priceData} from "./price-data.ts";
 import {pick, map, pipe, mergeAll, mergeLeft, omit, values} from "ramda";
 
 
-export function InterfaceChart() {
+export default function InterfaceChart() {
     const chartContainerRef = useRef();
     const chart = useRef();
     const resizeObserver = useRef();

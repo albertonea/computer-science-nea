@@ -1,8 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {useMemo} from "react";
 import {Responsive, WidthProvider} from "react-grid-layout";
-import {InterfaceChart} from "../../../components/interface-ui/chart-section.tsx";
-import InterfaceNav from "../../../components/interface-ui/InterfaceNav.tsx";
+import InterfaceChart from "@/components/interface-ui/InterfaceChart.tsx";
+import InterfaceNav from "@/components/interface-ui/InterfaceNav.tsx";
+import InterfaceOpenOrders from "@/components/interface-ui/InterfaceOpenOrders.tsx";
+import InterfaceOrderbook from "@/components/interface-ui/InterfaceOrderbook.tsx";
+import InterfaceTrading from "@/components/interface-ui/InterfaceTrading.tsx";
 export const Route = createFileRoute('/trade/$id/')({
   component: Interface,
 })
@@ -39,24 +42,3 @@ function Interface() {
 
 
 
-function InterfaceTrading() {
-  return <div>Trading interface</div>;
-}
-
-
-
-function InterfaceOrderbook() {
-  return (
-      <div>
-        orderbook
-      </div>
-  )
-}
-
-function InterfaceOpenOrders() {
-  return (
-      <div>
-        open orders
-      </div>
-  )
-}
