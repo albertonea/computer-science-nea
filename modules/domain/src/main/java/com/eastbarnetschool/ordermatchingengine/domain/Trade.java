@@ -4,9 +4,9 @@ import java.time.Instant;
 
 public class Trade {
     private Instant timestamp;
-    private Long price;
+    private Double price;
     private Integer quantity;
-    public Trade(Instant timestamp, Long price, Integer quantity) {
+    public Trade(Instant timestamp, Double price, Integer quantity) {
         this.timestamp = timestamp;
         this.price = price;
         this.quantity = quantity;
