@@ -6,6 +6,11 @@ public class PriceLevel {
     private Long price;
     private LinkedList<Order> orders;
 
+    public PriceLevel(Long price, Order order) {
+        this.price = price;
+        this.orders = new LinkedList<>();
+        orders.add(order);
+    }
 
     public Long getPrice() {
         return price;
@@ -13,5 +18,9 @@ public class PriceLevel {
 
     public LinkedList<Order> getOrders() {
         return orders;
+    }
+
+    public void addOrder(Order order) {
+        orders.add(order);
     }
 }
