@@ -20,7 +20,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": "../../../frontend",
+    "baseUrl": "../front-end",
     "paths": {
       "@/*": [
         "./src/*"
