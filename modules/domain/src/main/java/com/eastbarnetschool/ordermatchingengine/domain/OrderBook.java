@@ -10,8 +10,8 @@ public class OrderBook {
     private PriorityQueue<PriceLevel> buySide;
 
     public OrderBook() {
-        sellSide = new PriorityQueue<>((a, b) -> Double.compare(b.getPrice(), a.getPrice()));
-        buySide = new PriorityQueue<>((a, b) -> Double.compare(a.getPrice(), b.getPrice()));
+        sellSide = new PriorityQueue<>((a, b) -> Long.compare(b.getPrice(), a.getPrice()));
+        buySide = new PriorityQueue<>((a, b) -> Long.compare(a.getPrice(), b.getPrice()));
     }
 
     public PriorityQueue<PriceLevel> getBuySide() {
@@ -22,7 +22,7 @@ public class OrderBook {
         return sellSide;
     }
 
-    public Boolean canMatch(Side side, Double price) {
+    public Boolean canMatch(Side side, Long price) {
         if (side == Side.BUY) {
             if (sellSide.isEmpty()) return false;
             PriceLevel sellSide = this.sellSide.peek();

@@ -9,7 +9,7 @@ import {AuthContext} from "@/auth.tsx";
 const queryClient = new QueryClient()
 
 interface RouterContext {
-    auth: AuthContext
+    auth: AuthContext | undefined
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({

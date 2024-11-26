@@ -6,6 +6,7 @@ import InterfaceNav from '@/components/interface-ui/InterfaceNav.tsx'
 import InterfaceOpenOrders from '@/components/interface-ui/InterfaceOpenOrders.tsx'
 import InterfaceOrderbook from '@/components/interface-ui/InterfaceOrderbook.tsx'
 import InterfaceTrading from '@/components/interface-ui/InterfaceTrading.tsx'
+
 export const Route = createFileRoute('/_auth/trade/$id/')({
   component: Interface,
 })

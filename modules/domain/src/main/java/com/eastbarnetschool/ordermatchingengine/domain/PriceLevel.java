@@ -3,16 +3,16 @@ package com.eastbarnetschool.ordermatchingengine.domain;
 import java.util.LinkedList;
 
 public class PriceLevel {
-    private Double price;
+    private Long price;
     private LinkedList<Order> orders;
 
-    public PriceLevel(Double price, Order order) {
+    public PriceLevel(Long price, Order order) {
         this.price = price;
         this.orders = new LinkedList<>();
         orders.add(order);
     }
 
-    public Double getPrice() {
+    public Long getPrice() {
         return price;
     }
 
