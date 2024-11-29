@@ -3,8 +3,19 @@
  */
 package com.eastbarnetschool.ordermatchingengine.api;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello");
+        SpringApplication.run(App.class, args);
     }
+
+
 }
+
