@@ -8,4 +8,11 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=exchangedatadev
+
+  migrations:
+    build:
+      context: .
+      dockerfile: migrations.Dockerfile
+    depends_on:
+      - postgres

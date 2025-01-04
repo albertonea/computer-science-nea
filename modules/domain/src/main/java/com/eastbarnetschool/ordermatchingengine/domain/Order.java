@@ -2,7 +2,7 @@ package com.eastbarnetschool.ordermatchingengine.domain;
 
 public class Order {
     private Long price;
-    private String username;
+    private String userId;
     private Integer initialQuantity;
     private Integer remainingQuantity;
     private String ticker;

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 
 import static com.eastbarnetschool.ordermatchingengine.domain.OrderType.LIMIT;
-import static com.eastbarnetschool.ordermatchingengine.domain.OrderType.MARKET;
 
 public class MatchingEngine {
     private OrderBook orderBook;
@@ -24,11 +23,13 @@ public class MatchingEngine {
         if (order.getOrderType() == LIMIT) {
             ArrayList<Trade> trades = orderBook.placeLimitOrder(order);
             System.out.println("trades: " + trades);
-        } else if (order.getOrderType() == MARKET) {
-            ArrayList<Trade> trades = orderBook.placeMarketOrder(order);
-
-            System.out.println("trades: " + trades);
-        } else {
+        }
+//        else if (order.getOrderType() == MARKET) {
+//            ArrayList<Trade> trades = orderBook.placeMarketOrder(order);
+//
+//            System.out.println("trades: " + trades);
+//        }
+        else {
             throw new IllegalArgumentException("Order type sent to place limit order: " + order.getOrderType());
         }
         System.out.println("buy side");

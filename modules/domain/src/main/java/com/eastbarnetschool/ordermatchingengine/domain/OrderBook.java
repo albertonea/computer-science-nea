@@ -3,6 +3,7 @@ package com.eastbarnetschool.ordermatchingengine.domain;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 public class OrderBook {
@@ -37,21 +38,21 @@ public class OrderBook {
     public ArrayList<Trade> placeLimitOrder(Order order) {
         ArrayList<Trade> trades = new ArrayList<>();
         while (canMatch(order.getSide(), order.getPrice()) && !order.isFilled()) {
-            LinkedList<Order> bookOrders;
+            LinkedList<Order> priceLevel;
             if (order.getSide() == Side.BUY) {
-                bookOrders = sellSide.peek().getOrders();
+                priceLevel = sellSide.peek().getOrders();
             } else {
-                bookOrders = buySide.peek().getOrders();
+                priceLevel = buySide.peek().getOrders();
             }
 
-            while (!bookOrders.isEmpty()) {
-                Order bookOrder = bookOrders.peek();
+            while (!priceLevel.isEmpty()) {
+                Order bookOrder = priceLevel.peek();
                 Integer quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
                 bookOrder.fill(quantity);
                 order.fill(quantity);
 
                 if (order.isFilled() && bookOrder.isFilled()) {
-                    bookOrders.removeFirst();
+                    priceLevel.removeFirst();
                     trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
                     break;
                 } else if (order.isFilled()) {
@@ -59,13 +60,13 @@ public class OrderBook {
                     break;
                 } else if (bookOrder.isFilled()) {
                     trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-                    bookOrders.removeFirst();
+                    priceLevel.removeFirst();
                 } else {
                     throw new IllegalStateException("Neither order got fully filled");
                 }
             }
 
-            if (bookOrders.isEmpty()) {
+            if (priceLevel.isEmpty()) {
                 if (order.getSide() == Side.BUY) {
                     sellSide.poll();
                 } else {
@@ -77,21 +78,20 @@ public class OrderBook {
         if (!order.isFilled()) {
             if (order.getSide() == Side.BUY) {
                 for (PriceLevel level : buySide) {
-                    if (Math.abs(level.getPrice() - order.getPrice()) < 0.0001 ) {
+                    if (Objects.equals(level.getPrice(), order.getPrice())) {
                         level.addOrder(order);
                     }
                 }
                 buySide.add(new PriceLevel(order.getPrice(), order));
             } else {
                 for (PriceLevel level : sellSide) {
-                    if (Math.abs(level.getPrice() - order.getPrice()) < 0.0001 ) {
+                    if (Objects.equals(level.getPrice(), order.getPrice())) {
                         level.addOrder(order);
                     }
                 }
                 sellSide.add(new PriceLevel(order.getPrice(), order));
             }
         }
-
         return trades;
     }
 

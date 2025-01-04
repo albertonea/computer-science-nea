@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class OrderRequest {
     private Long price;
-    private String username;
+    private String userId;
     private Integer quantity;
     private String ticker;
     private Side side;

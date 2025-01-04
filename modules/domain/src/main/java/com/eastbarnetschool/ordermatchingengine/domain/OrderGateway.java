@@ -3,7 +3,6 @@ package com.eastbarnetschool.ordermatchingengine.domain;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import static com.eastbarnetschool.ordermatchingengine.domain.OrderType.LIMIT;
 public class OrderGateway {
     private HashMap<String, MatchingEngine> matchingEngines;
 

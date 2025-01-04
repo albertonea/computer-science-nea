@@ -31,7 +31,7 @@ public class OrderController {
     @MessageMapping("/order.place")
     @SendTo("/stream/trade")
     public OrderRequest placeOrder(OrderRequest order) {
-        orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getUsername(), order.getSide(), order.getOrderType()));
+        orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getUserId(), order.getSide(), order.getOrderType()));
         return order;
     }
 }
