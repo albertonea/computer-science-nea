@@ -1,7 +1,5 @@
 package com.eastbarnetschool.ordermatchingengine.api.entity;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -12,13 +10,25 @@ import java.util.UUID;
 public class User {
 
     @Id
-    private UUID userId;
-    private String username;
-    private Timestamp createdAt;
+    private final UUID userId;
+    private final String username;
+    private final Timestamp createdAt;
 
     public User(UUID userId, String username, Timestamp createdAt) {
         this.userId = userId;
         this.username = username;
         this.createdAt = createdAt;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 }

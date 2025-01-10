@@ -21,7 +21,7 @@ export const Route = createFileRoute('/login')({
         redirect: z.string().optional().catch(''),
     }),
     beforeLoad: ({ context, search }) => {
-        if (context.auth.isAuthenticated) {
+        if (context.auth?.isAuthenticated) {
             throw redirect({ to: search.redirect || fallback })
         }
     },
@@ -34,8 +34,6 @@ function LoginComponent() {
     const isLoading = useRouterState({ select: (s) => s.isLoading })
     const navigate = Route.useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
-
-    const search = Route.useSearch()
 
     const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         setIsSubmitting(true)
@@ -53,7 +51,7 @@ function LoginComponent() {
             // This is just a hack being used to wait for the auth state to update
             // in a real app, you'd want to use a more robust solution
 
-            await navigate({ to: search.redirect || fallback })
+            await navigate({ to: '/dashboard' })
         } catch (error) {
             console.error('Error logging in: ', error)
         } finally {

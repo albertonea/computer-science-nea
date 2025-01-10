@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api.controllers;
+package com.eastbarnetschool.ordermatchingengine.api.dto;
 
 import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;

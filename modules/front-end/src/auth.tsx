@@ -1,30 +1,41 @@
 import * as React from 'react'
+import {loginRequest} from "@/api/users.ts";
+
+type User = {
+    userId: string,
+    username: string,
+    createdAt: Date
+}
 
 export interface AuthContext {
     isAuthenticated: boolean
     login: (username: string) => Promise<void>
     logout: () => Promise<void>
-    user: string | null
+    user: User | null
 }
 
 const AuthContext = React.createContext<AuthContext | null>(null)
 
 const key = 'auth.user'
 
-function getStoredUser() {
-    return localStorage.getItem(key)
+function getStoredUser():User | null {
+    const userJson = localStorage.getItem(key)
+    if (userJson) {
+        return JSON.parse(userJson)
+    }
+    return null
 }
 
-function setStoredUser(user: string | null) {
+function setStoredUser(user: User | null) {
     if (user) {
-        localStorage.setItem(key, user)
+        localStorage.setItem(key, JSON.stringify(user))
     } else {
         localStorage.removeItem(key)
     }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = React.useState<string | null>(getStoredUser())
+    const [user, setUser] = React.useState<User | null>(getStoredUser())
     const isAuthenticated = !!user
 
     const logout = React.useCallback(async () => {
@@ -33,8 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     const login = React.useCallback(async (username: string) => {
-        setStoredUser(username)
-        setUser(username)
+        const user = await loginRequest(username);
+        setStoredUser(user)
+        setUser(user)
     }, [])
 
     React.useEffect(() => {

@@ -1,10 +1,10 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.User;
+import com.eastbarnetschool.ordermatchingengine.api.dto.UserWithBalancesResponse;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository {
-    User findByUsername(String username);
-    User create(String username);
+    UserWithBalancesResponse get(String username);
+    UserWithBalancesResponse create(String username);
 }

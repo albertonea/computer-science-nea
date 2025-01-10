@@ -3,9 +3,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/exchangedatadev
     username: postgres
     password: postgres
-  sql:
-    init:
-      mode: always
+    driver-class-name: org.postgresql.Driver
 
 logging:
   level:

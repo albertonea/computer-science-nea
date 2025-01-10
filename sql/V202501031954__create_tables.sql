@@ -4,7 +4,7 @@ CREATE TABLE users (
    created_at timestamp default now()
 );
 
-CREATE TABLE user_balances (
+CREATE TABLE balances (
    user_id uuid not null references users(user_id),
    ticker varchar(50) not null,
    balance bigint not null default 0,

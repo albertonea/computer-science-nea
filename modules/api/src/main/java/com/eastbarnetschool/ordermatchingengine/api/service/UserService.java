@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.User;
+import com.eastbarnetschool.ordermatchingengine.api.dto.UserWithBalancesResponse;
 import com.eastbarnetschool.ordermatchingengine.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public UserWithBalancesResponse get(String username) {
+        return userRepository.get(username);
+    }
+
+    public UserWithBalancesResponse create(String username) {
+        return userRepository.create(username);
     }
 }
