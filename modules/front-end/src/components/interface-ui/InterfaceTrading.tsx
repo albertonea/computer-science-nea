@@ -1,4 +1,4 @@
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx";
+import {Tabs, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx";
 import {TextTabs, TextTabsList, TextTabsTrigger} from "@/components/ui/text-tabs.tsx";
 import {ChangeEvent, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input.tsx";
@@ -10,7 +10,7 @@ import {useAuth} from "@/auth.tsx";
 
 export default function InterfaceTrading() {
     const [lastMessage, setLastMessage] = useState("no message yet!")
-    const [side, setSide] = useState("buy")
+    const [side, setSide] = useState("sell")
     const [orderType, setOrderType] = useState("limit")
     const [amount, setAmount] = useState("0")
     const [price, setPrice] = useState("0.00")
@@ -48,12 +48,12 @@ export default function InterfaceTrading() {
     }
 
     const sendMessage = () => {
-        if (stompClient) {
+        if (stompClient && auth.user?.userId) {
             stompClient.publish({
                 destination: "/app/order.place",
                 body: JSON.stringify({
                     price: 1234,
-                    username: auth.user,
+                    userId: auth.user.userId,
                     quantity: 100,
                     ticker: 'AAPL',
                     side: 'SELL',

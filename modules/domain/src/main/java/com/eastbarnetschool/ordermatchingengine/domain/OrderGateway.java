@@ -1,5 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 
@@ -10,15 +11,15 @@ public class OrderGateway {
         matchingEngines = new HashMap<>();
     }
 
-    public void placeOrder(Order order) {
+    public ArrayList<Trade> placeOrder(Order order) {
         MatchingEngine matchingEngine = matchingEngines.get(order.getTicker());
         if (matchingEngine == null) {
             MatchingEngine newMatchingEngine = new MatchingEngine(order.getTicker());
 //            newMatchingEngine.start(order.getTicker());
             matchingEngines.put(order.getTicker(), newMatchingEngine);
-            newMatchingEngine.placeOrder(order);
+            return newMatchingEngine.placeOrder(order);
         } else {
-            matchingEngine.placeOrder(order);
+            return matchingEngine.placeOrder(order);
         }
     }
 

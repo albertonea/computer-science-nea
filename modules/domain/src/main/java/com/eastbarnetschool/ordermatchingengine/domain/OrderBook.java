@@ -51,16 +51,17 @@ public class OrderBook {
                 bookOrder.fill(quantity);
                 order.fill(quantity);
 
-                if (order.isFilled() && bookOrder.isFilled()) {
-                    priceLevel.removeFirst();
-                    trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-                    break;
-                } else if (order.isFilled()) {
-                    trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-                    break;
-                } else if (bookOrder.isFilled()) {
-                    trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-                    priceLevel.removeFirst();
+                if (order.isFilled() | bookOrder.isFilled()) {
+                    ArrayList<Order> orders = new ArrayList<>();
+                    orders.add(new Order(order.getPrice(), order.getInitialQuantity(), order.getUserId(), order.getSide(), order.getOrderType(), order.getTicker(), order.getCreatedAt()));
+                    orders.add(new Order(bookOrder.getPrice(), bookOrder.getInitialQuantity(), bookOrder.getUserId(), bookOrder.getSide(), bookOrder.getOrderType(), bookOrder.getTicker(), bookOrder.getCreatedAt()));
+                    if (bookOrder.isFilled()) {
+                        priceLevel.removeFirst();
+                    }
+                    trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, orders));
+                    if (order.isFilled()) {
+                        break;
+                    }
                 } else {
                     throw new IllegalStateException("Neither order got fully filled");
                 }

@@ -17,10 +17,15 @@ public class MatchingEngine {
         return orderBook;
     }
 
-    public void placeOrder(Order order) {
+    public ArrayList<Trade> placeOrder(Order order) {
         if (order.getOrderType() == LIMIT) {
             ArrayList<Trade> trades = orderBook.placeLimitOrder(order);
             System.out.println("trades: " + trades);
+            System.out.println("buy side");
+            System.out.println(orderBook.getBuySide());
+            System.out.println("sell side");
+            System.out.println(orderBook.getSellSide());
+            return trades;
         }
 //        else if (order.getOrderType() == MARKET) {
 //            ArrayList<Trade> trades = orderBook.placeMarketOrder(order);
@@ -30,10 +35,7 @@ public class MatchingEngine {
         else {
             throw new IllegalArgumentException("Order type sent to place limit order: " + order.getOrderType());
         }
-        System.out.println("buy side");
-        System.out.println(orderBook.getBuySide());
-        System.out.println("sell side");
-        System.out.println(orderBook.getSellSide());
+
     }
 
 
