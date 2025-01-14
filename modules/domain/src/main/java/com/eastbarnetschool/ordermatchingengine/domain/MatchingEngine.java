@@ -17,15 +17,15 @@ public class MatchingEngine {
         return orderBook;
     }
 
-    public ArrayList<Trade> placeOrder(Order order) {
+    public MatchingEngineResponse placeOrder(Order order) {
         if (order.getOrderType() == LIMIT) {
-            ArrayList<Trade> trades = orderBook.placeLimitOrder(order);
-            System.out.println("trades: " + trades);
+            MatchingEngineResponse response = orderBook.placeLimitOrder(order);
+            System.out.println("trades: " + response.getTrades());
             System.out.println("buy side");
             System.out.println(orderBook.getBuySide());
             System.out.println("sell side");
             System.out.println(orderBook.getSellSide());
-            return trades;
+            return response;
         }
 //        else if (order.getOrderType() == MARKET) {
 //            ArrayList<Trade> trades = orderBook.placeMarketOrder(order);

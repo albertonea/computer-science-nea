@@ -25,9 +25,10 @@ CREATE TABLE trades (
 CREATE TABLE open_orders (
      order_id uuid primary key default uuid_generate_v4(),
      user_id uuid not null references users(user_id),
-     order_type varchar(4) not null check (order_type in ('BUY', 'SELL')),
+     side varchar(4) not null check (side in ('BUY', 'SELL')),
      ticker varchar(50) not null,
-     quantity bigint not null,
+     remaining_quantity bigint not null,
+     initial_quantity bigint not null,
      price bigint not null,
      created_at timestamp default now()
 );

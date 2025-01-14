@@ -5,6 +5,8 @@ import {ThemeProvider} from "../context/theme-provider.tsx";
 import Navbar from "../components/global/navbar.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {AuthContext} from "@/auth.tsx";
+import {Toaster} from "@/components/ui/sonner.tsx";
+import {StompSessionProvider} from "react-stomp-hooks";
 
 const queryClient = new QueryClient()
 
@@ -41,16 +43,19 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         return (
             <QueryClientProvider client={queryClient}>
                 <ThemeProvider>
+                    <StompSessionProvider url={"ws://localhost:8080/ws"}>
                     <div className="flex flex-col min-h-screen">
                     <Navbar/>
                     <main className="grow shrink basis-1 w-full">
                         <Outlet />
                     </main>
+                    <Toaster/>
                     </div>
                     <Suspense>
                         <TanStackRouterDevtools />
                         <TanStackReactQueryDevtools/>
                     </Suspense>
+                    </StompSessionProvider>
                 </ThemeProvider>
             </QueryClientProvider>
         )

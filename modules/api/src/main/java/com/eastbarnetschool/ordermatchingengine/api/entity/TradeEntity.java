@@ -1,32 +1,38 @@
-package com.eastbarnetschool.ordermatchingengine.domain;
+package com.eastbarnetschool.ordermatchingengine.api.entity;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
+
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
-public class Trade {
+@Table("trades")
+public class TradeEntity {
+    @Id
     private final UUID tradeId;
-    private final Instant tradeTime;
+    private final Timestamp tradeTime;
     private final Long price;
     private final Integer quantity;
     private final UUID buyerId;
     private final UUID sellerId;
     private final String ticker;
 
-    public Trade(Instant tradeTime, Long price, Integer quantity, UUID buyerId, UUID sellerId, String ticker) {
-        this.tradeId = UUID.randomUUID();
-        this.tradeTime = tradeTime;
-        this.price = price;
-        this.quantity = quantity;
-        this.buyerId = buyerId;
+    public TradeEntity(UUID sellerId, String ticker, UUID buyerId, Integer quantity, Long price, Timestamp tradeTime, UUID tradeId) {
         this.sellerId = sellerId;
         this.ticker = ticker;
+        this.buyerId = buyerId;
+        this.quantity = quantity;
+        this.price = price;
+        this.tradeTime = tradeTime;
+        this.tradeId = tradeId;
     }
 
     public UUID getTradeId() {
         return tradeId;
     }
 
-    public Instant getTradeTime() {
+    public Timestamp getTradeTime() {
         return tradeTime;
     }
 

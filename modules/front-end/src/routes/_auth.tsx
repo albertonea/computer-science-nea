@@ -3,6 +3,9 @@ import {
     createFileRoute,
     redirect,
 } from '@tanstack/react-router'
+import {useSubscription} from "react-stomp-hooks";
+import {useAuth} from "@/auth.tsx";
+import {toast} from "sonner";
 
 export const Route = createFileRoute('/_auth')({
     beforeLoad: ({ context, location }) => {
@@ -19,6 +22,10 @@ export const Route = createFileRoute('/_auth')({
 })
 
 function AuthLayout() {
+    const auth = useAuth()
+    useSubscription(`/stream/filledOrders/${auth.user?.userId}`, (message) => {
+        toast(`order filled ${message.body}`)
+    })
     return (
         <Outlet />
     )

@@ -9,17 +9,14 @@ import {Button} from "@/components/ui/button.tsx";
 import {useAuth} from "@/auth.tsx";
 
 export default function InterfaceTrading() {
-    const [lastMessage, setLastMessage] = useState("no message yet!")
-    const [side, setSide] = useState("sell")
+    const [side, setSide] = useState("SELL")
     const [orderType, setOrderType] = useState("limit")
-    const [amount, setAmount] = useState("0")
+    const [quantity, setQuantity] = useState("0")
     const [price, setPrice] = useState("0.00")
     const [availableBalance, setAvailableBalance] = useState(1000)
     const [marketPrice, setMarketPrice] = useState(98000.00)
     const stompClient = useStompClient()
     const auth = useAuth()
-
-    useSubscription("/stream", (message) => setLastMessage(message.body))
 
     useEffect(() => {
         const regex = /^\d*\.?\d{0,2}$/
@@ -34,7 +31,7 @@ export default function InterfaceTrading() {
         const regex = /^\d*$/
 
         if (regex.test(input)) {
-            setAmount(input)
+            setQuantity(input)
         }
     }
 
@@ -52,11 +49,11 @@ export default function InterfaceTrading() {
             stompClient.publish({
                 destination: "/app/order.place",
                 body: JSON.stringify({
-                    price: 1234,
+                    price: price,
                     userId: auth.user.userId,
-                    quantity: 100,
+                    quantity: quantity,
                     ticker: 'AAPL',
-                    side: 'SELL',
+                    side: side,
                     orderType: 'LIMIT'
                 })
             })
@@ -68,8 +65,8 @@ export default function InterfaceTrading() {
         <div>
             <Tabs defaultValue="buy" value={side} onValueChange={setSide}>
                 <TabsList className="w-full">
-                    <TabsTrigger className="w-full data-[state=active]:text-white data-[state=active]:bg-primary" value="buy">Buy</TabsTrigger>
-                    <TabsTrigger className="w-full data-[state=active]:text-white data-[state=active]:bg-red-500" value="sell">Sell</TabsTrigger>
+                    <TabsTrigger className="w-full data-[state=active]:text-white data-[state=active]:bg-primary" value="BUY">Buy</TabsTrigger>
+                    <TabsTrigger className="w-full data-[state=active]:text-white data-[state=active]:bg-red-500" value="SELL">Sell</TabsTrigger>
                 </TabsList>
             </Tabs>
             <TextTabs defaultValue="limit" value={orderType} onValueChange={setOrderType}>
@@ -92,11 +89,10 @@ export default function InterfaceTrading() {
             <Input id="price-input" value={price} onChange={handlePriceChange} name="price" type="number" step="0.01" placeholder="Price" required/>
 
             <Label htmlFor="amount-input">Amount</Label>
-            <Input id="amount-input" value={amount} onChange={handleAmountChange}  name="amount" type="number" step="0.01" placeholder="Price" required/>
+            <Input id="amount-input" value={quantity} onChange={handleAmountChange}  name="amount" type="number" step="0.01" placeholder="Price" required/>
             <Slider min={0} max={availableBalance}></Slider>
         </div>
         <Button onClick={sendMessage}>Test</Button>
-        <span>last message: {lastMessage}</span>
     </div>
     )
 }

@@ -1,10 +1,12 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class Order {
+    private UUID orderId;
     private Long price;
-    private String userId;
+    private UUID userId;
     private Integer initialQuantity;
     private Integer remainingQuantity;
     private String ticker;
@@ -12,7 +14,8 @@ public class Order {
     private OrderType orderType;
     private Instant createdAt;
 
-    public Order(Long price, Integer quantity, String ticker, Side side, OrderType orderType, String userId, Instant createdAt) {
+    public Order(Long price, Integer quantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+        this.orderId = UUID.randomUUID();
         this.price = price;
         this.initialQuantity = quantity;
         this.remainingQuantity = quantity;
@@ -23,11 +26,15 @@ public class Order {
         this.createdAt = createdAt;
     }
 
+    public UUID getOrderId() {
+        return orderId;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 

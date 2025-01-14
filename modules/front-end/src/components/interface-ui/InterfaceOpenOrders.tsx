@@ -7,20 +7,21 @@ type OpenOrders = {
     initialQuantity: number;
     remainingQuantity: number;
     side: 'BUY' | 'SELL';
-
 }[]
+
 
 export default function InterfaceOpenOrders() {
     const [lastMessage, setLastMessage] = useState<OpenOrders>()
     const auth = useAuth()
 
-    useSubscription(`/openorders/${auth.user?.userId}`,
+    useSubscription(`/stream/openOrders/${auth.user?.userId}`,
         (message) => {
             setLastMessage(JSON.parse(message.body))
         })
+
     return (
         <div>
-            open orders
+            {JSON.stringify(lastMessage)}
         </div>
     )
 }

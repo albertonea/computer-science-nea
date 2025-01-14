@@ -11,7 +11,7 @@ public class OrderGateway {
         matchingEngines = new HashMap<>();
     }
 
-    public ArrayList<Trade> placeOrder(Order order) {
+    public MatchingEngineResponse placeOrder(Order order) {
         MatchingEngine matchingEngine = matchingEngines.get(order.getTicker());
         if (matchingEngine == null) {
             MatchingEngine newMatchingEngine = new MatchingEngine(order.getTicker());
