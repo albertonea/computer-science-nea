@@ -19,7 +19,11 @@ public class BalancesService {
         return balancesRepository.get(userId);
     }
 
-    public Balance updateOrCreateBalance(UUID userId, String ticker, Long balanceDelta, Long lockedBalancesDelta) {
+    public Balance updateOrCreateBalance(UUID userId, String ticker, Integer balanceDelta, Integer lockedBalancesDelta) {
         return balancesRepository.updateOrCreateBalance(userId, ticker, balanceDelta, lockedBalancesDelta);
+    }
+
+    public Boolean checkIfHasEnoughBalance(UUID userId, String ticker, Integer requiredBalance) {
+        return balancesRepository.checkIfHasEnoughBalance(userId, ticker, requiredBalance);
     }
 }

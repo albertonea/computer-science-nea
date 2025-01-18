@@ -26,6 +26,10 @@ function AuthLayout() {
     useSubscription(`/stream/filledOrders/${auth.user?.userId}`, (message) => {
         toast(`order filled ${message.body}`)
     })
+
+    useSubscription(`/stream/errors/${auth.user?.userId}`, (message) => {
+        toast(`Error: ${message.body}`)
+    })
     return (
         <Outlet />
     )
