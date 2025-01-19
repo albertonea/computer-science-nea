@@ -53,18 +53,24 @@ public class OrderBook {
                 order.fill(quantity);
 
                 if (order.isFilled() | bookOrder.isFilled()) {
-                    if (bookOrder.isFilled()) {
-                        filledOrders.add(bookOrder);
-                        priceLevel.removeFirst();
-                    }
+                    // both filled insert both and break
+                    // order filled insert both and break
+                    // book order filled insert bookorder and continue
                     if (order.getSide() == Side.BUY) {
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, order.getUserId(), bookOrder.getUserId(), order.getTicker()));
                     } else {
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, bookOrder.getUserId(), order.getUserId(), order.getTicker()));
                     }
+
                     if (order.isFilled()) {
                         filledOrders.add(order);
+                        filledOrders.add(bookOrder);
                         break;
+                    }
+
+                    if (bookOrder.isFilled()) {
+                        filledOrders.add(bookOrder);
+                        priceLevel.removeFirst();
                     }
                 } else {
                     throw new IllegalStateException("Neither order got fully filled");
@@ -81,6 +87,9 @@ public class OrderBook {
         }
 
         if (!order.isFilled()) {
+            if (order.getInitialQuantity() > order.getRemainingQuantity()) {
+                filledOrders.add(order);
+            }
             if (order.getSide() == Side.BUY) {
                 for (PriceLevel level : buySide) {
                     if (Objects.equals(level.getPrice(), order.getPrice())) {

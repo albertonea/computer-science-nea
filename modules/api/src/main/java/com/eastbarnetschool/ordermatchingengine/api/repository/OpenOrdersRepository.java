@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface OpenOrdersRepository {
     void insert(OrderEntity order);
     void delete(UUID orderId);
+    void update(OrderEntity order);
 }

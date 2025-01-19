@@ -21,4 +21,8 @@ public class OpenOrdersService {
     public void delete(UUID orderId) {
         openOrdersRepository.delete(orderId);
     }
+
+    public void update(OrderEntity order) {
+        openOrdersRepository.update(order);
+    }
 }

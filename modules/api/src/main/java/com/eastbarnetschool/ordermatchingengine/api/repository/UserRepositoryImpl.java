@@ -37,9 +37,11 @@ public class UserRepositoryImpl implements UserRepository {
                 Map.of("username", username),
                 (rs, rowId) -> new User(rs.getObject("user_id", UUID.class), rs.getObject("username", String.class), rs.getObject("created_at", Timestamp.class)));
 
-        Balance balance = balancesService.updateOrCreateBalance(user.getUserId(), "USD", 100000, 0);
+        Balance usdBalance = balancesService.updateOrCreateBalance(user.getUserId(), "USD", 100000, 0);
+        Balance aaplBalance = balancesService.updateOrCreateBalance(user.getUserId(), "AAPL", 1000, 0);
         ArrayList<Balance> balances = new ArrayList<>();
-        balances.add(balance);
+        balances.add(usdBalance);
+        balances.add(aaplBalance);
 
         return new UserWithBalancesResponse(user.getUserId(), user.getUsername(), user.getCreatedAt(), balances);
     }

@@ -32,4 +32,14 @@ public class OpenOrdersRepositoryImpl implements OpenOrdersRepository {
                 Map.of("orderID", orderId)
         );
     }
+
+    @Override
+    public void update(OrderEntity order) {
+        template.update(
+                "insert into open_orders (order_id, user_id, side, ticker, remaining_quantity, initial_quantity, price, created_at)" +
+                        " values (:orderId, :userId, :side, :ticker, :remainingQuantity, :initialQuantity, :price, :createdAt)" +
+                        " on conflict (order_id)" +
+                        " do update set remaining_quantity = :remainingQuantity",
+                Map.of("orderId", order.getOrderId(), "userId", order.getUserId(), "side", order.getSide().name(), "ticker", order.getTicker(), "remainingQuantity", order.getRemainingQuantity(), "initialQuantity", order.getInitialQuantity(), "price", order.getPrice(), "createdAt", order.getCreatedAt()));
+    }
 }
