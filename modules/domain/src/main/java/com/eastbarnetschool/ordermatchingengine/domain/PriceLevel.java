@@ -1,14 +1,16 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 public class PriceLevel {
-    private Long price;
-    private LinkedList<Order> orders;
+    private final Long price;
+    private final PriorityQueue<Order> orders;
 
     public PriceLevel(Long price, Order order) {
         this.price = price;
-        this.orders = new LinkedList<>();
+        this.orders = new PriorityQueue<>(Comparator.comparing(Order::getCreatedAt));
         orders.add(order);
     }
 
@@ -16,7 +18,7 @@ public class PriceLevel {
         return price;
     }
 
-    public LinkedList<Order> getOrders() {
+    public PriorityQueue<Order> getOrders() {
         return orders;
     }
 

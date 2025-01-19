@@ -1,7 +1,7 @@
 import {
     ColumnDef,
     flexRender,
-    getCoreRowModel,
+    getCoreRowModel, Row,
     useReactTable,
 } from "@tanstack/react-table"
 
@@ -17,16 +17,21 @@ import {
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    getRowId?: (originalRow: TData, index: number, parent?: Row<TData>) => string;
+
 }
 
 export function DataTable<TData, TValue>({
-                                             columns,
-                                             data,
-                                         }: DataTableProps<TData, TValue>) {
+    columns,
+    data,
+    getRowId
+}: DataTableProps<TData, TValue>) {
+
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        getRowId
     })
 
     return (

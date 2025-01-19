@@ -7,14 +7,14 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 @Table("users")
-public class User {
+public class UserEntity {
 
     @Id
     private final UUID userId;
     private final String username;
     private final Timestamp createdAt;
 
-    public User(UUID userId, String username, Timestamp createdAt) {
+    public UserEntity(UUID userId, String username, Timestamp createdAt) {
         this.userId = userId;
         this.username = username;
         this.createdAt = createdAt;

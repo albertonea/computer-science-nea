@@ -4,15 +4,15 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class Order {
-    private UUID orderId;
-    private Long price;
-    private UUID userId;
-    private Integer initialQuantity;
+    private final UUID orderId;
+    private final Long price;
+    private final UUID userId;
+    private final Integer initialQuantity;
     private Integer remainingQuantity;
-    private String ticker;
-    private Side side;
-    private OrderType orderType;
-    private Instant createdAt;
+    private final String ticker;
+    private final Side side;
+    private final OrderType orderType;
+    private final Instant createdAt;
 
     public Order(Long price, Integer quantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         this.orderId = UUID.randomUUID();
@@ -58,13 +58,12 @@ public class Order {
         return remainingQuantity;
     }
 
-    public Integer fill(Integer fillQuantity) {
+    public void fill(Integer fillQuantity) {
         if (fillQuantity > remainingQuantity) {
             throw new IllegalArgumentException("Fill quantity exceeds remaining quantity");
         }
         remainingQuantity -= fillQuantity;
 
-        return remainingQuantity;
     }
 
     public boolean isFilled() {

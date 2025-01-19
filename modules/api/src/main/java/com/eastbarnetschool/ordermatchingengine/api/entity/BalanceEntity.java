@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import java.util.UUID;
 
 @Table("balances")
-public class Balance {
+public class BalanceEntity {
     @Id
     private final UUID userId;
     private final String ticker;
@@ -14,7 +14,7 @@ public class Balance {
     private final Long balance;
     private final Long lockedBalance;
 
-    public Balance(UUID userId, String ticker, Long balance, Long lockedBalance) {
+    public BalanceEntity(UUID userId, String ticker, Long balance, Long lockedBalance) {
         this.userId = userId;
         this.ticker = ticker;
         this.balance = balance;

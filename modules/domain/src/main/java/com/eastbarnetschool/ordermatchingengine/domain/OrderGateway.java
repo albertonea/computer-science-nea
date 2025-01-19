@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 public class OrderGateway {
-    private HashMap<String, MatchingEngine> matchingEngines;
+    private final HashMap<String, MatchingEngine> matchingEngines;
 
     public OrderGateway() {
         matchingEngines = new HashMap<>();
@@ -21,9 +21,5 @@ public class OrderGateway {
         } else {
             return matchingEngine.placeOrder(order);
         }
-    }
-
-    public HashMap<String, MatchingEngine> getMatchingEngines() {
-        return new HashMap<>(matchingEngines);
     }
 }

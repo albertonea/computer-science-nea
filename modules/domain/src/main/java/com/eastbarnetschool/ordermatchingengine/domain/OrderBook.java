@@ -1,18 +1,15 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class OrderBook {
-    private PriorityQueue<PriceLevel> sellSide;
-    private PriorityQueue<PriceLevel> buySide;
+    private final PriorityQueue<PriceLevel> sellSide;
+    private final PriorityQueue<PriceLevel> buySide;
 
     public OrderBook() {
-        sellSide = new PriorityQueue<>((a, b) -> Long.compare(b.getPrice(), a.getPrice()));
-        buySide = new PriorityQueue<>((a, b) -> Long.compare(a.getPrice(), b.getPrice()));
+        sellSide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice).reversed());
+        buySide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice));
     }
 
     public PriorityQueue<PriceLevel> getBuySide() {
@@ -39,7 +36,7 @@ public class OrderBook {
         ArrayList<Trade> trades = new ArrayList<>();
         ArrayList<Order> filledOrders = new ArrayList<>();
         while (canMatch(order.getSide(), order.getPrice()) && !order.isFilled()) {
-            LinkedList<Order> priceLevel;
+            PriorityQueue<Order> priceLevel;
             if (order.getSide() == Side.BUY) {
                 priceLevel = sellSide.peek().getOrders();
             } else {
@@ -53,24 +50,28 @@ public class OrderBook {
                 order.fill(quantity);
 
                 if (order.isFilled() | bookOrder.isFilled()) {
-                    // both filled insert both and break
-                    // order filled insert both and break
-                    // book order filled insert bookorder and continue
                     if (order.getSide() == Side.BUY) {
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, order.getUserId(), bookOrder.getUserId(), order.getTicker()));
                     } else {
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, bookOrder.getUserId(), order.getUserId(), order.getTicker()));
                     }
 
-                    if (order.isFilled()) {
+                    if (bookOrder.isFilled() && order.isFilled()) {
                         filledOrders.add(order);
                         filledOrders.add(bookOrder);
+                        priceLevel.poll();
                         break;
                     }
 
                     if (bookOrder.isFilled()) {
                         filledOrders.add(bookOrder);
-                        priceLevel.removeFirst();
+                        priceLevel.poll();
+                    }
+
+                    if (order.isFilled()) {
+                        filledOrders.add(order);
+                        filledOrders.add(bookOrder);
+                        break;
                     }
                 } else {
                     throw new IllegalStateException("Neither order got fully filled");

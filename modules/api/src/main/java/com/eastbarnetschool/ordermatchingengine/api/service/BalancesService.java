@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.Balance;
+import com.eastbarnetschool.ordermatchingengine.api.entity.BalanceEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.BalancesRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class BalancesService {
         this.balancesRepository = balancesRepository;
     }
 
-    public ArrayList<Balance> get(UUID userId) {
+    public ArrayList<BalanceEntity> get(UUID userId) {
         return balancesRepository.get(userId);
     }
 
-    public Balance updateOrCreateBalance(UUID userId, String ticker, Integer balanceDelta, Integer lockedBalancesDelta) {
+    public BalanceEntity updateOrCreateBalance(UUID userId, String ticker, Integer balanceDelta, Integer lockedBalancesDelta) {
         return balancesRepository.updateOrCreateBalance(userId, ticker, balanceDelta, lockedBalancesDelta);
     }
 

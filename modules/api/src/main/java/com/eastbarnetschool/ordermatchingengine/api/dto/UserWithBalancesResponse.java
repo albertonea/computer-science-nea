@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.dto;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.Balance;
+import com.eastbarnetschool.ordermatchingengine.api.entity.BalanceEntity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -10,9 +10,9 @@ public class UserWithBalancesResponse {
     private final UUID userId;
     private final String username;
     private final Timestamp createdAt;
-    private final ArrayList<Balance> balances;
+    private final ArrayList<BalanceEntity> balances;
 
-    public UserWithBalancesResponse(UUID userId, String username, Timestamp createdAt, ArrayList<Balance> balances) {
+    public UserWithBalancesResponse(UUID userId, String username, Timestamp createdAt, ArrayList<BalanceEntity> balances) {
         this.userId = userId;
         this.username = username;
         this.createdAt = createdAt;
@@ -29,7 +29,7 @@ public class UserWithBalancesResponse {
     public Timestamp getCreatedAt() {
         return createdAt;
     }
-    public ArrayList<Balance> getBalances() {
+    public ArrayList<BalanceEntity> getBalances() {
         return balances;
     }
 }

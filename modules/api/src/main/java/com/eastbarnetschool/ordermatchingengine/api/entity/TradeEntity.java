@@ -18,6 +18,7 @@ public class TradeEntity {
     private final UUID sellerId;
     private final String ticker;
 
+
     public TradeEntity(UUID sellerId, String ticker, UUID buyerId, Integer quantity, Long price, Timestamp tradeTime, UUID tradeId) {
         this.sellerId = sellerId;
         this.ticker = ticker;

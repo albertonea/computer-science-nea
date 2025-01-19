@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import static com.eastbarnetschool.ordermatchingengine.domain.OrderType.LIMIT;
 
 public class MatchingEngine {
-    private OrderBook orderBook;
-    private String ticker;
+    private final OrderBook orderBook;
+    private final String ticker;
 
     public MatchingEngine(String ticker) {
         this.ticker = ticker;
         orderBook = new OrderBook();
-    }
-
-    public OrderBook getOrderBook() {
-        return orderBook;
     }
 
     public MatchingEngineResponse placeOrder(Order order) {

@@ -39,7 +39,7 @@ function Interface() {
           <InterfaceChart/>
         </div>
         <div
-            className="bg-card"
+            className="bg-card overflow-scroll scrollbar-hide"
             key="c"
             style={{zIndex: 10}}
             data-grid={{x: 0, y: 13, w: 15, h: 5, isDraggable: false}}
@@ -55,7 +55,7 @@ function Interface() {
           <InterfaceOrderbook/>
         </div>
         <div
-            className="bg-card"
+            className="bg-card overflow-scroll scrollbar-hide"
             key="e"
             style={{zIndex: 10}}
             data-grid={{x: 15, y: 20, w: 5, h: 5}}
