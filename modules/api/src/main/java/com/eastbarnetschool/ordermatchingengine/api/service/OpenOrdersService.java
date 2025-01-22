@@ -4,6 +4,7 @@ import com.eastbarnetschool.ordermatchingengine.api.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OpenOrdersRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -24,5 +25,9 @@ public class OpenOrdersService {
 
     public void update(OrderEntity order) {
         openOrdersRepository.update(order);
+    }
+
+    public ArrayList<OrderEntity> getAllOpenOrders() {
+        return openOrdersRepository.getAllOpenOpenOrders();
     }
 }

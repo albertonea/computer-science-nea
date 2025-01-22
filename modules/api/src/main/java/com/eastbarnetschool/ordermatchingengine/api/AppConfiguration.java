@@ -15,7 +15,6 @@ public class AppConfiguration {
         return new OrderGateway();
     }
 
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -26,4 +25,5 @@ public class AppConfiguration {
                         .allowedOrigins("*");
             }
         };
-    }}
+    }
+}

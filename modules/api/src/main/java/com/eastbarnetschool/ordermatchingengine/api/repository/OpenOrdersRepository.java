@@ -11,4 +11,5 @@ public interface OpenOrdersRepository {
     void insert(OrderEntity order);
     void delete(UUID orderId);
     void update(OrderEntity order);
+    ArrayList<OrderEntity> getAllOpenOpenOrders();
 }

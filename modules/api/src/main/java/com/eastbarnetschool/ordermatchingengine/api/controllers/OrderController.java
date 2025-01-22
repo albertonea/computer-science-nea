@@ -53,7 +53,7 @@ public class OrderController {
             }
         }
 
-        MatchingEngineResponse response = orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), order.getUserId(), Instant.now()));
+        MatchingEngineResponse response = orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), order.getUserId(), Instant.now()));
         // change balance for user that placed order
         // place order in order book
 

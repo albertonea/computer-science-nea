@@ -12,14 +12,6 @@ public class OrderBook {
         buySide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice));
     }
 
-    public PriorityQueue<PriceLevel> getBuySide() {
-        return buySide;
-    }
-
-    public PriorityQueue<PriceLevel> getSellSide() {
-        return sellSide;
-    }
-
     public Boolean canMatch(Side side, Long price) {
         if (side == Side.BUY) {
             if (sellSide.isEmpty()) return false;
@@ -36,11 +28,11 @@ public class OrderBook {
         ArrayList<Trade> trades = new ArrayList<>();
         ArrayList<Order> filledOrders = new ArrayList<>();
         while (canMatch(order.getSide(), order.getPrice()) && !order.isFilled()) {
-            PriorityQueue<Order> priceLevel;
+            PriceLevel priceLevel;
             if (order.getSide() == Side.BUY) {
-                priceLevel = sellSide.peek().getOrders();
+                priceLevel = sellSide.peek();
             } else {
-                priceLevel = buySide.peek().getOrders();
+                priceLevel = buySide.peek();
             }
 
             while (!priceLevel.isEmpty()) {
@@ -95,6 +87,7 @@ public class OrderBook {
                 for (PriceLevel level : buySide) {
                     if (Objects.equals(level.getPrice(), order.getPrice())) {
                         level.addOrder(order);
+                        return new MatchingEngineResponse(trades, filledOrders, order);
                     }
                 }
                 buySide.add(new PriceLevel(order.getPrice(), order));
@@ -102,6 +95,7 @@ public class OrderBook {
                 for (PriceLevel level : sellSide) {
                     if (Objects.equals(level.getPrice(), order.getPrice())) {
                         level.addOrder(order);
+                        return new MatchingEngineResponse(trades, filledOrders, order);
                     }
                 }
                 sellSide.add(new PriceLevel(order.getPrice(), order));

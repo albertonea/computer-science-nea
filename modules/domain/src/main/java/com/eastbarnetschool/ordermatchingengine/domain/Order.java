@@ -14,11 +14,11 @@ public class Order {
     private final OrderType orderType;
     private final Instant createdAt;
 
-    public Order(Long price, Integer quantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+    public Order(Long price, Integer initialQuantity, Integer remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         this.orderId = UUID.randomUUID();
         this.price = price;
-        this.initialQuantity = quantity;
-        this.remainingQuantity = quantity;
+        this.initialQuantity = initialQuantity;
+        this.remainingQuantity = remainingQuantity;
         this.ticker = ticker;
         this.side = side;
         this.orderType = orderType;
