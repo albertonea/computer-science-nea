@@ -37,7 +37,7 @@ public class OrderBook {
 
             while (!priceLevel.isEmpty()) {
                 Order bookOrder = priceLevel.peek();
-                Integer quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
+                Long quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
                 bookOrder.fill(quantity);
                 order.fill(quantity);
 

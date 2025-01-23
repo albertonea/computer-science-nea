@@ -1,5 +1,4 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
-
 import java.time.Instant;
 import java.util.UUID;
 
@@ -7,15 +6,27 @@ public class Order {
     private final UUID orderId;
     private final Long price;
     private final UUID userId;
-    private final Integer initialQuantity;
-    private Integer remainingQuantity;
+    private final Long initialQuantity;
+    private Long remainingQuantity;
     private final String ticker;
     private final Side side;
     private final OrderType orderType;
     private final Instant createdAt;
 
-    public Order(Long price, Integer initialQuantity, Integer remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+    public Order(Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         this.orderId = UUID.randomUUID();
+        this.price = price;
+        this.initialQuantity = initialQuantity;
+        this.remainingQuantity = remainingQuantity;
+        this.ticker = ticker;
+        this.side = side;
+        this.orderType = orderType;
+        this.userId = userId;
+        this.createdAt = createdAt;
+    }
+
+    public Order(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+        this.orderId = orderId;
         this.price = price;
         this.initialQuantity = initialQuantity;
         this.remainingQuantity = remainingQuantity;
@@ -50,15 +61,15 @@ public class Order {
         return side;
     }
 
-    public Integer getInitialQuantity() {
+    public Long getInitialQuantity() {
         return initialQuantity;
     }
 
-    public Integer getRemainingQuantity() {
+    public Long getRemainingQuantity() {
         return remainingQuantity;
     }
 
-    public void fill(Integer fillQuantity) {
+    public void fill(Long fillQuantity) {
         if (fillQuantity > remainingQuantity) {
             throw new IllegalArgumentException("Fill quantity exceeds remaining quantity");
         }

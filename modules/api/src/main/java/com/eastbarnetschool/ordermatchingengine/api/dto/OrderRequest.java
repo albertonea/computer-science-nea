@@ -10,7 +10,7 @@ import java.util.UUID;
 public class OrderRequest {
     private Long price;
     private UUID userId;
-    private Integer quantity;
+    private Long quantity;
     private String ticker;
     private Side side;
     private OrderType orderType;

@@ -8,8 +8,7 @@ import java.util.UUID;
 
 @Repository
 public interface OpenOrdersRepository {
-    void insert(OrderEntity order);
     void delete(UUID orderId);
-    void update(OrderEntity order);
+    void insertOrUpdate(OrderEntity order);
     ArrayList<OrderEntity> getAllOpenOpenOrders();
 }

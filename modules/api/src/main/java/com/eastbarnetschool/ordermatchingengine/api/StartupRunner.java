@@ -9,8 +9,6 @@ import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 
 @Component
@@ -27,8 +25,8 @@ public class StartupRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("Starting Order Matching Engine");
         ArrayList<OrderEntity> orders = openOrdersService.getAllOpenOrders();
-        orders.forEach(order -> {
-            orderGateway.placeOrder(new Order(order.getPrice(), order.getInitialQuantity(), order.getRemainingQuantity(), order.getTicker(), order.getSide(), OrderType.LIMIT, order.getUserId(), order.getCreatedAt().toInstant()));
-        });
+        System.out.println("Found " + orders.size() + " Open Orders");
+        orders.forEach(order -> orderGateway.placeOrder(new Order(order.getOrderId(), order.getPrice(), order.getInitialQuantity(), order.getRemainingQuantity(), order.getTicker(), order.getSide(), OrderType.LIMIT, order.getUserId(), order.getCreatedAt().toInstant())));
+        System.out.println("Order Matching Engine has been started");
     }
 }

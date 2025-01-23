@@ -15,16 +15,12 @@ public class OpenOrdersService {
         this.openOrdersRepository = openOrdersRepository;
     }
 
-    public void insert(OrderEntity order) {
-        openOrdersRepository.insert(order);
-    }
-
     public void delete(UUID orderId) {
         openOrdersRepository.delete(orderId);
     }
 
-    public void update(OrderEntity order) {
-        openOrdersRepository.update(order);
+    public void insertOrUpdate(OrderEntity order) {
+        openOrdersRepository.insertOrUpdate(order);
     }
 
     public ArrayList<OrderEntity> getAllOpenOrders() {

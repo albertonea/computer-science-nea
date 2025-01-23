@@ -3,6 +3,7 @@ package com.eastbarnetschool.ordermatchingengine.api.repository;
 import com.eastbarnetschool.ordermatchingengine.api.dto.UserWithBalancesResponse;
 import com.eastbarnetschool.ordermatchingengine.api.entity.BalanceEntity;
 import com.eastbarnetschool.ordermatchingengine.api.entity.UserEntity;
+import com.eastbarnetschool.ordermatchingengine.api.entity.UserRowMapper;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -23,9 +24,11 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserWithBalancesResponse get(String username) {
-        UserEntity user = template.queryForObject("select * from users where username = :username",
+        UserEntity user = template.queryForObject(
+                "select * from users where username = :username",
                 Map.of("username", username),
-                (rs, rowNum) -> new UserEntity(rs.getObject("user_id", UUID.class), rs.getObject("username", String.class), rs.getObject("created_at", Timestamp.class)));
+                new UserRowMapper()
+        );
 
         ArrayList<BalanceEntity> balances = balancesService.get(user.getUserId());
         return new UserWithBalancesResponse(user.getUserId(), user.getUsername(), user.getCreatedAt(), balances);
@@ -37,8 +40,8 @@ public class UserRepositoryImpl implements UserRepository {
                 Map.of("username", username),
                 (rs, rowId) -> new UserEntity(rs.getObject("user_id", UUID.class), rs.getObject("username", String.class), rs.getObject("created_at", Timestamp.class)));
 
-        BalanceEntity usdBalance = balancesService.updateOrCreateBalance(user.getUserId(), "USD", 100000, 0);
-        BalanceEntity aaplBalance = balancesService.updateOrCreateBalance(user.getUserId(), "AAPL", 1000, 0);
+        BalanceEntity usdBalance = balancesService.updateOrCreateBalance(user.getUserId(), "USD", 100000L, 0L);
+        BalanceEntity aaplBalance = balancesService.updateOrCreateBalance(user.getUserId(), "AAPL", 1000L, 0L);
         ArrayList<BalanceEntity> balances = new ArrayList<>();
         balances.add(usdBalance);
         balances.add(aaplBalance);

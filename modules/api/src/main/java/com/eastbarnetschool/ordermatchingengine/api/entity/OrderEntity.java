@@ -7,6 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 @Table("open_orders")
@@ -15,13 +16,13 @@ public class OrderEntity {
     private final UUID orderId;
     private final UUID userId;
     private final Side side;
-    private final Integer initialQuantity;
-    private final Integer remainingQuantity;
+    private final Long initialQuantity;
+    private final Long remainingQuantity;
     private final String ticker;
     private final Long price;
     private final Timestamp createdAt;
 
-    public OrderEntity(Timestamp createdAt, Long price, String ticker, Integer remainingQuantity, Integer initialQuantity, UUID userId, UUID orderId, Side side) {
+    public OrderEntity(Timestamp createdAt, Long price, String ticker, Long remainingQuantity, Long initialQuantity, UUID userId, UUID orderId, Side side) {
         this.createdAt = createdAt;
         this.price = price;
         this.ticker = ticker;
@@ -36,11 +37,11 @@ public class OrderEntity {
         return side;
     }
 
-    public Integer getRemainingQuantity() {
+    public Long getRemainingQuantity() {
         return remainingQuantity;
     }
 
-    public Integer getInitialQuantity() {
+    public Long getInitialQuantity() {
         return initialQuantity;
     }
 
@@ -62,5 +63,18 @@ public class OrderEntity {
 
     public Timestamp getCreatedAt() {
         return createdAt;
+    }
+
+    public Map<String, Object> toQueryParameters() {
+        return Map.of(
+                "orderId", this.getOrderId(),
+                "userId", this.getUserId(),
+                "side", this.getSide().name(),
+                "ticker", this.getTicker(),
+                "remainingQuantity", this.getRemainingQuantity(),
+                "initialQuantity", this.getInitialQuantity(),
+                "price", this.getPrice(),
+                "createdAt", this.getCreatedAt()
+        );
     }
 }

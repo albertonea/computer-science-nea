@@ -7,15 +7,15 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class FilledOrderResponse {
-    private UUID orderId;
-    private Long price;
-    private Integer initialQuantity;
-    private String ticker;
-    private Side side;
-    private OrderType orderType;
-    private Instant orderDate;
+    private final UUID orderId;
+    private final Long price;
+    private final Long initialQuantity;
+    private final String ticker;
+    private final Side side;
+    private final OrderType orderType;
+    private final Instant orderDate;
 
-    public FilledOrderResponse(UUID orderId, Long price, Integer initialQuantity, String ticker, Side side, OrderType orderType, Instant orderDate) {
+    public FilledOrderResponse(UUID orderId, Long price, Long initialQuantity, String ticker, Side side, OrderType orderType, Instant orderDate) {
         this.orderId = orderId;
         this.price = price;
         this.initialQuantity = initialQuantity;
@@ -33,7 +33,7 @@ public class FilledOrderResponse {
         return price;
     }
 
-    public Integer getInitialQuantity() {
+    public Long getInitialQuantity() {
         return initialQuantity;
     }
 

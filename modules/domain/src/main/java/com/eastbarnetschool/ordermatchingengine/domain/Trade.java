@@ -7,12 +7,12 @@ public class Trade {
     private final UUID tradeId;
     private final Instant tradeTime;
     private final Long price;
-    private final Integer quantity;
+    private final Long quantity;
     private final UUID buyerId;
     private final UUID sellerId;
     private final String ticker;
 
-    public Trade(Instant tradeTime, Long price, Integer quantity, UUID buyerId, UUID sellerId, String ticker) {
+    public Trade(Instant tradeTime, Long price, Long quantity, UUID buyerId, UUID sellerId, String ticker) {
         this.tradeId = UUID.randomUUID();
         this.tradeTime = tradeTime;
         this.price = price;
@@ -34,7 +34,7 @@ public class Trade {
         return price;
     }
 
-    public Integer getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 

@@ -5,6 +5,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 @Table("trades")
@@ -13,13 +14,13 @@ public class TradeEntity {
     private final UUID tradeId;
     private final Timestamp tradeTime;
     private final Long price;
-    private final Integer quantity;
+    private final Long quantity;
     private final UUID buyerId;
     private final UUID sellerId;
     private final String ticker;
 
 
-    public TradeEntity(UUID sellerId, String ticker, UUID buyerId, Integer quantity, Long price, Timestamp tradeTime, UUID tradeId) {
+    public TradeEntity(UUID sellerId, String ticker, UUID buyerId, Long quantity, Long price, Timestamp tradeTime, UUID tradeId) {
         this.sellerId = sellerId;
         this.ticker = ticker;
         this.buyerId = buyerId;
@@ -41,7 +42,7 @@ public class TradeEntity {
         return price;
     }
 
-    public Integer getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 
@@ -55,5 +56,17 @@ public class TradeEntity {
 
     public String getTicker() {
         return ticker;
+    }
+
+    public Map<String, Object> toQueryParameters() {
+        return Map.of(
+                "tradeId", this.getTradeId(),
+                "buyerId", this.getBuyerId(),
+                "ticker", this.getTicker(),
+                "price", this.getPrice(),
+                "quantity", this.getQuantity(),
+                "sellerId", this.getSellerId(),
+                "tradeTime", this.getTradeTime()
+        );
     }
 }

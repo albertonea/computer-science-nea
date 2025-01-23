@@ -37,7 +37,7 @@ public class OrderController {
     @MessageMapping("/order.place")
     public void placeOrder(OrderRequest order) {
         if (order.getSide() == Side.BUY) {
-            Integer cost = Math.toIntExact(order.getQuantity() * order.getPrice());
+            Long cost = (long) Math.toIntExact(order.getQuantity() * order.getPrice());
             if (balancesService.checkIfHasEnoughBalance(order.getUserId(), "USD", cost)) {
                 balancesService.updateOrCreateBalance(order.getUserId(), "USD", -cost, cost);
             } else {
@@ -62,16 +62,16 @@ public class OrderController {
 
         // return order opened
         messagingTemplate.convertAndSend("/stream/openOrders/" + order.getUserId(), placedOrderEntity);
-        openOrdersService.insert(placedOrderEntity);
+        openOrdersService.insertOrUpdate(placedOrderEntity);
 
         for ( Trade trade : response.getTrades() ) {
             // change balances
-            Integer cost = Math.toIntExact(trade.getQuantity() * trade.getPrice());
-            balancesService.updateOrCreateBalance(trade.getSellerId(), trade.getTicker(), 0, -trade.getQuantity());
-            balancesService.updateOrCreateBalance(trade.getSellerId(), "USD", cost, 0);
+            Long cost = (long) Math.toIntExact(trade.getQuantity() * trade.getPrice());
+            balancesService.updateOrCreateBalance(trade.getSellerId(), trade.getTicker(), 0L, -trade.getQuantity());
+            balancesService.updateOrCreateBalance(trade.getSellerId(), "USD", cost, 0L);
 
-            balancesService.updateOrCreateBalance(trade.getBuyerId(), trade.getTicker(), trade.getQuantity(), 0);
-            balancesService.updateOrCreateBalance(trade.getBuyerId(), "USD", 0, -cost);
+            balancesService.updateOrCreateBalance(trade.getBuyerId(), trade.getTicker(), trade.getQuantity(), 0L);
+            balancesService.updateOrCreateBalance(trade.getBuyerId(), "USD", 0L, -cost);
 
             // return trades for ticker
             messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), new TradeResponse(trade.getQuantity(), trade.getPrice()));
@@ -80,7 +80,7 @@ public class OrderController {
 
         for ( Order filledOrder : response.getFilledOrders() ) {
             messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), new FilledOrderResponse(filledOrder.getOrderId(), filledOrder.getPrice(), filledOrder.getInitialQuantity(), filledOrder.getTicker(), filledOrder.getSide(), filledOrder.getOrderType(), filledOrder.getCreatedAt()));
-            openOrdersService.update(new OrderEntity(Timestamp.from(filledOrder.getCreatedAt()), filledOrder.getPrice(), filledOrder.getTicker(), filledOrder.getRemainingQuantity(), filledOrder.getInitialQuantity(), filledOrder.getUserId(), filledOrder.getOrderId(), filledOrder.getSide()));
+            openOrdersService.insertOrUpdate(new OrderEntity(Timestamp.from(filledOrder.getCreatedAt()), filledOrder.getPrice(), filledOrder.getTicker(), filledOrder.getRemainingQuantity(), filledOrder.getInitialQuantity(), filledOrder.getUserId(), filledOrder.getOrderId(), filledOrder.getSide()));
 
             // return filled and partially filled orders
         }

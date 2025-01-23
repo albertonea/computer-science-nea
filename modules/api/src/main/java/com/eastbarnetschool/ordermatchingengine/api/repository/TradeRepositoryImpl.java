@@ -16,8 +16,10 @@ public class TradeRepositoryImpl implements TradeRepository {
 
     @Override
     public void insert(TradeEntity trade) {
-        template.update("insert into trades (trade_id, buyer_id, ticker, price, quantity, seller_id, trade_time) values (:tradeId, :buyerId, :ticker, :price, :quantity, :sellerId, :tradeTime)",
-                Map.of("tradeId", trade.getTradeId(), "buyerId", trade.getBuyerId(), "ticker", trade.getTicker(), "price", trade.getPrice(), "quantity", trade.getQuantity(), "sellerId", trade.getSellerId(), "tradeTime", trade.getTradeTime())
+        template.update(
+                "insert into trades (trade_id, buyer_id, ticker, price, quantity, seller_id, trade_time)" +
+                    " values (:tradeId, :buyerId, :ticker, :price, :quantity, :sellerId, :tradeTime)",
+                trade.toQueryParameters()
         );
     }
 }

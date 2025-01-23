@@ -19,7 +19,7 @@ public class BalancesRepositoryImpl implements BalancesRepository{
     }
 
     @Override
-    public BalanceEntity updateOrCreateBalance(UUID userId, String ticker, Integer balanceDelta, Integer lockedBalanceDelta) {
+    public BalanceEntity updateOrCreateBalance(UUID userId, String ticker, Long balanceDelta, Long lockedBalanceDelta) {
         return template.queryForObject(
                         "insert into balances (user_id, ticker, balance, locked_balance) " +
                         "values (:userId, :ticker, :balance, :lockedBalance) " +
@@ -41,12 +41,12 @@ public class BalancesRepositoryImpl implements BalancesRepository{
     }
 
     @Override
-    public Boolean checkIfHasEnoughBalance(UUID userId, String ticker, Integer requiredBalance) {
+    public Boolean checkIfHasEnoughBalance(UUID userId, String ticker, Long requiredBalance) {
         try {
-            Integer balance = template.queryForObject(
+            Long balance = template.queryForObject(
                     "select balance from balances where user_id = :userId and ticker = :ticker",
                     Map.of("userId", userId, "ticker", ticker),
-                    Integer.class
+                    Long.class
             );
 
             return balance != null && balance >= requiredBalance;

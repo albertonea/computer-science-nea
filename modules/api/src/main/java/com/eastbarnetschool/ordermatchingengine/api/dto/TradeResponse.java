@@ -2,9 +2,9 @@ package com.eastbarnetschool.ordermatchingengine.api.dto;
 
 public class TradeResponse {
     private final Long price;
-    private final Integer quantity;
+    private final Long quantity;
 
-    public TradeResponse(Integer quantity, Long price) {
+    public TradeResponse(Long quantity, Long price) {
         this.quantity = quantity;
         this.price = price;
     }
@@ -13,7 +13,7 @@ public class TradeResponse {
         return price;
     }
 
-    public Integer getQuantity() {
+    public Long getQuantity() {
         return quantity;
     }
 }
