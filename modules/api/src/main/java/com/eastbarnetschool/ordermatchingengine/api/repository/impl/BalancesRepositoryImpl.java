@@ -1,6 +1,7 @@
-package com.eastbarnetschool.ordermatchingengine.api.repository;
+package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.BalanceEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.BalanceEntity;
+import com.eastbarnetschool.ordermatchingengine.api.repository.BalancesRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Repository
-public class BalancesRepositoryImpl implements BalancesRepository{
+public class BalancesRepositoryImpl implements BalancesRepository {
 
     private final NamedParameterJdbcTemplate template;
 

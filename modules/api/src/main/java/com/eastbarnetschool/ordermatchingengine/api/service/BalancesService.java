@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.BalanceEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.BalanceEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.BalancesRepository;
 import org.springframework.stereotype.Service;
 

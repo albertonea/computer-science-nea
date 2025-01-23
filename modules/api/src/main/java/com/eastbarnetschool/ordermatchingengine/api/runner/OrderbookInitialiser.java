@@ -1,7 +1,6 @@
-package com.eastbarnetschool.ordermatchingengine.api;
+package com.eastbarnetschool.ordermatchingengine.api.runner;
 
-import com.eastbarnetschool.ordermatchingengine.api.controllers.OrderController;
-import com.eastbarnetschool.ordermatchingengine.api.entity.OrderEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.OpenOrdersService;
 import com.eastbarnetschool.ordermatchingengine.domain.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.OrderGateway;
@@ -12,11 +11,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 
 @Component
-public class StartupRunner implements ApplicationRunner {
+public class OrderbookInitialiser implements ApplicationRunner {
     public final OrderGateway orderGateway;
     public final OpenOrdersService openOrdersService;
 
-    public StartupRunner(OrderGateway orderGateway, OpenOrdersService openOrdersService) {
+    public OrderbookInitialiser(OrderGateway orderGateway, OpenOrdersService openOrdersService) {
         this.orderGateway = orderGateway;
         this.openOrdersService = openOrdersService;
     }

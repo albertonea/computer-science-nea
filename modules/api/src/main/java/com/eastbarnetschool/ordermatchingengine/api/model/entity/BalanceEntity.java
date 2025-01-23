@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api.entity;
+package com.eastbarnetschool.ordermatchingengine.api.model.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;

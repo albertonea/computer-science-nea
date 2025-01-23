@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api.entity;
+package com.eastbarnetschool.ordermatchingengine.api.model.entity;
 
 import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;

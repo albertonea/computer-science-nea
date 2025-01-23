@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api;
+package com.eastbarnetschool.ordermatchingengine.api.config;
 
 
 import com.eastbarnetschool.ordermatchingengine.domain.OrderGateway;
@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 
 @Configuration
 public class AppConfiguration {

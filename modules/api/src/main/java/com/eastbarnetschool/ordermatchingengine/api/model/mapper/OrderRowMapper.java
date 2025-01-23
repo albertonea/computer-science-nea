@@ -1,5 +1,6 @@
-package com.eastbarnetschool.ordermatchingengine.api.entity;
+package com.eastbarnetschool.ordermatchingengine.api.model.mapper;
 
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;

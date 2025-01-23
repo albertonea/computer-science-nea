@@ -1,10 +1,9 @@
-package com.eastbarnetschool.ordermatchingengine.api.repository;
+package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.TradeEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
+import com.eastbarnetschool.ordermatchingengine.api.repository.TradeRepository;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.Map;
 
 @Repository
 public class TradeRepositoryImpl implements TradeRepository {

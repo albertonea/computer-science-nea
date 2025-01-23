@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.OrderEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
-package com.eastbarnetschool.ordermatchingengine.api.controllers;
+package com.eastbarnetschool.ordermatchingengine.api.controller.websocket;
 
-import com.eastbarnetschool.ordermatchingengine.api.dto.FilledOrderResponse;
-import com.eastbarnetschool.ordermatchingengine.api.dto.OrderRequest;
-import com.eastbarnetschool.ordermatchingengine.api.dto.TradeResponse;
-import com.eastbarnetschool.ordermatchingengine.api.entity.OrderEntity;
-import com.eastbarnetschool.ordermatchingengine.api.entity.TradeEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderRequest;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.OpenOrdersService;
 import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;

@@ -1,13 +1,11 @@
-package com.eastbarnetschool.ordermatchingengine.api.repository;
+package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.OrderEntity;
-import com.eastbarnetschool.ordermatchingengine.api.entity.OrderRowMapper;
-import com.eastbarnetschool.ordermatchingengine.domain.Order;
-import com.eastbarnetschool.ordermatchingengine.domain.Side;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.mapper.OrderRowMapper;
+import com.eastbarnetschool.ordermatchingengine.api.repository.OpenOrdersRepository;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;

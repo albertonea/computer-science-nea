@@ -1,7 +1,7 @@
-package com.eastbarnetschool.ordermatchingengine.api.controllers;
+package com.eastbarnetschool.ordermatchingengine.api.controller.rest;
 
-import com.eastbarnetschool.ordermatchingengine.api.dto.UserWithBalancesResponse;
-import com.eastbarnetschool.ordermatchingengine.api.entity.BalanceEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserWithBalancesResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.BalanceEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import org.springframework.dao.EmptyResultDataAccessException;

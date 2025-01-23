@@ -1,10 +1,8 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import com.eastbarnetschool.ordermatchingengine.api.entity.TradeEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.TradeRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 public class TradeService {

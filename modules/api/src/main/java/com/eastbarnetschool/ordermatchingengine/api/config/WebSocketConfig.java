@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api;
+package com.eastbarnetschool.ordermatchingengine.api.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api.dto;
+package com.eastbarnetschool.ordermatchingengine.api.model.dto;
 
 public class TradeResponse {
     private final Long price;

@@ -1,8 +1,10 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import com.eastbarnetschool.ordermatchingengine.api.dto.UserWithBalancesResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserWithBalancesResponse;
 import com.eastbarnetschool.ordermatchingengine.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -13,8 +15,8 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserWithBalancesResponse get(String username) {
-        return userRepository.get(username);
+    public UserWithBalancesResponse get(UUID userId) {
+        return userRepository.get(userId);
     }
 
     public UserWithBalancesResponse create(String username) {
