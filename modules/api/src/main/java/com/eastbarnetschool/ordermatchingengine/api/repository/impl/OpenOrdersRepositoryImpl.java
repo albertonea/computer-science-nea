@@ -1,7 +1,7 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
-import com.eastbarnetschool.ordermatchingengine.api.model.mapper.OrderRowMapper;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.rowmapper.OrderRowMapper;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OpenOrdersRepository;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;

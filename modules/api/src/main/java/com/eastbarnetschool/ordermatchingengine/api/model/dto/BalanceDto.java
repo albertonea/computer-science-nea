@@ -1,11 +1,11 @@
 package com.eastbarnetschool.ordermatchingengine.api.model.dto;
 
-public class Balance {
+public class BalanceDto {
     private String ticker;
     private Long balance;
     private Long lockedBalance;
 
-    public Balance(String ticker, Long balance, Long lockedBalance) {
+    public BalanceDto(String ticker, Long balance, Long lockedBalance) {
         this.ticker = ticker;
         this.balance = balance;
         this.lockedBalance = lockedBalance;

@@ -1,4 +1,4 @@
-package com.eastbarnetschool.ordermatchingengine.api.model.mapper;
+package com.eastbarnetschool.ordermatchingengine.api.model.entity.rowmapper;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import org.springframework.jdbc.core.RowMapper;
@@ -14,6 +14,7 @@ public class UserRowMapper implements RowMapper<UserEntity> {
         return new UserEntity(
                 rs.getObject("user_id", UUID.class),
                 rs.getObject("username", String.class),
+                rs.getObject("password", String.class),
                 rs.getObject("created_at", Timestamp.class)
         );
     }

@@ -1,10 +1,11 @@
 CREATE TABLE users (
    user_id uuid primary key default uuid_generate_v4(),
    username varchar(50) not null unique,
+   password varchar(255) not null,
    created_at timestamp default now()
 );
 
-CREATE TABLE balances (
+CREATE TABLE balanceDtos (
    user_id uuid not null references users(user_id),
    ticker varchar(50) not null,
    balance bigint not null default 0,
