@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("api/user")
 public class UserController {
 
     private final UserService userService;
@@ -35,10 +35,10 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/balances")
-    public ResponseEntity<List<BalanceDto>> getUserBalances(final Authentication authentication) {
-        final var balances = balancesService.get(authentication.)
-    }
+//    @GetMapping("/balances")
+//    public ResponseEntity<List<BalanceDto>> getUserBalances(final Authentication authentication) {
+//        final var balances = balancesService.get(authentication.getName());
+//    }
 
 //    @GetMapping("/login/{username}")
 //    public ResponseEntity<UserWithBalancesResponse> login(@PathVariable String username) {

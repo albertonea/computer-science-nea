@@ -6,6 +6,7 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.RegistrationReques
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.RegistrationResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.service.AuthenticationService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,9 +30,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegistrationResponseDto> registerUser(@RequestBody final RegistrationRequestDto registrationRequestDto) {
-        final var registeredUser = userService.registerUser(registrationRequestDto);
+    public ResponseEntity<?> registerUser(@RequestBody final RegistrationRequestDto registrationRequestDto) {
+        userService.registerUser(registrationRequestDto);
 
-        return ResponseEntity.ok(registeredUser);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

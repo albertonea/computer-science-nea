@@ -5,12 +5,14 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserWithBalancesRe
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface UserRepository {
     UserWithBalancesResponse get(String username);
+    Optional<UserEntity> getByUsername(String username);
     boolean exists(String username);
-    UserEntity create(UserEntity userEntity);
+    void create(UserEntity userEntity);
     UserDashboardDto getUserWithOrdersAndBalances(String username);
 }

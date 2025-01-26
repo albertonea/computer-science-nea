@@ -7,14 +7,16 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class OrderDto {
-    private final UUID orderId;
-    private final Long price;
-    private final Long initialQuantity;
-    private final Long remainingQuantity;
-    private final String ticker;
-    private final Side side;
-    private final OrderType orderType;
-    private final Instant orderDate;
+    private UUID orderId;
+    private Long price;
+    private Long initialQuantity;
+    private Long remainingQuantity;
+    private String ticker;
+    private Side side;
+    private OrderType orderType;
+    private Instant orderDate;
+
+    public OrderDto() {}
 
     public OrderDto(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, Instant orderDate) {
         this.orderId = orderId;

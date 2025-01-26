@@ -64,45 +64,68 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<UserEntity> getByUsername(String username) {
+        return Optional.ofNullable(template.queryForObject(
+                """
+                        select * from users where username = :username
+                        """,
+                Map.of("username", username),
+                new UserRowMapper()
+        ));
+    }
+
+    @Override
     public UserDashboardDto getUserWithOrdersAndBalances(String username) {
-        return template.queryForObject(
+    return template.queryForObject(
             """
                  select
-                     u.user_id,
-                     u.username,
-                     u.created_at,
-                     json_agg(json_build_object(
+                     u.user_id as user_id,
+                     u.username as username,
+                     u.created_at as created_at,
+                     coalesce(json_agg(json_build_object(
                          'ticker', b.ticker,
                          'balance', b.balance,
-                         'locked_balance', b.locked_balance
-                     )) as balances,
-                    json_agg(json_build_object(
-                        'order_id', o.order_id,
-                        'side', o.side,
-                        'ticker', o.ticker,
-                        'remaining_quantity', o.remaining_quantity,
-                        'initial_quantity', o.initial_quantity,
-                        'price', o.price,
-                        'created_at', o.created_at,
-                    )) as orders
+                         'lockedBalance', b.locked_balance
+                     )) filter (where b.ticker is not null), '[]'::json) as balances,
+                     coalesce(json_agg(json_build_object(
+                         'orderId', o.order_id,
+                         'side', o.side,
+                         'ticker', o.ticker,
+                         'remainingQuantity', o.remaining_quantity,
+                         'initialQuantity', o.initial_quantity,
+                         'price', o.price,
+                         'createdAt', o.created_at
+                     )) filter (where o.order_id is not null), '[]'::json) as orders
                  from users u
-                 left join balances b on u.user_id = b.user_id
+                 left join balances b on b.user_id = u.user_id
                  left join open_orders o on o.user_id = u.user_id
                  where u.username = :username
                  group by u.user_id
                 """,
                 Map.of("username", username),
                 (rs, rowNum) -> {
-                    List<OrderDto> orders =  new ArrayList<>();
+                    String ordersJson = rs.getString("orders");
+                    String balancesJson = rs.getString("balances");
+
+                    List<OrderDto> orders = new ArrayList<>();
                     List<BalanceDto> balances = new ArrayList<>();
 
-                    try {
-                        orders = new ObjectMapper().readValue(rs.getString("orders" ), new TypeReference<List<OrderDto>>() {});
-                    } catch (JsonProcessingException e) {}
+                    if (ordersJson != null && !ordersJson.isEmpty()) {
+                        try {
+                            orders = new ObjectMapper().readValue(ordersJson, new TypeReference<List<OrderDto>>() {});
+                        } catch (JsonProcessingException e) {
+                            System.err.println("Error parsing orders JSON: " + e.getMessage());
+                        }
+                    }
 
-                    try {
-                        balances = new ObjectMapper().readValue(rs.getString("balances" ), new TypeReference<List<BalanceDto>>() {});
-                    } catch (JsonProcessingException e) {}
+                    if (balancesJson != null && !balancesJson.isEmpty()) {
+                        try {
+                            balances = new ObjectMapper().readValue(balancesJson, new TypeReference<List<BalanceDto>>() {});
+                        } catch (JsonProcessingException e) {
+                            // Log the error or handle it as needed
+                            System.err.println("Error parsing balances JSON: " + e.getMessage());
+                        }
+                    }
 
                     return new UserDashboardDto(
                         rs.getObject("user_id", UUID.class),
@@ -119,20 +142,20 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean exists(String username) {
         return Boolean.TRUE.equals(template.queryForObject(
             """
-                select username from users where username = :username
+                select exists (select 1 from users where username = :username)
                 """,
                 Map.of("username", username),
-                (rs, rowNum) -> rs.getString("username").equals(username)
+                Boolean.class
         ));
     }
 
     @Override
-    public UserEntity create(UserEntity userEntity) {
-        UserEntity user = template.queryForObject(
+    public void create(UserEntity userEntity) {
+        UUID userId = template.queryForObject(
             """
                 insert into users (user_id, username, password, created_at)
                 values (:userId, :username, :password, :createdAt)
-                on conflict(username) do nothing returning user_id, username, created_at
+                returning user_id
                 """,
                 Map.of(
                     "userId", userEntity.getUserId(),
@@ -140,12 +163,11 @@ public class UserRepositoryImpl implements UserRepository {
                     "password", userEntity.getPassword(),
                     "createdAt", userEntity.getCreatedAt()
                 ),
-                new UserRowMapper()
+                UUID.class
         );
 
-        balancesService.updateOrCreateBalance(user.getUserId(), "USD", 100000L, 0L);
-        balancesService.updateOrCreateBalance(user.getUserId(), "AAPL", 1000L, 0L);
-        return user;
+        balancesService.updateOrCreateBalance(userId, "USD", 100000L, 0L);
+        balancesService.updateOrCreateBalance(userId, "AAPL", 1000L, 0L);
     }
 
 

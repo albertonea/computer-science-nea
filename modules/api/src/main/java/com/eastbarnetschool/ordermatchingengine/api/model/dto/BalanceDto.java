@@ -5,6 +5,8 @@ public class BalanceDto {
     private Long balance;
     private Long lockedBalance;
 
+    public BalanceDto() {}
+
     public BalanceDto(String ticker, Long balance, Long lockedBalance) {
         this.ticker = ticker;
         this.balance = balance;

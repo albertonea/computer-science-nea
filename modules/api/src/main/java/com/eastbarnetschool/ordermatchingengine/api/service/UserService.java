@@ -34,7 +34,7 @@ public class UserService {
 
 
 
-    public RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequestDto) {
+    public void registerUser(RegistrationRequestDto registrationRequestDto) {
         final var errors = new HashMap<String, String>();
 
         if (userRepository.exists(registrationRequestDto.getUsername())) {
@@ -44,7 +44,7 @@ public class UserService {
         if (!errors.isEmpty()) {
             throw new ValidationException(CONFLICT, errors);
         }
-
-        return userMapper.toRegistrationResponse(userRepository.create(userMapper.toUserEntity(registrationRequestDto)));
+        final var userEntity = userMapper.toUserEntity(registrationRequestDto);
+        userRepository.create(userEntity);
     }
 }
