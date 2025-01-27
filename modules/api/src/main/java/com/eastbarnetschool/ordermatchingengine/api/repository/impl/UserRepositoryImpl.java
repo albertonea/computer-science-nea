@@ -28,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserWithBalancesResponse get(String username) {
+    public UserWithBalancesResponse getUserWithBalances(String username) {
          return template.queryForObject(
             """
                  select
@@ -136,6 +136,17 @@ public class UserRepositoryImpl implements UserRepository {
                     );
                 }
         );
+    }
+
+    @Override
+    public UserEntity getById(UUID userId) {
+        return (template.queryForObject(
+                """
+                        select * from users where user_id = :userId
+                        """,
+                Map.of("userId", userId),
+                new UserRowMapper()
+        ));
     }
 
     @Override

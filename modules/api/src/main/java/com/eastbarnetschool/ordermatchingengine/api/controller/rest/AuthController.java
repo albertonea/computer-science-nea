@@ -8,10 +8,9 @@ import com.eastbarnetschool.ordermatchingengine.api.service.AuthenticationServic
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -34,5 +33,16 @@ public class AuthController {
         userService.registerUser(registrationRequestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthenticationResponseDto> refreshToken(@RequestParam UUID refreshToken) {
+        return ResponseEntity.ok(authenticationService.refreshToken(refreshToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> revokeToken(@RequestParam UUID refreshToken) {
+        authenticationService.revokeRefreshToken(refreshToken);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

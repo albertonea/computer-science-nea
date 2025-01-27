@@ -10,9 +10,10 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository {
-    UserWithBalancesResponse get(String username);
+    UserWithBalancesResponse getUserWithBalances(String username);
     Optional<UserEntity> getByUsername(String username);
     boolean exists(String username);
     void create(UserEntity userEntity);
     UserDashboardDto getUserWithOrdersAndBalances(String username);
+    UserEntity getById(UUID userId);
 }

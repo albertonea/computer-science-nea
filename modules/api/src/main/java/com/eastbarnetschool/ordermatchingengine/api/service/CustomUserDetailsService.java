@@ -12,16 +12,15 @@ import java.util.Collections;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.getByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        UserEntity user = userService.getByUsername(username);
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
