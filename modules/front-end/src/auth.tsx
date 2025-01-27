@@ -1,60 +1,83 @@
 import * as React from 'react'
-import {loginRequest} from "@/api/users.ts";
+import {login, Auth, logout, refreshToken, registerAccount} from "@/api/auth.ts";
+import {useCallback, useEffect} from "react";
+import {mergeLeft} from "ramda";
 
-type User = {
-    userId: string,
-    username: string,
-    createdAt: Date
-}
-
-export interface AuthContext {
+export type AuthContext = {
     isAuthenticated: boolean
-    login: (username: string) => Promise<void>
-    logout: () => Promise<void>
-    user: User | null
+    loginAndSaveContents: (username: string, password: string) => Promise<void>
+    logoutAndDeleteLocalstorage: () => Promise<void>
+    register: (username: string, password: string) => Promise<void>
+    auth: Auth | null
 }
 
 const AuthContext = React.createContext<AuthContext | null>(null)
 
-const key = 'auth.user'
+const key = 'auth'
 
-function getStoredUser():User | null {
-    const userJson = localStorage.getItem(key)
-    if (userJson) {
-        return JSON.parse(userJson)
+function getStoredAuth(): Auth | null {
+    const authJson = localStorage.getItem(key)
+    if (authJson) {
+        return JSON.parse(authJson)
     }
     return null
 }
 
-function setStoredUser(user: User | null) {
-    if (user) {
-        localStorage.setItem(key, JSON.stringify(user))
+function setStoredAuth(auth: Auth | null) {
+    if (auth) {
+        localStorage.setItem(key, JSON.stringify(auth))
     } else {
         localStorage.removeItem(key)
     }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = React.useState<User | null>(getStoredUser())
-    const isAuthenticated = !!user
+    const [auth, setAuth] = React.useState<Auth | null>(getStoredAuth())
+    const isAuthenticated = !!auth
 
-    const logout = React.useCallback(async () => {
-        setStoredUser(null)
-        setUser(null)
+    const logoutAndDeleteLocalstorage = useCallback(async () => {
+        if (auth?.refreshToken) {
+            await logout(auth.refreshToken)
+        }
+        setStoredAuth(null)
+        setAuth(null)
     }, [])
 
-    const login = React.useCallback(async (username: string) => {
-        const user = await loginRequest(username);
-        setStoredUser(user)
-        setUser(user)
+    const loginAndSaveContents = useCallback(async (username: string, password: string) => {
+        const loginResponse = await login(username, password);
+        setStoredAuth(loginResponse)
+        setAuth(loginResponse)
     }, [])
 
-    React.useEffect(() => {
-        setUser(getStoredUser())
+    const register = useCallback(async (username: string, password: string) => {
+        await registerAccount(username, password)
+    }, [])
+
+    const refreshTokenAndSave = useCallback(async () => {
+        const auth = getStoredAuth()
+        if (auth && auth.expiresAt.getTime() > new Date().getTime()) {
+            const newAuthTokens = await refreshToken(auth.refreshToken)
+            setStoredAuth(mergeLeft(newAuthTokens, auth))
+        } else {
+            logoutAndDeleteLocalstorage()
+        }
+    }, [])
+
+    useEffect(() => {
+        setTimeout(async () => {
+            await refreshTokenAndSave()
+        }, 2700000)
+
+        refreshTokenAndSave()
+            .then(() => setAuth(getStoredAuth()))
+    })
+
+    useEffect(() => {
+        setAuth(getStoredAuth())
     }, [])
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, auth, register, loginAndSaveContents, logoutAndDeleteLocalstorage }}>
             {children}
         </AuthContext.Provider>
     )

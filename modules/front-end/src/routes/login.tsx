@@ -11,7 +11,7 @@ import {useState} from "react";
 import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 const fallback = '/dashboard' as const
@@ -35,16 +35,18 @@ function LoginComponent() {
     const navigate = Route.useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+    const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         setIsSubmitting(true)
         try {
-            evt.preventDefault()
-            const data = new FormData(evt.currentTarget)
-            const fieldValue = data.get('username')
+            e.preventDefault()
+            const data = new FormData(e.currentTarget)
+            const usernameFieldValue = data.get('username')
+            const passwordFieldValue = data.get('password')
 
-            if (!fieldValue) return
-            const username = fieldValue.toString()
-            await auth.login(username)
+            if (!usernameFieldValue || !passwordFieldValue) return
+            const username = usernameFieldValue.toString()
+            const password = passwordFieldValue.toString()
+            await auth.loginAndSaveContents(username, password)
 
             await router.invalidate()
 
@@ -65,24 +67,42 @@ function LoginComponent() {
         <div className="flex w-full h-full justify-center items-center">
             <form onSubmit={onFormSubmit}>
                 <fieldset disabled={isLoggingIn} className="w-full grid gap-2">
-                    <Card className="w-full max-w-sm">
+                    <Card>
                         <CardHeader>
                             <CardTitle className="text-2xl">Login</CardTitle>
                             <CardDescription>
-                                Enter a username below to start trading.
+                                Enter your username below to login to your account
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="username-input">Username</Label>
-                                <Input id="username-input" name="username" type="text" placeholder="Enter your name" required/>
+                        <CardContent>
+                            <div className="flex flex-col gap-6">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="username">Username</Label>
+                                    <Input
+                                        id="username"
+                                        name="username"
+                                        type="username"
+                                        placeholder="trader123"
+                                        required
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <div className="flex items-center">
+                                        <Label htmlFor="password">Password</Label>
+                                    </div>
+                                    <Input id="password" name="password" type="password" required />
+                                </div>
+                                <Button type="submit" className="w-full">
+                                    Login
+                                </Button>
+                            </div>
+                            <div className="mt-4 text-center text-sm">
+                                Don&apos;t have an account?{" "}
+                                <a href="/register" className="underline underline-offset-4">
+                                    Sign up
+                                </a>
                             </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button variant="default" type="submit" className="w-full">
-                                {isLoggingIn ? 'Loading...' : 'Start'}
-                            </Button>
-                        </CardFooter>
                     </Card>
                 </fieldset>
             </form>

@@ -1,9 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.controller.rest;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.AuthenticationRequestDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.AuthenticationResponseDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.RegistrationRequestDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.RegistrationResponseDto;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.*;
 import com.eastbarnetschool.ordermatchingengine.api.service.AuthenticationService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -36,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthenticationResponseDto> refreshToken(@RequestParam UUID refreshToken) {
+    public ResponseEntity<RefreshTokenResponseDto> refreshToken(@RequestParam UUID refreshToken) {
         return ResponseEntity.ok(authenticationService.refreshToken(refreshToken));
     }
 
