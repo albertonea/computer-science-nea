@@ -1,9 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.BalanceDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserDashboardDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserWithBalancesResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.*;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.rowmapper.UserRowMapper;
 import com.eastbarnetschool.ordermatchingengine.api.repository.UserRepository;
@@ -78,37 +75,54 @@ public class UserRepositoryImpl implements UserRepository {
     public UserDashboardDto getUserWithOrdersAndBalances(String username) {
     return template.queryForObject(
             """
-                 select
-                     u.user_id as user_id,
-                     u.username as username,
-                     u.created_at as created_at,
-                     coalesce(json_agg(json_build_object(
-                         'ticker', b.ticker,
-                         'balance', b.balance,
-                         'lockedBalance', b.locked_balance
-                     )) filter (where b.ticker is not null), '[]'::json) as balances,
-                     coalesce(json_agg(json_build_object(
-                         'orderId', o.order_id,
-                         'side', o.side,
-                         'ticker', o.ticker,
-                         'remainingQuantity', o.remaining_quantity,
-                         'initialQuantity', o.initial_quantity,
-                         'price', o.price,
-                         'createdAt', o.created_at
-                     )) filter (where o.order_id is not null), '[]'::json) as orders
+                 SELECT
+                     u.user_id AS user_id,
+                     u.username AS username,
+                     u.created_at AS created_at,
+                     coalesce(
+                         (select json_agg(json_build_object(
+                             'ticker', b.ticker,
+                             'balance', b.balance,
+                             'lockedBalance', b.locked_balance
+                         )) from balances b where b.user_id = u.user_id),
+                         '[]'::json
+                     ) as balances,
+                     coalesce(
+                         (select json_agg(json_build_object(
+                             'orderId', o.order_id,
+                             'side', o.side,
+                             'ticker', o.ticker,
+                             'remainingQuantity', o.remaining_quantity,
+                             'initialQuantity', o.initial_quantity,
+                             'price', o.price,
+                             'createdAt', o.created_at
+                         )) from open_orders o where o.user_id = u.user_id),
+                         '[]'::json
+                     ) as orders,
+                     coalesce(
+                         (select json_agg(json_build_object(
+                             'tradeId', t.trade_id,
+                             'buy', case when t.buyer_id = u.user_id then true else false end,
+                             'price', t.price,
+                             'quantity', t.quantity,
+                             'ticker', t.ticker,
+                             'tradeTime', t.trade_time
+                         )) from trades t where t.seller_id = u.user_id or t.buyer_id = u.user_id),
+                         '[]'::json
+                     ) as trades
+                 
                  from users u
-                 left join balances b on b.user_id = u.user_id
-                 left join open_orders o on o.user_id = u.user_id
-                 where u.username = :username
-                 group by u.user_id
+                 where u.username = :username;
                 """,
                 Map.of("username", username),
                 (rs, rowNum) -> {
                     String ordersJson = rs.getString("orders");
                     String balancesJson = rs.getString("balances");
+                    String tradesJson = rs.getString("trades");
 
                     List<OrderDto> orders = new ArrayList<>();
                     List<BalanceDto> balances = new ArrayList<>();
+                    List<TradeDto> trades = new ArrayList<>();
 
                     if (ordersJson != null && !ordersJson.isEmpty()) {
                         try {
@@ -127,12 +141,22 @@ public class UserRepositoryImpl implements UserRepository {
                         }
                     }
 
+                    if (tradesJson != null && !tradesJson.isEmpty()) {
+                        try {
+                            trades = new ObjectMapper().readValue(tradesJson, new TypeReference<List<TradeDto>>() {});
+                        } catch (JsonProcessingException e) {
+                            // Log the error or handle it as needed
+                            System.err.println("Error parsing balances JSON: " + e.getMessage());
+                        }
+                    }
+
                     return new UserDashboardDto(
                         rs.getObject("user_id", UUID.class),
                         rs.getString("username"),
                         rs.getTimestamp("created_at"),
                         balances,
-                        orders
+                        orders,
+                        trades
                     );
                 }
         );

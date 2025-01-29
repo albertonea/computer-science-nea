@@ -12,13 +12,19 @@ public class UserDashboardDto {
     private final Timestamp createdAt;
     private final List<BalanceDto> balances;
     private final List<OrderDto> orders;
+    private final List<TradeDto> trades;
 
-    public UserDashboardDto(UUID userId, String username, Timestamp createdAt, List<BalanceDto> balances, List<OrderDto> orders) {
+    public UserDashboardDto(UUID userId, String username, Timestamp createdAt, List<BalanceDto> balances, List<OrderDto> orders, List<TradeDto> trades) {
         this.userId = userId;
         this.username = username;
         this.createdAt = createdAt;
         this.balances = balances;
         this.orders = orders;
+        this.trades = trades;
+    }
+
+    public List<TradeDto> getTrades() {
+        return trades;
     }
 
     public UUID getUserId() {

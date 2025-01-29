@@ -23,11 +23,11 @@ export const Route = createFileRoute('/_auth')({
 
 function AuthLayout() {
     const auth = useAuth()
-    useSubscription(`/stream/filledOrders/${auth.user?.userId}`, (message) => {
+    useSubscription(`/stream/filledOrders/${auth.auth?.user.userId}`, (message) => {
         toast(`order filled ${message.body}`)
     })
 
-    useSubscription(`/stream/errors/${auth.user?.userId}`, (message) => {
+    useSubscription(`/stream/errors/${auth.auth?.user.userId}`, (message) => {
         toast(`Error: ${message.body}`)
     })
     return (

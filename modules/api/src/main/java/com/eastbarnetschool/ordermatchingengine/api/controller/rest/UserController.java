@@ -39,15 +39,4 @@ public class UserController {
 //    public ResponseEntity<List<BalanceDto>> getUserBalances(final Authentication authentication) {
 //        final var balances = balancesService.get(authentication.getName());
 //    }
-
-//    @GetMapping("/login/{username}")
-//    public ResponseEntity<UserWithBalancesResponse> login(@PathVariable String username) {
-//        try {
-//            UserWithBalancesResponse user = userService.get(username);
-//            return ResponseEntity.ok(user);
-//        } catch (EmptyResultDataAccessException e) {
-//            UserWithBalancesResponse response = userService.create(username);
-//            return ResponseEntity.ok(response);
-//        }
-//    }
 }

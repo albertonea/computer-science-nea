@@ -3,6 +3,7 @@ package com.eastbarnetschool.ordermatchingengine.api.model.dto;
 import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -14,11 +15,11 @@ public class OrderDto {
     private String ticker;
     private Side side;
     private OrderType orderType;
-    private Instant orderDate;
+    private Timestamp orderDate;
 
     public OrderDto() {}
 
-    public OrderDto(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, Instant orderDate) {
+    public OrderDto(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, Timestamp orderDate) {
         this.orderId = orderId;
         this.price = price;
         this.initialQuantity = initialQuantity;
@@ -53,7 +54,7 @@ public class OrderDto {
         return orderType;
     }
 
-    public Instant getOrderDate() {
+    public Timestamp getOrderDate() {
         return orderDate;
     }
 

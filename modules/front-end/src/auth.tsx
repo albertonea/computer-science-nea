@@ -54,12 +54,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [])
 
     const refreshTokenAndSave = useCallback(async () => {
+        console.log('refresh token')
         const auth = getStoredAuth()
-        if (auth && auth.expiresAt.getTime() > new Date().getTime()) {
+        if (auth && new Date(auth.expiresAt).getTime() > new Date().getTime()) {
             const newAuthTokens = await refreshToken(auth.refreshToken)
             setStoredAuth(mergeLeft(newAuthTokens, auth))
         } else {
-            logoutAndDeleteLocalstorage()
+            window.alert('session expired, please login again')
+            await logoutAndDeleteLocalstorage()
         }
     }, [])
 
@@ -69,12 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, 2700000)
 
         refreshTokenAndSave()
-            .then(() => setAuth(getStoredAuth()))
     })
-
-    useEffect(() => {
-        setAuth(getStoredAuth())
-    }, [])
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, auth, register, loginAndSaveContents, logoutAndDeleteLocalstorage }}>

@@ -2,7 +2,7 @@ package com.eastbarnetschool.ordermatchingengine.api.controller.websocket;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderRequest;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
@@ -74,7 +74,7 @@ public class OrderController {
             balancesService.updateOrCreateBalance(trade.getBuyerId(), "USD", 0L, -cost);
 
             // return trades for ticker
-            messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), new TradeResponse(trade.getQuantity(), trade.getPrice()));
+//            messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), new TradeDto(trade.getQuantity(), trade.getPrice()));
             tradeService.insert(new TradeEntity(trade.getSellerId(), trade.getTicker(), trade.getBuyerId(), trade.getQuantity(), trade.getPrice(), Timestamp.from(trade.getTradeTime()), trade.getTradeId()));
         }
 

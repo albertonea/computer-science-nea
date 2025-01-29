@@ -17,7 +17,7 @@ export default function Navbar() {
 
     const handleLogout = () => {
         if (window.confirm('Are you sure you want to logout?')) {
-            auth.logout().then(() => {
+            auth.logoutAndDeleteLocalstorage().then(() => {
                 router.invalidate().finally(() => {
                     navigate({ to: '/' })
                 })
