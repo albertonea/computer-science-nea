@@ -76,9 +76,9 @@ public class UserRepositoryImpl implements UserRepository {
     return template.queryForObject(
             """
                  SELECT
-                     u.user_id AS user_id,
-                     u.username AS username,
-                     u.created_at AS created_at,
+                     u.user_id as user_id,
+                     u.username as username,
+                     u.created_at as created_at,
                      coalesce(
                          (select json_agg(json_build_object(
                              'ticker', b.ticker,
@@ -110,7 +110,6 @@ public class UserRepositoryImpl implements UserRepository {
                          )) from trades t where t.seller_id = u.user_id or t.buyer_id = u.user_id),
                          '[]'::json
                      ) as trades
-                 
                  from users u
                  where u.username = :username;
                 """,

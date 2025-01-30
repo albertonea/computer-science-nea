@@ -6,7 +6,9 @@ import {Button } from '@/components/ui/button';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {format, formatDistanceToNow} from "date-fns";
+import {formatDistanceToNow} from "date-fns";
+import {sort} from "ramda";
+import {Progress} from "@/components/ui/progress.tsx";
 
 export const Route = createFileRoute('/_auth/dashboard/')({
   loader: () => getDashboard(),
@@ -96,18 +98,87 @@ function Page() {
               <TableRow>
                 <TableHead>Customer</TableHead>
                 <TableHead className="hidden xl:table-column">
-                  Type
+                  Time
                 </TableHead>
                 <TableHead className="hidden xl:table-column">
-                  Status
+                  Ticker
                 </TableHead>
                 <TableHead className="hidden xl:table-column">
-                  Date
+                  Price
                 </TableHead>
-                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="text-right">
+                  Quantity
+                </TableHead>
+                <TableHead className="text-right">
+                  Fill
+                </TableHead>
+                <TableHead className="text-right">
+                  Side
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
+              {dashboardData.orders.map((order) => (
+                  <TableRow key={order.orderId}>
+                    <TableCell>
+                      <div></div>
+                    </TableCell>
+                  </TableRow>
+              {
+                id: "createdAt",
+                accessorKey: "createdAt",
+                header: "Time",
+                cell: ({row}) =>  (
+                <a>{new Date(row.getValue('createdAt')).toLocaleString()}</a>
+            )
+            },
+            {
+            accessorKey: "ticker",
+            header: "Ticker"
+            },
+            {
+            accessorKey: "price",
+            header: "Price",
+            },
+            {
+            accessorKey: "initialQuantity",
+            header: "Quantity",
+            },
+            {
+            accessorKey: "remainingQuantity",
+            header: "Filled",
+            cell: ({row}) =>  {
+            const rowData = row.original
+            return (
+            <a>{rowData.initialQuantity - rowData.remainingQuantity}</a>
+            )
+            }
+            },
+            {
+            size: 100,
+            minSize: 100,
+            maxSize: 100,
+            header: "Fill",
+            cell: ({row}) =>  {
+            const rowData = row.original
+            const progress = Math.round((1 - rowData.remainingQuantity/rowData.initialQuantity) * 100)
+            return (
+            <>
+              <a className="text-xs text-muted-foreground">{progress}%</a>
+              <Progress value={progress} primary={rowData.side === "SELL"} className="w-full h-2" />
+            </>
+            )
+            }
+            },
+            {
+            id: "side",
+            accessorKey: "side",
+            header: "Side",
+            cell: ({row}) => (
+            <a className={`${row.getValue('side') === "BUY" ? "text-primary": "text-red-500"} font-bold`}>{row.getValue('side')}</a>
+            )
+            }
+              ))}
               <TableRow>
                 <TableCell>
                   <div className="font-medium">Liam Johnson</div>
@@ -128,86 +199,6 @@ function Page() {
                 </TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
-              <TableRow>
-                <TableCell>
-                  <div className="font-medium">Olivia Smith</div>
-                  <div className="hidden text-sm text-muted-foreground md:inline">
-                    olivia@example.com
-                  </div>
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  Refund
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  <Badge className="text-xs" variant="outline">
-                    Declined
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                  2023-06-24
-                </TableCell>
-                <TableCell className="text-right">$150.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <div className="font-medium">Noah Williams</div>
-                  <div className="hidden text-sm text-muted-foreground md:inline">
-                    noah@example.com
-                  </div>
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  Subscription
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  <Badge className="text-xs" variant="outline">
-                    Approved
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                  2023-06-25
-                </TableCell>
-                <TableCell className="text-right">$350.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <div className="font-medium">Emma Brown</div>
-                  <div className="hidden text-sm text-muted-foreground md:inline">
-                    emma@example.com
-                  </div>
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  Sale
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  <Badge className="text-xs" variant="outline">
-                    Approved
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                  2023-06-26
-                </TableCell>
-                <TableCell className="text-right">$450.00</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>
-                  <div className="font-medium">Liam Johnson</div>
-                  <div className="hidden text-sm text-muted-foreground md:inline">
-                    liam@example.com
-                  </div>
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  Sale
-                </TableCell>
-                <TableCell className="hidden xl:table-column">
-                  <Badge className="text-xs" variant="outline">
-                    Approved
-                  </Badge>
-                </TableCell>
-                <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                  2023-06-27
-                </TableCell>
-                <TableCell className="text-right">$550.00</TableCell>
-              </TableRow>
             </TableBody>
           </Table>
         </CardContent>
@@ -217,8 +208,8 @@ function Page() {
           <CardTitle>Trade History</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-8">
-          {dashboardData.trades.map((trade) => (
-              <div className="flex items-center gap-4">
+          {sort((a,b) => new Date(b.tradeTime).getTime() - new Date(a.tradeTime).getTime(), dashboardData.trades).map((trade, i) => (
+              <div key={i} className="flex items-center gap-4">
                 <Avatar className="hidden h-9 w-9 sm:flex">
                   <AvatarImage src="/avatars/01.png" alt="Avatar" />
                   <AvatarFallback>{trade.ticker.substring(0,2)}</AvatarFallback>
@@ -232,10 +223,10 @@ function Page() {
                   </p>
                 </div>
                 <div className="ml-auto grid gap-1">
-                  <p className={`${trade.buy ? "text-positive" : "text-red-500"} text-lg font-medium leading-none`}>
-                    {trade.buy ? "+" : "-"} {trade.quantity}
+                  <p className={`${trade.buy ? "text-primary" : "text-red-500"} text-right text-lg font-medium leading-none`}>
+                    {trade.buy ? "+" : "-"} {trade.quantity.toLocaleString()}
                   </p>
-                  <p className={`${trade.buy ? "text-red-500" : "text-primary"} text-xs text-muted-foreground`}>
+                  <p className={`text-xs text-muted-foreground`}>
                     {trade.buy ? "-" : "+"} {trade.price*trade.quantity}$
                   </p>
                 </div>
