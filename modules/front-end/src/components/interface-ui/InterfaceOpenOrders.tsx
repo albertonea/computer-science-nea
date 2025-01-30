@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {useSubscription} from "react-stomp-hooks";
 import {useAuth} from "@/auth.tsx";
-import {Tabs, TabsContent} from "@/components/ui/tabs.tsx";
+import {TabsContent} from "@/components/ui/tabs.tsx";
 import {TextTabs, TextTabsList, TextTabsTrigger} from "@/components/ui/text-tabs.tsx";
 import {ColumnDef} from "@tanstack/react-table";
 import {DataTable} from "@/components/ui/dataTable.tsx";
@@ -22,10 +22,13 @@ export default function InterfaceOpenOrders() {
     const [openOrders, setOpenOrders] = useState<OpenOrder[]>([])
     const auth = useAuth()
 
-    useSubscription(`/stream/openOrders/${auth.user?.userId}`,
+    useSubscription(`/stream/openOrders/${auth.auth?.user.userId}`,
         (message) => {
             setOpenOrders([...openOrders, JSON.parse(message.body)])
-        })
+        },
+        {Authorization: `Bearer ${auth.auth?.user?.userId}`}
+    )
+
 
     const columns: ColumnDef<OpenOrder>[] = [
         {

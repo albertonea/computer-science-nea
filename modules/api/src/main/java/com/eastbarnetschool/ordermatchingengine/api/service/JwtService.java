@@ -1,20 +1,18 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.Function;
 
 public class JwtService {
 
     private final String issuer;
-
     private final Duration ttl;
-
     private final JwtEncoder jwtEncoder;
 
     public JwtService(String issuer, Duration ttl, JwtEncoder jwtEncoder) {
@@ -32,5 +30,4 @@ public class JwtService {
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
     }
-
 }

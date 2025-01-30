@@ -45,12 +45,12 @@ export default function InterfaceTrading() {
     }
 
     const sendMessage = () => {
-        if (stompClient && auth.user?.userId) {
+        if (stompClient && auth.auth?.user.userId) {
             stompClient.publish({
                 destination: "/app/order.place",
                 body: JSON.stringify({
                     price: price,
-                    userId: auth.user.userId,
+                    userId: auth.auth.user.userId,
                     quantity: quantity,
                     ticker: 'AAPL',
                     side: side,

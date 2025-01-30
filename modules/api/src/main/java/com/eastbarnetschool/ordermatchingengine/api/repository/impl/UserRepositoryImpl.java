@@ -102,7 +102,7 @@ public class UserRepositoryImpl implements UserRepository {
                      coalesce(
                          (select json_agg(json_build_object(
                              'tradeId', t.trade_id,
-                             'buy', case when t.buyer_id = u.user_id then true else false end,
+                             'side', case when t.buyer_id = u.user_id then 'BUY' else 'SELL' end,
                              'price', t.price,
                              'quantity', t.quantity,
                              'ticker', t.ticker,

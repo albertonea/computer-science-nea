@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {formatDistanceToNow} from "date-fns";
 import {sort} from "ramda";
-import {Progress} from "@/components/ui/progress.tsx";
 
 export const Route = createFileRoute('/_auth/dashboard/')({
   loader: () => getDashboard(),
@@ -118,67 +117,67 @@ function Page() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {dashboardData.orders.map((order) => (
-                  <TableRow key={order.orderId}>
-                    <TableCell>
-                      <div></div>
-                    </TableCell>
-                  </TableRow>
-              {
-                id: "createdAt",
-                accessorKey: "createdAt",
-                header: "Time",
-                cell: ({row}) =>  (
-                <a>{new Date(row.getValue('createdAt')).toLocaleString()}</a>
-            )
-            },
-            {
-            accessorKey: "ticker",
-            header: "Ticker"
-            },
-            {
-            accessorKey: "price",
-            header: "Price",
-            },
-            {
-            accessorKey: "initialQuantity",
-            header: "Quantity",
-            },
-            {
-            accessorKey: "remainingQuantity",
-            header: "Filled",
-            cell: ({row}) =>  {
-            const rowData = row.original
-            return (
-            <a>{rowData.initialQuantity - rowData.remainingQuantity}</a>
-            )
-            }
-            },
-            {
-            size: 100,
-            minSize: 100,
-            maxSize: 100,
-            header: "Fill",
-            cell: ({row}) =>  {
-            const rowData = row.original
-            const progress = Math.round((1 - rowData.remainingQuantity/rowData.initialQuantity) * 100)
-            return (
-            <>
-              <a className="text-xs text-muted-foreground">{progress}%</a>
-              <Progress value={progress} primary={rowData.side === "SELL"} className="w-full h-2" />
-            </>
-            )
-            }
-            },
-            {
-            id: "side",
-            accessorKey: "side",
-            header: "Side",
-            cell: ({row}) => (
-            <a className={`${row.getValue('side') === "BUY" ? "text-primary": "text-red-500"} font-bold`}>{row.getValue('side')}</a>
-            )
-            }
-              ))}
+            {/*  {dashboardData.orders.map((order) => (*/}
+            {/*      <TableRow key={order.orderId}>*/}
+            {/*        <TableCell>*/}
+            {/*          <div></div>*/}
+            {/*        </TableCell>*/}
+            {/*      </TableRow>*/}
+            {/*  {*/}
+            {/*    id: "createdAt",*/}
+            {/*    accessorKey: "createdAt",*/}
+            {/*    header: "Time",*/}
+            {/*    cell: ({row}) =>  (*/}
+            {/*    <a>{new Date(row.getValue('createdAt')).toLocaleString()}</a>*/}
+            {/*)*/}
+            {/*},*/}
+            {/*{*/}
+            {/*accessorKey: "ticker",*/}
+            {/*header: "Ticker"*/}
+            {/*},*/}
+            {/*{*/}
+            {/*accessorKey: "price",*/}
+            {/*header: "Price",*/}
+            {/*},*/}
+            {/*{*/}
+            {/*accessorKey: "initialQuantity",*/}
+            {/*header: "Quantity",*/}
+            {/*},*/}
+            {/*{*/}
+            {/*accessorKey: "remainingQuantity",*/}
+            {/*header: "Filled",*/}
+            {/*cell: ({row}) =>  {*/}
+            {/*const rowData = row.original*/}
+            {/*return (*/}
+            {/*<a>{rowData.initialQuantity - rowData.remainingQuantity}</a>*/}
+            {/*)*/}
+            {/*}*/}
+            {/*},*/}
+            {/*{*/}
+            {/*size: 100,*/}
+            {/*minSize: 100,*/}
+            {/*maxSize: 100,*/}
+            {/*header: "Fill",*/}
+            {/*cell: ({row}) =>  {*/}
+            {/*const rowData = row.original*/}
+            {/*const progress = Math.round((1 - rowData.remainingQuantity/rowData.initialQuantity) * 100)*/}
+            {/*return (*/}
+            {/*<>*/}
+            {/*  <a className="text-xs text-muted-foreground">{progress}%</a>*/}
+            {/*  <Progress value={progress} primary={rowData.side === "SELL"} className="w-full h-2" />*/}
+            {/*</>*/}
+            {/*)*/}
+            {/*}*/}
+            {/*},*/}
+            {/*{*/}
+            {/*id: "side",*/}
+            {/*accessorKey: "side",*/}
+            {/*header: "Side",*/}
+            {/*cell: ({row}) => (*/}
+            {/*<a className={`${row.getValue('side') === "BUY" ? "text-primary": "text-red-500"} font-bold`}>{row.getValue('side')}</a>*/}
+            {/*)*/}
+            {/*}*/}
+            {/*  ))}*/}
               <TableRow>
                 <TableCell>
                   <div className="font-medium">Liam Johnson</div>

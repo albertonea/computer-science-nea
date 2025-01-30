@@ -1,11 +1,13 @@
 package com.eastbarnetschool.ordermatchingengine.api.model.dto;
 
+import com.eastbarnetschool.ordermatchingengine.domain.Side;
+
 import java.sql.Timestamp;
 import java.time.Instant;
 
 public class TradeDto {
     private String tradeId;
-    private boolean buy;
+    private Side side;
     private Long price;
     private Long quantity;
     private String ticker;
@@ -13,9 +15,9 @@ public class TradeDto {
 
     public TradeDto() {}
 
-    public TradeDto(String tradeId, boolean buy, Long quantity, Long price, String ticker, Timestamp tradeTime) {
+    public TradeDto(String tradeId, Side side, Long quantity, Long price, String ticker, Timestamp tradeTime) {
         this.tradeId = tradeId;
-        this.buy = buy;
+        this.side = side;
         this.quantity = quantity;
         this.price = price;
         this.ticker = ticker;
@@ -26,8 +28,8 @@ public class TradeDto {
         return ticker;
     }
 
-    public boolean isBuy() {
-        return buy;
+    public Side getSide() {
+        return side;
     }
 
     public Timestamp getTradeTime() {

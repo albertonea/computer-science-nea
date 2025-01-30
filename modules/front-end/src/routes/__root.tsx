@@ -4,7 +4,7 @@ import {isProd} from "../lib/utils.ts";
 import {ThemeProvider} from "../context/theme-provider.tsx";
 import Navbar from "../components/global/navbar.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {AuthContext} from "@/auth.tsx";
+import {AuthContext, useAuth} from "@/auth.tsx";
 import {Toaster} from "@/components/ui/sonner.tsx";
 import {StompSessionProvider} from "react-stomp-hooks";
 
@@ -15,21 +15,24 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-    component: () => {
-        const TanStackRouterDevtools =
-            isProd()
-                ? () => null // Render nothing in production
-                : React.lazy(() =>
-                        // Lazy load in development
-                        import('@tanstack/router-devtools').then((res) => ({
-                            default: res.TanStackRouterDevtools,
-                            // For Embedded Mode
-                            // default: res.TanStackRouterDevtoolsPanel
-                        })),
-                )
+    component: Page
+})
 
-        const TanStackReactQueryDevtools =
-            isProd()
+function Page() {
+    const TanStackRouterDevtools =
+        isProd()
+            ? () => null // Render nothing in production
+            : React.lazy(() =>
+                // Lazy load in development
+                import('@tanstack/router-devtools').then((res) => ({
+                    default: res.TanStackRouterDevtools,
+                    // For Embedded Mode
+                    // default: res.TanStackRouterDevtoolsPanel
+                })),
+            )
+
+    const TanStackReactQueryDevtools =
+        isProd()
             ? () => null // Render nothing in production
             : React.lazy(() =>
                 // Lazy load in development
@@ -39,26 +42,30 @@ export const Route = createRootRouteWithContext<RouterContext>()({
                     // default: res.TanStackRouterDevtoolsPanel
                 })),
             )
+    const auth = useAuth()
 
-        return (
-            <QueryClientProvider client={queryClient}>
-                <ThemeProvider>
-                    <StompSessionProvider url={"ws://localhost:8080/ws"}>
+    return (
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+                <StompSessionProvider
+                    connectHeaders={{
+                        Authorization: `Bearer ${auth.auth?.token}`,
+                    }}
+                    url={"ws://localhost:8080/ws"}
+                >
                     <div className="flex flex-col min-h-screen">
-                    <Navbar/>
-                    <main className="grow shrink basis-1 w-full">
-                        <Outlet />
-                    </main>
-                    <Toaster/>
+                        <Navbar/>
+                        <main className="grow shrink basis-1 w-full">
+                            <Outlet />
+                        </main>
+                        <Toaster/>
                     </div>
                     <Suspense>
                         <TanStackRouterDevtools />
                         <TanStackReactQueryDevtools/>
                     </Suspense>
-                    </StompSessionProvider>
-                </ThemeProvider>
-            </QueryClientProvider>
-        )
-    }
-
-})
+                </StompSessionProvider>
+            </ThemeProvider>
+        </QueryClientProvider>
+    )
+}
