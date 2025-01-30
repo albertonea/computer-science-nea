@@ -4,9 +4,10 @@ import com.eastbarnetschool.ordermatchingengine.domain.Side;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.UUID;
 
 public class TradeDto {
-    private String tradeId;
+    private UUID tradeId;
     private Side side;
     private Long price;
     private Long quantity;
@@ -15,9 +16,17 @@ public class TradeDto {
 
     public TradeDto() {}
 
-    public TradeDto(String tradeId, Side side, Long quantity, Long price, String ticker, Timestamp tradeTime) {
+    public TradeDto(UUID tradeId, Side side, Long quantity, Long price, String ticker, Timestamp tradeTime) {
         this.tradeId = tradeId;
         this.side = side;
+        this.quantity = quantity;
+        this.price = price;
+        this.ticker = ticker;
+        this.tradeTime = tradeTime;
+    }
+
+    public TradeDto(UUID tradeId, Long quantity, Long price, String ticker, Timestamp tradeTime) {
+        this.tradeId = tradeId;
         this.quantity = quantity;
         this.price = price;
         this.ticker = ticker;
@@ -36,7 +45,7 @@ public class TradeDto {
         return tradeTime;
     }
 
-    public String getTradeId() {
+    public UUID getTradeId() {
         return tradeId;
     }
 

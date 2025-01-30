@@ -6,6 +6,7 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.mapper.TradeMapper;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.OpenOrdersService;
 import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;
@@ -27,14 +28,16 @@ public class OrderController {
     private final OpenOrdersService openOrdersService;
     private final BalancesService balancesService;
     private final UserService userService;
+    private final TradeMapper tradeMapper;
 
-    OrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, TradeService tradeService, OpenOrdersService openOrdersService, BalancesService balancesService, UserService userService) {
+    OrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, TradeService tradeService, OpenOrdersService openOrdersService, BalancesService balancesService, UserService userService, TradeMapper tradeMapper) {
         this.orderGateway = orderGateway;
         this.messagingTemplate = messagingTemplate;
         this.tradeService = tradeService;
         this.openOrdersService = openOrdersService;
         this.balancesService = balancesService;
         this.userService = userService;
+        this.tradeMapper = tradeMapper;
     }
 
     @MessageMapping("/order.place")
@@ -84,7 +87,7 @@ public class OrderController {
             balancesService.updateOrCreateBalance(trade.getBuyerId(), "USD", 0L, -cost);
 
             // return trades for ticker
-//            messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), new TradeDto(trade.getQuantity(), trade.getPrice()));
+            messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), tradeMapper.toTradeDto(trade));
             tradeService.insert(new TradeEntity(trade.getSellerId(), trade.getTicker(), trade.getBuyerId(), trade.getQuantity(), trade.getPrice(), Timestamp.from(trade.getTradeTime()), trade.getTradeId()));
         }
 

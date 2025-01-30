@@ -27,23 +27,16 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             String authHeader = accessor.getFirstNativeHeader("Authorization");
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                System.out.println("❌ No valid Authorization header found in STOMP CONNECT!");
-                return null; // Reject connection
+                return null;
             }
 
             String token = authHeader.substring(7); // Extract token
-            System.out.println("✅ Extracted STOMP Token: " + token);
 
             try {
-                // 🔥 Validate the JWT token
                 Jwt jwt = jwtDecoder.decode(token);
-                System.out.println("✅ JWT is valid: " + jwt.getSubject());
-
-                // Store the authenticated user in session attributes
                 accessor.getSessionAttributes().put("user", jwt.getSubject());
             } catch (JwtException e) {
-                System.out.println("❌ Invalid JWT: " + e.getMessage());
-                return null; // Reject connection
+                return null;
             }
         }
 
