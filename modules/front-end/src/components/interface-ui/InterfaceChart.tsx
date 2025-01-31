@@ -7,40 +7,58 @@ import {
     TextTabsList,
     TextTabsTrigger
 } from "@/components/ui/text-tabs.tsx";
+import {useTheme} from "@/context/theme-provider.tsx";
 
 
 export default function InterfaceChart() {
     const chartContainerRef = useRef<any>();
     const chart = useRef<any>();
-    const resizeObserver = useRef();
+    const theme = useTheme();
+
+    const chartThemes = {
+        dark: {
+            layout: {
+                background: {
+                    color: "#1c1917",
+                },
+                textColor: "#ffffff"
+            },
+            grid: {
+                vertLines: {
+                    color: "#262626"
+                },
+                horzLines: {
+                    color: "#262626"
+                }
+            },
+        },
+        light:  {
+            layout: {
+                background: {
+                    color: "#ffffff",
+                },
+                textColor: "#000000"
+            },
+            grid: {
+                vertLines: {
+                    color: "#262626"
+                },
+                horzLines: {
+                    color: "#262626"
+                }
+            },
+        }
+    }
 
     useEffect(() => {
             chart.current = createChart(chartContainerRef.current, {
                 width: chartContainerRef.current.clientWidth,
                 height: chartContainerRef.current.clientHeight,
-                layout: {
-                    background: {
-                        color: "#1c1917"
-                    },
-                    textColor: "#ffffff"
-                },
-                grid: {
-                    vertLines: {
-                        color: "#262626"
-                    },
-                    horzLines: {
-                        color: "#262626"
-                    }
-                },
+
                 crosshair: {
                     mode: CrosshairMode.Normal
                 },
-                priceScale: {
-                    borderColor: "#262626"
-                },
-                timeScale: {
-                    borderColor: "#262626"
-                },
+                autoSize: true,
                 localization: {
                     // priceFormatter: (p: number) => p.toFixed(6)
                 }
@@ -71,7 +89,6 @@ export default function InterfaceChart() {
                 },
             });
 
-
             const volume = map(p => {
                 const addColor = mergeLeft(p, {color: p.close > p.open ? '#03786e' : '#ce4242'})
                 const volume = pick(['volume', 'time', 'color'], addColor)
@@ -86,34 +103,22 @@ export default function InterfaceChart() {
         }
     }, []);
 
-    // Resize chart on container resizes.
     useEffect(() => {
-        resizeObserver.current = new ResizeObserver((entries) => {
-            const { width, height } = entries[0].contentRect;
-            chart.current.applyOptions({ width, height });
-            setTimeout(() => {
-                chart.current.timeScale().fitContent();
-            }, 0);
-        });
-
-        resizeObserver.current.observe(chartContainerRef.current);
-
-        return () => resizeObserver.current.disconnect();
-    }, []);
+        chart.current.applyOptions(chartThemes[theme.className]);
+    }, [theme.className]);
 
     return (
         <div className="w-full h-full">
             <div className="w-full h-[50px] border-b border-b-border px-4 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Time</span>
-                    <TextTabs defaultValue="1h">
+                    <TextTabs defaultValue="15m">
                         <TextTabsList>
+                            <TextTabsTrigger value="5m">5m</TextTabsTrigger>
                             <TextTabsTrigger value="15m">15m</TextTabsTrigger>
                             <TextTabsTrigger value="1h">1H</TextTabsTrigger>
                             <TextTabsTrigger value="4h">4H</TextTabsTrigger>
-                            <TextTabsTrigger value="1d">1D</TextTabsTrigger>
                         </TextTabsList>
-
                     </TextTabs>
                 </div>
                 <div>
@@ -125,7 +130,7 @@ export default function InterfaceChart() {
                     </TextTabs>
                 </div>
             </div>
-            <div ref={chartContainerRef} className="w-full h-full" />
+            <div ref={chartContainerRef} className="w-full h-[calc(100%-50px)]" />
         </div>
     );
 }

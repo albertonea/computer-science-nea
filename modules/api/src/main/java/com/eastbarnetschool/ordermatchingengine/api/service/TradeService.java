@@ -1,8 +1,12 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeDto;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeHistoryResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.TradeRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TradeService {
@@ -14,5 +18,8 @@ public class TradeService {
 
     public void insert(TradeEntity trade) {
         tradeRepository.insert(trade);
+    }
+    public List<TradeHistoryResponseDto> getTradeHistory(String ticker) {
+        return tradeRepository.getWeekHistory(ticker);
     }
 }

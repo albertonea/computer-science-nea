@@ -42,7 +42,7 @@ function Interface() {
             className="bg-card overflow-scroll scrollbar-hide"
             key="c"
             style={{zIndex: 10}}
-            data-grid={{x: 0, y: 13, w: 15, h: 5, isDraggable: false}}
+            data-grid={{x: 0, y: 20, w: 15, h: 5, isDraggable: false}}
         >
           <InterfaceOpenOrders/>
         </div>
