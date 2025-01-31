@@ -1,40 +1,43 @@
 package com.eastbarnetschool.ordermatchingengine.api.controller.websocket;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookResponseDto;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderRequestDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.TradeMapper;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
-import com.eastbarnetschool.ordermatchingengine.api.service.OpenOrdersService;
+import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
 import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import com.eastbarnetschool.ordermatchingengine.domain.*;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @Controller
 public class OrderController {
     private final OrderGateway orderGateway;
     private final SimpMessagingTemplate messagingTemplate;
     private final TradeService tradeService;
-    private final OpenOrdersService openOrdersService;
+    private final OrdersService ordersService;
     private final BalancesService balancesService;
     private final UserService userService;
     private final TradeMapper tradeMapper;
 
-    OrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, TradeService tradeService, OpenOrdersService openOrdersService, BalancesService balancesService, UserService userService, TradeMapper tradeMapper) {
+    OrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, TradeService tradeService, OrdersService ordersService, BalancesService balancesService, UserService userService, TradeMapper tradeMapper) {
         this.orderGateway = orderGateway;
         this.messagingTemplate = messagingTemplate;
         this.tradeService = tradeService;
-        this.openOrdersService = openOrdersService;
+        this.ordersService = ordersService;
         this.balancesService = balancesService;
         this.userService = userService;
         this.tradeMapper = tradeMapper;
@@ -75,7 +78,7 @@ public class OrderController {
 
         // return order opened
         messagingTemplate.convertAndSend("/stream/openOrders/" + user.getUserId(), placedOrderEntity);
-        openOrdersService.insertOrUpdate(placedOrderEntity);
+        ordersService.insertOrUpdate(placedOrderEntity);
 
         for ( Trade trade : response.getTrades() ) {
             // change balances
@@ -93,9 +96,17 @@ public class OrderController {
 
         for ( Order filledOrder : response.getFilledOrders() ) {
             messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), new FilledOrderResponse(filledOrder.getOrderId(), filledOrder.getPrice(), filledOrder.getInitialQuantity(), filledOrder.getTicker(), filledOrder.getSide(), filledOrder.getOrderType(), filledOrder.getCreatedAt()));
-            openOrdersService.insertOrUpdate(new OrderEntity(Timestamp.from(filledOrder.getCreatedAt()), filledOrder.getPrice(), filledOrder.getTicker(), filledOrder.getRemainingQuantity(), filledOrder.getInitialQuantity(), filledOrder.getUserId(), filledOrder.getOrderId(), filledOrder.getSide()));
+            ordersService.insertOrUpdate(new OrderEntity(Timestamp.from(filledOrder.getCreatedAt()), filledOrder.getPrice(), filledOrder.getTicker(), filledOrder.getRemainingQuantity(), filledOrder.getInitialQuantity(), filledOrder.getUserId(), filledOrder.getOrderId(), filledOrder.getSide()));
 
             // return filled and partially filled orders
+        }
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void sendOrderbook() {
+        List<OrderBookResponseDto> orders = ordersService.getAllOrderBooks();
+        for (OrderBookResponseDto order : orders) {
+            messagingTemplate.convertAndSend("/stream/orderBook/" + order.getTicker(), orders);
         }
     }
 }

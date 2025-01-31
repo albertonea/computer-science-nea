@@ -1,14 +1,16 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository;
 
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookEntryDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface OpenOrdersRepository {
+public interface OrdersRepository {
     void delete(UUID orderId);
     void insertOrUpdate(OrderEntity order);
-    ArrayList<OrderEntity> getAllOpenOpenOrders();
+    List<OrderEntity> getAllOpenOrders();
+    List<OrderBookEntryDto> getAggregatedOrders();
 }
