@@ -12,7 +12,7 @@ public class OrderBook {
         buySide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice));
     }
 
-    public Boolean canMatch(Side side, Long price) {
+    public Boolean canMatchLimitOrder(Side side, Long price) {
         if (side == Side.BUY) {
             if (sellSide.isEmpty()) return false;
             PriceLevel sellSide = this.sellSide.peek();
@@ -24,10 +24,20 @@ public class OrderBook {
         }
     }
 
-    public MatchingEngineResponse placeLimitOrder(Order order) {
-        ArrayList<Trade> trades = new ArrayList<>();
-        ArrayList<Order> filledOrders = new ArrayList<>();
-        while (canMatch(order.getSide(), order.getPrice()) && !order.isFilled()) {
+    public Boolean canMatchMarketOrder(Side side, Long remainingQuantity) {
+        if (side == Side.BUY) {
+            if (sellSide.isEmpty()) return false;
+            PriceLevel sellSide = this.sellSide.peek();
+            return sellSide.getPrice() <= remainingQuantity;
+        } else {
+            return !buySide.isEmpty();
+        }
+    }
+
+    public MatchingEngineResponse placeLimitOrder(LimitOrder order) {
+        List<Trade> trades = new ArrayList<>();
+        List<LimitOrder> filledOrders = new ArrayList<>();
+        while (canMatchLimitOrder(order.getSide(), order.getPrice()) && !order.isFilled()) {
             PriceLevel priceLevel;
             if (order.getSide() == Side.BUY) {
                 priceLevel = sellSide.peek();
@@ -36,7 +46,7 @@ public class OrderBook {
             }
 
             while (!priceLevel.isEmpty()) {
-                Order bookOrder = priceLevel.peek();
+                LimitOrder bookOrder = priceLevel.peek();
                 Long quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
                 bookOrder.fill(quantity);
                 order.fill(quantity);
@@ -104,73 +114,102 @@ public class OrderBook {
         return new MatchingEngineResponse(trades, filledOrders, order);
     }
 
-//    public ArrayList<Trade> placeMarketOrder(Order order) {
-//        ArrayList<Trade> trades = new ArrayList<>();
-//        if (order.getSide() == Side.BUY) {
-//            while (!sellSide.isEmpty()) {
-//                LinkedList<Order> bookOrders = sellSide.peek().getOrders();
-//
-//                while (!bookOrders.isEmpty()) {
-//                    Order bookOrder = bookOrders.peek();
-//                    Integer quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
-//                    bookOrder.fill(quantity);
-//                    order.fill(quantity);
-//
-//                    if (order.isFilled() && bookOrder.isFilled()) {
-//                        bookOrders.removeFirst();
-//                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-//                        break;
-//                    } else if (order.isFilled()) {
-//                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-//                        break;
-//                    } else if (bookOrder.isFilled()) {
-//                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-//                        bookOrders.removeFirst();
-//                    } else {
-//                        throw new IllegalStateException("Neither order got fully filled");
-//                    }
-//                }
-//
-//                if (bookOrders.isEmpty()) {
-//                    sellSide.poll();
-//                }
-//                if (order.isFilled()) {
-//                    break;
-//                }
-//            }
-//        } else {
-//            while (!buySide.isEmpty()) {
-//                LinkedList<Order> bookOrders = buySide.peek().getOrders();
-//
-//                while (!bookOrders.isEmpty()) {
-//                    Order bookOrder = bookOrders.peek();
-//                    Integer quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
-//                    bookOrder.fill(quantity);
-//                    order.fill(quantity);
-//
-//                    if (order.isFilled() && bookOrder.isFilled()) {
-//                        bookOrders.removeFirst();
-//                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-//                        break;
-//                    } else if (order.isFilled()) {
-//                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-//                        break;
-//                    } else if (bookOrder.isFilled()) {
-//                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity));
-//                        bookOrders.removeFirst();
-//                    } else {
-//                        throw new IllegalStateException("Neither order got fully filled");
-//                    }
-//                }
-//
-//                if (bookOrders.isEmpty()) {
-//                    buySide.poll();
-//                }
-//                if (order.isFilled()) {
-//                    break;
-//                }
-//            }
-//        }
-//        return trades;
-//    }
+    public MatchingEngineResponse placeMarketOrder(MarketOrder order) {
+        List<Trade> trades = new ArrayList<>();
+        List<LimitOrder> filledOrders = new ArrayList<>();
+
+        if (order.getSide() == Side.BUY) {
+            while (canMatchMarketOrder(order.getSide(), order.getRemainingQuantity()) && !order.isFilled()) {
+                PriceLevel priceLevel;
+                if (order.getSide() == Side.BUY) {
+                   priceLevel = sellSide.peek();
+                } else {
+                   priceLevel = buySide.peek();
+                }
+
+                while (!priceLevel.isEmpty()) {
+                    Long price = priceLevel.getPrice();
+                    LimitOrder bookOrder = priceLevel.peek();
+                    Long quantity = Math.min((bookOrder.getRemainingQuantity()*bookOrder.getPrice()), (order.getRemainingQuantity()));
+                    bookOrder.fill(quantity/price);
+                    order.fill(quantity);
+
+                    if (order.isFilled(price) | bookOrder.isFilled()) {
+                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, order.getUserId(), bookOrder.getUserId(), order.getTicker()));
+
+                        if (bookOrder.isFilled() && order.isFilled(price)) {
+                            filledOrders.add(bookOrder);
+                            priceLevel.poll();
+                            break;
+                        }
+
+                        if (bookOrder.isFilled()) {
+                            filledOrders.add(bookOrder);
+                            priceLevel.poll();
+                        }
+
+                        if (order.isFilled(price)) {
+                            filledOrders.add(bookOrder);
+                            break;
+                        }
+                    } else {
+                        throw new IllegalStateException("Neither order got fully filled");
+                    }
+                }
+
+                if (priceLevel.isEmpty()) {
+                    sellSide.poll();
+                }
+                if (order.isFilled(priceLevel.getPrice())) {
+                    break;
+                }
+            }
+        } else {
+            while (canMatchMarketOrder(order.getSide(), order.getRemainingQuantity()) && !order.isFilled()) {
+                PriceLevel priceLevel;
+                if (order.getSide() == Side.BUY) {
+                    priceLevel = sellSide.peek();
+                } else {
+                    priceLevel = buySide.peek();
+                }
+
+                while (!priceLevel.isEmpty()) {
+                    LimitOrder bookOrder = priceLevel.peek();
+                    Long quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
+                    bookOrder.fill(quantity);
+                    order.fill(quantity);
+
+                    if (order.isFilled() | bookOrder.isFilled()) {
+                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, bookOrder.getUserId(), order.getUserId(), order.getTicker()));
+
+                        if (bookOrder.isFilled() && order.isFilled()) {
+                            filledOrders.add(bookOrder);
+                            priceLevel.poll();
+                            break;
+                        }
+
+                        if (bookOrder.isFilled()) {
+                            filledOrders.add(bookOrder);
+                            priceLevel.poll();
+                        }
+
+                        if (order.isFilled()) {
+                            filledOrders.add(bookOrder);
+                            break;
+                        }
+                    } else {
+                        throw new IllegalStateException("Neither order got fully filled");
+                    }
+                }
+
+                if (priceLevel.isEmpty()) {
+                    buySide.poll();
+                }
+                if (order.isFilled()) {
+                    break;
+                }
+            }
+        }
+        return new MatchingEngineResponse(trades, filledOrders, order);
+    }
 }

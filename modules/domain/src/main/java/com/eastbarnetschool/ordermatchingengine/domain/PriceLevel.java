@@ -6,9 +6,9 @@ import java.util.PriorityQueue;
 
 public class PriceLevel {
     private final Long price;
-    private final PriorityQueue<Order> orders;
+    private final PriorityQueue<LimitOrder> orders;
 
-    public PriceLevel(Long price, Order order) {
+    public PriceLevel(Long price, LimitOrder order) {
         this.price = price;
         this.orders = new PriorityQueue<>(Comparator.comparing(Order::getCreatedAt));
         orders.add(order);
@@ -18,19 +18,19 @@ public class PriceLevel {
         return price;
     }
 
-    public PriorityQueue<Order> getOrders() {
+    public PriorityQueue<LimitOrder> getOrders() {
         return orders;
     }
 
-    public void addOrder(Order order) {
+    public void addOrder(LimitOrder order) {
         orders.add(order);
     }
     
-    public Order poll() {
+    public LimitOrder poll() {
         return orders.poll();
     }
 
-    public Order peek() {
+    public LimitOrder peek() {
         return orders.peek();
     }
 

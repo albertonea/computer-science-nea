@@ -165,8 +165,8 @@ public class UserRepositoryImpl implements UserRepository {
     public UserEntity getById(UUID userId) {
         return (template.queryForObject(
                 """
-                        select * from users where user_id = :userId
-                        """,
+                    select * from users where user_id = :userId
+                    """,
                 Map.of("userId", userId),
                 new UserRowMapper()
         ));

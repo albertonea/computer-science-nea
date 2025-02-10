@@ -1,25 +1,25 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class OrderGateway {
-    private final HashMap<String, MatchingEngine> matchingEngines;
+    private final HashMap<String, OrderQueue> orderQueues;
 
     public OrderGateway() {
-        matchingEngines = new HashMap<>();
+        orderQueues = new HashMap<>();
+    }
+
+    public OrderQueue getOrderQueue(String ticker) {
+        OrderQueue orderQueue = orderQueues.get(ticker);
+        if (orderQueue == null) {
+            OrderQueue newOrderQueue = new OrderQueue(ticker);
+            orderQueues.put(ticker, newOrderQueue);
+            return newOrderQueue;
+        }
+        return orderQueue;
     }
 
     public MatchingEngineResponse placeOrder(Order order) {
-        MatchingEngine matchingEngine = matchingEngines.get(order.getTicker());
-        if (matchingEngine == null) {
-            MatchingEngine newMatchingEngine = new MatchingEngine(order.getTicker());
-//            newMatchingEngine.start(order.getTicker());
-            matchingEngines.put(order.getTicker(), newMatchingEngine);
-            return newMatchingEngine.placeOrder(order);
-        } else {
-            return matchingEngine.placeOrder(order);
-        }
+        return getOrderQueue(order.getTicker()).placeOrder(order);
     }
 }

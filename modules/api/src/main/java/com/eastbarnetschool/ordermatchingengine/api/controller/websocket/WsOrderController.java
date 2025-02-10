@@ -2,7 +2,6 @@ package com.eastbarnetschool.ordermatchingengine.api.controller.websocket;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookResponseDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderRequestDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
@@ -24,7 +23,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Controller
-public class OrderController {
+public class WsOrderController {
     private final OrderGateway orderGateway;
     private final SimpMessagingTemplate messagingTemplate;
     private final TradeService tradeService;
@@ -33,7 +32,7 @@ public class OrderController {
     private final UserService userService;
     private final TradeMapper tradeMapper;
 
-    OrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, TradeService tradeService, OrdersService ordersService, BalancesService balancesService, UserService userService, TradeMapper tradeMapper) {
+    WsOrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, TradeService tradeService, OrdersService ordersService, BalancesService balancesService, UserService userService, TradeMapper tradeMapper) {
         this.orderGateway = orderGateway;
         this.messagingTemplate = messagingTemplate;
         this.tradeService = tradeService;
@@ -69,7 +68,7 @@ public class OrderController {
             }
         }
 
-        MatchingEngineResponse response = orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
+        MatchingEngineResponse response = orderGateway.placeLimitOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
         // change balance for user that placed order
         // place order in order book
 
@@ -95,7 +94,7 @@ public class OrderController {
         }
 
         for ( Order filledOrder : response.getFilledOrders() ) {
-            messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), new FilledOrderResponse(filledOrder.getOrderId(), filledOrder.getPrice(), filledOrder.getInitialQuantity(), filledOrder.getTicker(), filledOrder.getSide(), filledOrder.getOrderType(), filledOrder.getCreatedAt()));
+            messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), new FilledOrderResponse(filledOrder.getOrderId(), filledOrder.getPrice(), filledOrder.getInitialQuantity(), filledOrder.getRemainingQuantity(), filledOrder.getTicker(), filledOrder.getSide(), filledOrder.getOrderType(), filledOrder.getCreatedAt()));
             ordersService.insertOrUpdate(new OrderEntity(Timestamp.from(filledOrder.getCreatedAt()), filledOrder.getPrice(), filledOrder.getTicker(), filledOrder.getRemainingQuantity(), filledOrder.getInitialQuantity(), filledOrder.getUserId(), filledOrder.getOrderId(), filledOrder.getSide()));
 
             // return filled and partially filled orders

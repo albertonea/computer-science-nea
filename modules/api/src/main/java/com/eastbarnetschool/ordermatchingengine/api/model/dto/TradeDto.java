@@ -33,6 +33,13 @@ public class TradeDto {
         this.tradeTime = tradeTime;
     }
 
+    public TradeDto(UUID tradeId, Long quantity, Long price, Timestamp tradeTime) {
+        this.tradeId = tradeId;
+        this.quantity = quantity;
+        this.price = price;
+        this.tradeTime = tradeTime;
+    }
+
     public String getTicker() {
         return ticker;
     }

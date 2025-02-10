@@ -36,7 +36,7 @@ public class TradeRepositoryImpl implements TradeRepository {
     public List<TradeHistoryResponseDto> getWeekHistory(String ticker) {
         return template.query(
                 """
-                SELECT * FROM trades WHERE ticker = :ticker AND trade_time > NOW() - INTERVAL '7 days'
+                select * from trades where ticker = :ticker and trade_time > now() - interval '7 days'
                 """,
                 Map.of("ticker", ticker),
                 (rs, rowNum) -> new TradeHistoryResponseDto(

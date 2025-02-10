@@ -10,15 +10,17 @@ public class FilledOrderResponse {
     private final UUID orderId;
     private final Long price;
     private final Long initialQuantity;
+    private final Long remainingQuantity;
     private final String ticker;
     private final Side side;
     private final OrderType orderType;
     private final Instant orderDate;
 
-    public FilledOrderResponse(UUID orderId, Long price, Long initialQuantity, String ticker, Side side, OrderType orderType, Instant orderDate) {
+    public FilledOrderResponse(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, Instant orderDate) {
         this.orderId = orderId;
         this.price = price;
         this.initialQuantity = initialQuantity;
+        this.remainingQuantity = remainingQuantity;
         this.ticker = ticker;
         this.side = side;
         this.orderType = orderType;
@@ -43,6 +45,10 @@ public class FilledOrderResponse {
 
     public Side getSide() {
         return side;
+    }
+
+    public Long getRemainingQuantity() {
+        return remainingQuantity;
     }
 
     public OrderType getOrderType() {

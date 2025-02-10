@@ -22,11 +22,15 @@ public class BalancesRepositoryImpl implements BalancesRepository {
     @Override
     public BalanceEntity updateOrCreateBalance(UUID userId, String ticker, Long balanceDelta, Long lockedBalanceDelta) {
         return template.queryForObject(
-                        "insert into balances (user_id, ticker, balance, locked_balance) " +
-                        "values (:userId, :ticker, :balance, :lockedBalance) " +
-                        "on conflict(user_id, ticker) " +
-                        "do update set balance = balances.balance + excluded.balance, locked_balance = balances.locked_balance + excluded.locked_balance " +
-                        "returning user_id, ticker, balance, locked_balance",
+                """
+                    insert into balances (user_id, ticker, balance, locked_balance)
+                    values (:userId, :ticker, :balance, :lockedBalance)
+                    on conflict(user_id, ticker)
+                    do update
+                        set balance = balances.balance + excluded.balance,
+                        locked_balance = balances.locked_balance + excluded.locked_balance
+                    returning user_id, ticker, balance, locked_balance
+                    """,
                 Map.of("userId", userId, "ticker", ticker, "balance", balanceDelta, "lockedBalance", lockedBalanceDelta),
                 (rs, rowId) -> new BalanceEntity(rs.getObject("user_id", UUID.class), rs.getObject("ticker", String.class), rs.getObject("balance", Long.class), rs.getObject("locked_balance", Long.class))
         );
@@ -35,7 +39,11 @@ public class BalancesRepositoryImpl implements BalancesRepository {
     @Override
     public ArrayList<BalanceEntity> get(UUID userId) {
         return (ArrayList<BalanceEntity>) template.query(
-                "select * from balances where user_id = :userId",
+                """
+                    select *
+                    from balances
+                    where user_id = :userId
+                    """,
                 Map.of("userId", userId),
                 (rs, rowId) -> new BalanceEntity(rs.getObject("user_id", UUID.class), rs.getObject("ticker", String.class), rs.getObject("balance", Long.class), rs.getObject("locked_balance", Long.class))
         );
@@ -45,7 +53,14 @@ public class BalancesRepositoryImpl implements BalancesRepository {
     public Boolean checkIfHasEnoughBalance(UUID userId, String ticker, Long requiredBalance) {
         try {
             Long balance = template.queryForObject(
-                    "select balance from balances where user_id = :userId and ticker = :ticker",
+                """
+                    select balance
+                    from balances
+                    where
+                        user_id = :userId
+                        and
+                        ticker = :ticker
+                    """,
                     Map.of("userId", userId, "ticker", ticker),
                     Long.class
             );

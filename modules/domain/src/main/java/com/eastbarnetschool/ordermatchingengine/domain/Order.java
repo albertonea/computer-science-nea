@@ -4,7 +4,6 @@ import java.util.UUID;
 
 public class Order {
     private final UUID orderId;
-    private final Long price;
     private final UUID userId;
     private final Long initialQuantity;
     private Long remainingQuantity;
@@ -13,9 +12,8 @@ public class Order {
     private final OrderType orderType;
     private final Instant createdAt;
 
-    public Order(Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+    public Order(Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         this.orderId = UUID.randomUUID();
-        this.price = price;
         this.initialQuantity = initialQuantity;
         this.remainingQuantity = remainingQuantity;
         this.ticker = ticker;
@@ -25,9 +23,8 @@ public class Order {
         this.createdAt = createdAt;
     }
 
-    public Order(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+    public Order(UUID orderId, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         this.orderId = orderId;
-        this.price = price;
         this.initialQuantity = initialQuantity;
         this.remainingQuantity = remainingQuantity;
         this.ticker = ticker;
@@ -47,10 +44,6 @@ public class Order {
 
     public UUID getUserId() {
         return userId;
-    }
-
-    public Long getPrice() {
-        return price;
     }
 
     public String getTicker() {
@@ -74,7 +67,6 @@ public class Order {
             throw new IllegalArgumentException("Fill quantity exceeds remaining quantity");
         }
         remainingQuantity -= fillQuantity;
-
     }
 
     public boolean isFilled() {

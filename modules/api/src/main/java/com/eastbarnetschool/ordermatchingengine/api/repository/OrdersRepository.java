@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface OrdersRepository {
     void delete(UUID orderId);
     void insertOrUpdate(OrderEntity order);
+    List<OrderEntity> getOpenOrders(UUID userId, String ticker);
     List<OrderEntity> getAllOpenOrders();
     List<OrderBookEntryDto> getAggregatedOrders();
 }

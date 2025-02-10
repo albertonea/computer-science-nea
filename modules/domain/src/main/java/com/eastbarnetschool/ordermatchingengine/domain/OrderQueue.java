@@ -1,13 +1,13 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 import java.util.concurrent.*;
 
-public class MatchingEngine {
+public class OrderQueue {
     private final OrderBook orderBook;
     private final String ticker;
     private final BlockingQueue<Pair<Order, BlockingQueue<MatchingEngineResponse>>> orderQueue;
     private volatile boolean running;
 
-    public MatchingEngine(String ticker) {
+    public OrderQueue(String ticker) {
         this.ticker = ticker;
         this.orderBook = new OrderBook();
         this.orderQueue = new LinkedBlockingQueue<>();
@@ -52,6 +52,8 @@ public class MatchingEngine {
     private MatchingEngineResponse processOrder(Order order) {
         if (order.getOrderType() == OrderType.LIMIT) {
             return orderBook.placeLimitOrder(order);
+        } else if (order.getOrderType() == OrderType.MARKET) {
+            return orderBook.placeMarketOrder(order);
         } else {
             throw new IllegalArgumentException("Unsupported order type: " + order.getOrderType());
         }

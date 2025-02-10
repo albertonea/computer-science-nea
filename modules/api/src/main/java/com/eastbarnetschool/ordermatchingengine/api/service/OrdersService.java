@@ -3,6 +3,7 @@ package com.eastbarnetschool.ordermatchingengine.api.service;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookEntryDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookLevelDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookResponseDto;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OrdersRepository;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
@@ -21,6 +22,10 @@ public class OrdersService {
 
     public void delete(UUID orderId) {
         ordersRepository.delete(orderId);
+    }
+
+    public List<OrderEntity> getOpenOrders(UUID userId, String ticker) {
+        return ordersRepository.getOpenOrders(userId, ticker);
     }
 
     public void insertOrUpdate(OrderEntity order) {

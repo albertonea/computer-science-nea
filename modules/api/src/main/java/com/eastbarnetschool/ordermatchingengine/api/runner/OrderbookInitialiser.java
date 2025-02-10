@@ -8,7 +8,7 @@ import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Component
@@ -26,7 +26,7 @@ public class OrderbookInitialiser implements ApplicationRunner {
         System.out.println("Starting Order Matching Engine");
         List<OrderEntity> orders = ordersService.getAllOpenOrders();
         System.out.println("Found " + orders.size() + " Open Orders");
-        orders.forEach(order -> orderGateway.placeOrder(new Order(order.getOrderId(), order.getPrice(), order.getInitialQuantity(), order.getRemainingQuantity(), order.getTicker(), order.getSide(), OrderType.LIMIT, order.getUserId(), order.getCreatedAt().toInstant())));
+        orders.forEach(order -> orderGateway.placeLimitOrder(new Order(order.getOrderId(), order.getPrice(), order.getInitialQuantity(), order.getRemainingQuantity(), order.getTicker(), order.getSide(), OrderType.LIMIT, order.getUserId(), order.getCreatedAt().toInstant())));
         System.out.println("Order Matching Engine has been started");
     }
 }

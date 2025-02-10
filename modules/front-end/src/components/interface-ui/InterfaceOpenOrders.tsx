@@ -1,34 +1,17 @@
 import {useState} from "react";
-import {useSubscription} from "react-stomp-hooks";
-import {useAuth} from "@/auth.tsx";
 import {TabsContent} from "@/components/ui/tabs.tsx";
 import {TextTabs, TextTabsList, TextTabsTrigger} from "@/components/ui/text-tabs.tsx";
 import {ColumnDef} from "@tanstack/react-table";
 import {DataTable} from "@/components/ui/dataTable.tsx";
 import {Progress} from "@/components/ui/progress.tsx";
+import {OpenOrder, useTradingContext} from "@/context/trading-provider.tsx";
 
-type OpenOrder = {
-    createdAt: Date;
-    ticker: string;
-    orderId: string;
-    price: number;
-    initialQuantity: number;
-    remainingQuantity: number;
-    side: 'BUY' | 'SELL';
-}
+
 
 export default function InterfaceOpenOrders() {
     const [tab, setTab] = useState("openOrders")
-    const [openOrders, setOpenOrders] = useState<OpenOrder[]>([])
-    const auth = useAuth()
-
-    useSubscription(`/stream/openOrders/${auth.auth?.user.userId}`,
-        (message) => {
-            setOpenOrders([...openOrders, JSON.parse(message.body)])
-        },
-        {Authorization: `Bearer ${auth.auth?.user?.userId}`}
-    )
-
+    const {openOrders} = useTradingContext()
+    console.log(openOrders)
 
     const columns: ColumnDef<OpenOrder>[] = [
         {
@@ -94,7 +77,7 @@ export default function InterfaceOpenOrders() {
                 <TextTabsTrigger value="tradeHistory">Trade History</TextTabsTrigger>
             </TextTabsList>
             <TabsContent className="mt-0 h-full" value="openOrders">
-                {openOrders.length > 0 ? (
+                {openOrders?.length > 0 ? (
                     <DataTable columns={columns} data={openOrders} getRowId={(row) => row.orderId}/>
                 ) : (
                     <div className="flex justify-center items-center h-[85%] w-full">

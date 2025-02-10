@@ -7,8 +7,8 @@ export const Route = createFileRoute('/_auth/trade/')({
 function Page() {
   return (
     <div>
-      <Link to="/trade/$id" params={{ id: 'bitcoin' }}>
-        Bitcoin
+      <Link to="/trade/$ticker" params={{ ticker: 'AAPL' }}>
+        AAPL
       </Link>
     </div>
   )

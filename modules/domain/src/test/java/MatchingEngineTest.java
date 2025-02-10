@@ -1,10 +1,3 @@
-import com.eastbarnetschool.ordermatchingengine.domain.MatchingEngine;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-
-import java.util.PriorityQueue;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MatchingEngineTest {

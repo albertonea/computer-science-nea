@@ -12,7 +12,7 @@ export type Side = 'BUY' | 'SELL'
 
 export type OrderType = 'LIMIT'
 
-export type Trade = {
+type DashboardTrade = {
     tradeId: string;
     buy: boolean;
     price: number;
@@ -21,7 +21,7 @@ export type Trade = {
     tradeTime: string;
 }
 
-export type Order = {
+export type DashboardOrder = {
    orderId: string;
    price: number;
    initialQuantity: number;
@@ -33,9 +33,9 @@ export type Order = {
 }
 
 export type Dashboard = User & {
-    orders: Order[];
+    orders: DashboardOrder[];
     balances: Balance[];
-    trades: Trade[];
+    trades: DashboardTrade[];
 }
 
 export async function getDashboard(): Promise<Dashboard> {

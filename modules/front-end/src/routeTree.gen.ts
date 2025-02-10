@@ -17,7 +17,7 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthTradeIndexImport } from './routes/_auth/trade/index'
 import { Route as AuthDashboardIndexImport } from './routes/_auth/dashboard/index'
-import { Route as AuthTradeIdIndexImport } from './routes/_auth/trade/$id/index'
+import { Route as AuthTradeTickerIndexImport } from './routes/_auth/trade/$ticker/index'
 
 // Create/Update Routes
 
@@ -51,8 +51,8 @@ const AuthDashboardIndexRoute = AuthDashboardIndexImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 
-const AuthTradeIdIndexRoute = AuthTradeIdIndexImport.update({
-  path: '/trade/$id/',
+const AuthTradeTickerIndexRoute = AuthTradeTickerIndexImport.update({
+  path: '/trade/$ticker/',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -102,11 +102,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthTradeIndexImport
       parentRoute: typeof AuthImport
     }
-    '/_auth/trade/$id/': {
-      id: '/_auth/trade/$id/'
-      path: '/trade/$id'
-      fullPath: '/trade/$id'
-      preLoaderRoute: typeof AuthTradeIdIndexImport
+    '/_auth/trade/$ticker/': {
+      id: '/_auth/trade/$ticker/'
+      path: '/trade/$ticker'
+      fullPath: '/trade/$ticker'
+      preLoaderRoute: typeof AuthTradeTickerIndexImport
       parentRoute: typeof AuthImport
     }
   }
@@ -117,13 +117,13 @@ declare module '@tanstack/react-router' {
 interface AuthRouteChildren {
   AuthDashboardIndexRoute: typeof AuthDashboardIndexRoute
   AuthTradeIndexRoute: typeof AuthTradeIndexRoute
-  AuthTradeIdIndexRoute: typeof AuthTradeIdIndexRoute
+  AuthTradeTickerIndexRoute: typeof AuthTradeTickerIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthDashboardIndexRoute: AuthDashboardIndexRoute,
   AuthTradeIndexRoute: AuthTradeIndexRoute,
-  AuthTradeIdIndexRoute: AuthTradeIdIndexRoute,
+  AuthTradeTickerIndexRoute: AuthTradeTickerIndexRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -135,7 +135,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/dashboard': typeof AuthDashboardIndexRoute
   '/trade': typeof AuthTradeIndexRoute
-  '/trade/$id': typeof AuthTradeIdIndexRoute
+  '/trade/$ticker': typeof AuthTradeTickerIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -145,7 +145,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/dashboard': typeof AuthDashboardIndexRoute
   '/trade': typeof AuthTradeIndexRoute
-  '/trade/$id': typeof AuthTradeIdIndexRoute
+  '/trade/$ticker': typeof AuthTradeTickerIndexRoute
 }
 
 export interface FileRoutesById {
@@ -156,7 +156,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/_auth/dashboard/': typeof AuthDashboardIndexRoute
   '/_auth/trade/': typeof AuthTradeIndexRoute
-  '/_auth/trade/$id/': typeof AuthTradeIdIndexRoute
+  '/_auth/trade/$ticker/': typeof AuthTradeTickerIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -168,9 +168,16 @@ export interface FileRouteTypes {
     | '/register'
     | '/dashboard'
     | '/trade'
-    | '/trade/$id'
+    | '/trade/$ticker'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/register' | '/dashboard' | '/trade' | '/trade/$id'
+  to:
+    | '/'
+    | ''
+    | '/login'
+    | '/register'
+    | '/dashboard'
+    | '/trade'
+    | '/trade/$ticker'
   id:
     | '__root__'
     | '/'
@@ -179,7 +186,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/_auth/dashboard/'
     | '/_auth/trade/'
-    | '/_auth/trade/$id/'
+    | '/_auth/trade/$ticker/'
   fileRoutesById: FileRoutesById
 }
 
@@ -223,7 +230,7 @@ export const routeTree = rootRoute
       "children": [
         "/_auth/dashboard/",
         "/_auth/trade/",
-        "/_auth/trade/$id/"
+        "/_auth/trade/$ticker/"
       ]
     },
     "/login": {
@@ -240,8 +247,8 @@ export const routeTree = rootRoute
       "filePath": "_auth/trade/index.tsx",
       "parent": "/_auth"
     },
-    "/_auth/trade/$id/": {
-      "filePath": "_auth/trade/$id/index.tsx",
+    "/_auth/trade/$ticker/": {
+      "filePath": "_auth/trade/$ticker/index.tsx",
       "parent": "/_auth"
     }
   }

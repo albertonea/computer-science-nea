@@ -1,19 +1,20 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MatchingEngineResponse {
-    private ArrayList<Order> filledOrders;
-    private ArrayList<Trade> trades;
+    private List<LimitOrder> filledOrders;
+    private List<Trade> trades;
     private Order placedOrder;
 
-    public MatchingEngineResponse(ArrayList<Trade> trades, ArrayList<Order> filledOrders, Order placedOrder) {
+    public MatchingEngineResponse(List<Trade> trades, List<LimitOrder> filledOrders, Order placedOrder) {
         this.trades = trades;
         this.filledOrders = filledOrders;
         this.placedOrder = placedOrder;
     }
 
-    public ArrayList<Trade> getTrades() {
+    public List<Trade> getTrades() {
         return trades;
     }
 
@@ -21,7 +22,7 @@ public class MatchingEngineResponse {
         return placedOrder;
     }
 
-    public ArrayList<Order> getFilledOrders() {
+    public List<LimitOrder> getFilledOrders() {
         return filledOrders;
     }
 }

@@ -1,10 +1,14 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.BalanceDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.BalanceEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.mapper.BalanceMapper;
 import com.eastbarnetschool.ordermatchingengine.api.repository.BalancesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -15,7 +19,7 @@ public class BalancesService {
         this.balancesRepository = balancesRepository;
     }
 
-    public ArrayList<BalanceEntity> get(UUID userId) {
+    public List<BalanceEntity> getByUserId(UUID userId) {
         return balancesRepository.get(userId);
     }
 

@@ -14,7 +14,6 @@ public class TradeMapper {
                 trade.getTradeId(),
                 trade.getQuantity(),
                 trade.getPrice(),
-                trade.getTicker(),
                 Timestamp.from(trade.getTradeTime())
         );
     }

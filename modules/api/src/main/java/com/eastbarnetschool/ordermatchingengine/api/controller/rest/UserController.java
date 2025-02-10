@@ -4,6 +4,7 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.BalanceDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserDashboardDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserWithBalancesResponse;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.BalanceEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -35,8 +36,4 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-//    @GetMapping("/balances")
-//    public ResponseEntity<List<BalanceDto>> getUserBalances(final Authentication authentication) {
-//        final var balances = balancesService.get(authentication.getName());
-//    }
 }
