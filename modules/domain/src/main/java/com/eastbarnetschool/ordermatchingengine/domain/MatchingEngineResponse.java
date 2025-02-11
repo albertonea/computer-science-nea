@@ -1,6 +1,8 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
-import java.util.ArrayList;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.LimitOrder;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
+
 import java.util.List;
 
 public class MatchingEngineResponse {

@@ -2,7 +2,7 @@ package com.eastbarnetschool.ordermatchingengine.api.runner;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
-import com.eastbarnetschool.ordermatchingengine.domain.Order;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.OrderGateway;
 import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import org.springframework.boot.ApplicationArguments;

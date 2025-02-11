@@ -1,4 +1,7 @@
-package com.eastbarnetschool.ordermatchingengine.domain;
+package com.eastbarnetschool.ordermatchingengine.domain.orders;
+
+import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
+import com.eastbarnetschool.ordermatchingengine.domain.Side;
 
 import java.time.Instant;
 import java.util.UUID;

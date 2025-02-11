@@ -12,6 +12,7 @@ import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
 import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import com.eastbarnetschool.ordermatchingengine.domain.*;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -68,7 +69,7 @@ public class WsOrderController {
             }
         }
 
-        MatchingEngineResponse response = orderGateway.placeLimitOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
+        MatchingEngineResponse response = orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
         // change balance for user that placed order
         // place order in order book
 

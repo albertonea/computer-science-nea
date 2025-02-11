@@ -1,10 +1,13 @@
-package com.eastbarnetschool.ordermatchingengine.domain;
+package com.eastbarnetschool.ordermatchingengine.domain.orders;
+
+import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
+import com.eastbarnetschool.ordermatchingengine.domain.Side;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public class MarketOrder extends Order {
-    public Long executedValue;
+    private Long executedValue;
 
     public MarketOrder(Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         super(initialQuantity, remainingQuantity, ticker, side, orderType, userId, createdAt);

@@ -1,15 +1,23 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
+import com.eastbarnetschool.ordermatchingengine.domain.listeners.PriceUpdateListener;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.LimitOrder;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.MarketOrder;
+
 import java.time.Instant;
 import java.util.*;
 
 public class OrderBook {
     private final PriorityQueue<PriceLevel> sellSide;
     private final PriorityQueue<PriceLevel> buySide;
+    private final PriceUpdateListener priceUpdateListener;
+    private Long lastPrice;
 
-    public OrderBook() {
+    public OrderBook(PriceUpdateListener priceUpdateListener) {
         sellSide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice).reversed());
         buySide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice));
+        lastPrice = Long.MAX_VALUE;
+        this.priceUpdateListener = priceUpdateListener;
     }
 
     public Boolean canMatchLimitOrder(Side side, Long price) {
@@ -52,6 +60,7 @@ public class OrderBook {
                 order.fill(quantity);
 
                 if (order.isFilled() | bookOrder.isFilled()) {
+                    setLastPrice(bookOrder.getPrice());
                     if (order.getSide() == Side.BUY) {
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, order.getUserId(), bookOrder.getUserId(), order.getTicker()));
                     } else {
@@ -135,6 +144,7 @@ public class OrderBook {
                     order.fill(quantity);
 
                     if (order.isFilled(price) | bookOrder.isFilled()) {
+                        setLastPrice(bookOrder.getPrice());
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, order.getUserId(), bookOrder.getUserId(), order.getTicker()));
 
                         if (bookOrder.isFilled() && order.isFilled(price)) {
@@ -180,6 +190,7 @@ public class OrderBook {
                     order.fill(quantity);
 
                     if (order.isFilled() | bookOrder.isFilled()) {
+                        setLastPrice(bookOrder.getPrice());
                         trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, bookOrder.getUserId(), order.getUserId(), order.getTicker()));
 
                         if (bookOrder.isFilled() && order.isFilled()) {
@@ -212,4 +223,18 @@ public class OrderBook {
         }
         return new MatchingEngineResponse(trades, filledOrders, order);
     }
+
+    private void notifyListeners() {
+        priceUpdateListener.onPriceUpdated(lastPrice);
+    }
+
+    public void setLastPrice(Long price) {
+        this.lastPrice = price;
+        notifyListeners();
+    }
+
+    public Long getLastPrice() {
+        return lastPrice;
+    }
+
 }

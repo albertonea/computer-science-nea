@@ -1,7 +1,5 @@
 package com.eastbarnetschool.ordermatchingengine.api.model.dto;
 
-import com.eastbarnetschool.ordermatchingengine.domain.Order;
-
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
