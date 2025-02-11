@@ -29,4 +29,6 @@ public class OrderbookInitialiser implements ApplicationRunner {
         orders.forEach(order -> orderGateway.placeLimitOrder(new Order(order.getOrderId(), order.getPrice(), order.getInitialQuantity(), order.getRemainingQuantity(), order.getTicker(), order.getSide(), OrderType.LIMIT, order.getUserId(), order.getCreatedAt().toInstant())));
         System.out.println("Order Matching Engine has been started");
     }
+
+
 }

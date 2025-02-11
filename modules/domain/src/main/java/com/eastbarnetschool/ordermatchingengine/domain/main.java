@@ -1,22 +1,20 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
-import com.eastbarnetschool.ordermatchingengine.domain.orders.OrderFactory;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
+import com.sun.security.auth.NTSidDomainPrincipal;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class main {
     public static void main(String[] args) {
+        Notifier notifier = new Notifier();
         OrderGateway orderGateway = new OrderGateway();
-        OrderFactory orderFactory = new OrderFactory();
+        orderGateway.addTradingEventListener(notifier);
 
-        System.out.println("placing order");
-        orderGateway.placeStopOrder(new StopOrder(orderFactory.createLimitOrder(2000L, 2000L, "AAPL", Side.SELL, UUID.randomUUID()), 1000L));
-        MatchingEngineResponse response = orderGateway.placeOrder(orderFactory.createLimitOrder(1000L, 1000L, "AAPL", Side.BUY, UUID.randomUUID()));
-        MatchingEngineResponse response1 = orderGateway.placeOrder(orderFactory.createMarketOrder(1000L, "AAPL", Side.SELL, UUID.randomUUID()));
-        System.out.println(response);
-        System.out.println(response1.getTrades());
-        MatchingEngineResponse response2 = orderGateway.placeOrder(orderFactory.createMarketOrder(4000000L, "AAPL", Side.BUY, UUID.randomUUID()));
-        System.out.println(response2.getTrades());
+        orderGateway.placeOrder(new Order(1000L, 1000L, 10000L, 0L,  "AAPL", Side.SELL, OrderType.LIMIT, UUID.randomUUID(), Instant.now()));
+        orderGateway.placeOrder(new Order(1000L, 1000L, 10000L, 0L,  "AAPL", Side.BUY, OrderType.LIMIT, UUID.randomUUID(), Instant.now()));
+        System.out.println("order placed");
     }
 }

@@ -1,7 +1,8 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
+import com.eastbarnetschool.ordermatchingengine.domain.events.OrderPlacedEvent;
+import com.eastbarnetschool.ordermatchingengine.domain.events.StopOrderExecutedEvent;
+import com.eastbarnetschool.ordermatchingengine.domain.events.StopOrderQueuedEvent;
 import com.eastbarnetschool.ordermatchingengine.domain.listeners.PriceUpdateListener;
-import com.eastbarnetschool.ordermatchingengine.domain.orders.LimitOrder;
-import com.eastbarnetschool.ordermatchingengine.domain.orders.MarketOrder;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
 
@@ -12,14 +13,16 @@ import java.util.concurrent.*;
 public class OrderQueue implements PriceUpdateListener {
     private final OrderBook orderBook;
     private final String ticker;
-    private final BlockingQueue<Pair<Order, CompletableFuture<MatchingEngineResponse>>> orderQueue;
+    private final BlockingQueue<Order> orderQueue;
     private volatile boolean running;
     private final PriorityQueue<StopOrder> stopBuyOrders;
     private final PriorityQueue<StopOrder> stopSellOrders;
+    private final OrderGateway eventPublisher; // to publish events
 
-    public OrderQueue(String ticker) {
+    public OrderQueue(String ticker, OrderGateway eventPublisher) {
         this.ticker = ticker;
-        this.orderBook = new OrderBook(this);
+        this.eventPublisher = eventPublisher;
+        this.orderBook = new OrderBook(this, eventPublisher);
         this.orderQueue = new LinkedBlockingQueue<>();
         this.running = true;
         this.stopSellOrders = new PriorityQueue<>(Comparator.comparing(StopOrder::getExecutionPrice).reversed());
@@ -32,6 +35,7 @@ public class OrderQueue implements PriceUpdateListener {
             StopOrder stopOrder = stopSellOrders.peek();
             Order order = stopOrder.getOrder();
             if (stopOrder.getExecutionPrice() >= orderBook.getLastPrice()) {
+                eventPublisher.publishStopOrderExecutedEvent(new StopOrderExecutedEvent(stopOrder));
                 stopSellOrders.poll();
                 placeOrder(order);
             } else {
@@ -43,6 +47,7 @@ public class OrderQueue implements PriceUpdateListener {
             StopOrder stopOrder = stopBuyOrders.peek();
             Order order = stopOrder.getOrder();
             if (stopOrder.getExecutionPrice() <= orderBook.getLastPrice()) {
+                eventPublisher.publishStopOrderExecutedEvent(new StopOrderExecutedEvent(stopOrder));
                 stopBuyOrders.poll();
                 placeOrder(order);
             } else {
@@ -56,34 +61,29 @@ public class OrderQueue implements PriceUpdateListener {
             if (stopOrder.getExecutionPrice() <= orderBook.getLastPrice()) {
                 placeOrder(stopOrder.getOrder());
             } else {
+                eventPublisher.publishStopOrderQueuedEvent(new StopOrderQueuedEvent(stopOrder));
                 stopBuyOrders.add(stopOrder);
             }
         } else {
             if (stopOrder.getExecutionPrice() >= orderBook.getLastPrice()) {
                 placeOrder(stopOrder.getOrder());
             } else {
+                eventPublisher.publishStopOrderQueuedEvent(new StopOrderQueuedEvent(stopOrder));
                 stopSellOrders.add(stopOrder);
             }
         }
     }
 
-    public CompletableFuture<MatchingEngineResponse> placeOrder(Order order) {
-        CompletableFuture<MatchingEngineResponse> future = new CompletableFuture<>();
-        orderQueue.offer(new Pair<>(order, future));
-        return future;
+    public void placeOrder(Order order) {
+        orderQueue.offer(order);
     }
 
     private void startOrderProcessor() {
         Thread processorThread = new Thread(() -> {
             while (running || !orderQueue.isEmpty()) {
                 try {
-                    Pair<Order, CompletableFuture<MatchingEngineResponse>> task = orderQueue.take();
-                    Order order = task.getKey();
-                    CompletableFuture<MatchingEngineResponse> future = task.getValue();
-
-                    MatchingEngineResponse response = processOrder(order);
-
-                    future.complete(response);
+                    Order order = orderQueue.take();
+                    processOrder(order);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     System.err.println("Order processor interrupted");
@@ -97,14 +97,9 @@ public class OrderQueue implements PriceUpdateListener {
         processorThread.start();
     }
 
-    private MatchingEngineResponse processOrder(Order order) {
-        if (order.getOrderType() == OrderType.LIMIT) {
-            return orderBook.placeLimitOrder((LimitOrder) order);
-        } else if (order.getOrderType() == OrderType.MARKET) {
-            return orderBook.placeMarketOrder((MarketOrder) order);
-        } else {
-            throw new IllegalArgumentException("Unsupported order type: " + order.getOrderType());
-        }
+    private void processOrder(Order order) {
+        eventPublisher.publishOrderPlacedEvent(new OrderPlacedEvent(order));
+        orderBook.placeOrder(order);
     }
 
     public void stop() {
@@ -114,23 +109,5 @@ public class OrderQueue implements PriceUpdateListener {
     @Override
     public void onPriceUpdated(Long newPrice) {
         updateStopOrders();
-    }
-
-    public static class Pair<K, V> {
-        private final K key;
-        private final V value;
-
-        public Pair(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
     }
 }

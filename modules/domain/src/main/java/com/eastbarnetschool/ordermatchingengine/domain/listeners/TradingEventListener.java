@@ -1,9 +1,11 @@
 package com.eastbarnetschool.ordermatchingengine.domain.listeners;
 
-import com.eastbarnetschool.ordermatchingengine.domain.events.OrderEvent;
-import com.eastbarnetschool.ordermatchingengine.domain.events.TradeEvent;
+import com.eastbarnetschool.ordermatchingengine.domain.events.*;
 
 public interface TradingEventListener {
     void onTrade(TradeEvent event);
-    void onOrderEvent(OrderEvent event);
+    void onOrderFilledEvent(OrderFilledEvent event);
+    void onOrderPlacedEvent(OrderPlacedEvent event);
+    void onStopOrderQueuedEvent(StopOrderQueuedEvent event);
+    void onStopOrderExecutedEvent(StopOrderExecutedEvent event);
 }

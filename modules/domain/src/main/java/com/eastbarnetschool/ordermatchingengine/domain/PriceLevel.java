@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
-import com.eastbarnetschool.ordermatchingengine.domain.orders.LimitOrder;
+import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 
 import java.util.Comparator;
@@ -8,9 +8,9 @@ import java.util.PriorityQueue;
 
 public class PriceLevel {
     private final Long price;
-    private final PriorityQueue<LimitOrder> orders;
+    private final PriorityQueue<Order> orders;
 
-    public PriceLevel(Long price, LimitOrder order) {
+    public PriceLevel(Long price, Order order) {
         this.price = price;
         this.orders = new PriorityQueue<>(Comparator.comparing(Order::getCreatedAt));
         orders.add(order);
@@ -20,19 +20,19 @@ public class PriceLevel {
         return price;
     }
 
-    public PriorityQueue<LimitOrder> getOrders() {
+    public PriorityQueue<Order> getOrders() {
         return orders;
     }
 
-    public void addOrder(LimitOrder order) {
+    public void addOrder(Order order) {
         orders.add(order);
     }
     
-    public LimitOrder poll() {
+    public Order poll() {
         return orders.poll();
     }
 
-    public LimitOrder peek() {
+    public Order peek() {
         return orders.peek();
     }
 

@@ -1,7 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
-import com.eastbarnetschool.ordermatchingengine.domain.events.OrderEvent;
-import com.eastbarnetschool.ordermatchingengine.domain.events.TradeEvent;
+import com.eastbarnetschool.ordermatchingengine.domain.events.*;
 import com.eastbarnetschool.ordermatchingengine.domain.listeners.TradingEventListener;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
@@ -34,9 +33,27 @@ public class OrderGateway {
         }
     }
 
-    public void publishOrderEvent(OrderEvent event) {
+    public void publishOrderFilledEvent(OrderFilledEvent event) {
         for (TradingEventListener listener : listeners) {
-            listener.onOrderEvent(event);
+            listener.onOrderFilledEvent(event);
+        }
+    }
+
+    public void publishOrderPlacedEvent(OrderPlacedEvent event) {
+        for (TradingEventListener listener : listeners) {
+            listener.onOrderPlacedEvent(event);
+        }
+    }
+
+    public void publishStopOrderQueuedEvent(StopOrderQueuedEvent event) {
+        for (TradingEventListener listener : listeners) {
+            listener.onStopOrderQueuedEvent(event);
+        }
+    }
+
+    public void publishStopOrderExecutedEvent(StopOrderExecutedEvent event) {
+        for (TradingEventListener listener : listeners) {
+            listener.onStopOrderExecutedEvent(event);
         }
     }
 

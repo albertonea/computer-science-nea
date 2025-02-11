@@ -1,6 +1,7 @@
 package com.eastbarnetschool.ordermatchingengine.api.config;
 
 
+import com.eastbarnetschool.ordermatchingengine.api.controller.websocket.WsEventNotifier;
 import com.eastbarnetschool.ordermatchingengine.domain.OrderGateway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +17,10 @@ import java.util.List;
 @Configuration
 public class AppConfiguration {
     @Bean
-    public OrderGateway orderGateway() {
-        return new OrderGateway();
+    public OrderGateway orderGateway(WsEventNotifier notifier) {
+        OrderGateway gateway = new OrderGateway();
+        gateway.addTradingEventListener(notifier);
+        return gateway;
     }
 
     @Bean

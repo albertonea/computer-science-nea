@@ -10,15 +10,19 @@ public class Order {
     private final UUID userId;
     private final Long initialQuantity;
     private Long remainingQuantity;
+    private Long executedValue;
+    private Long price;
     private final String ticker;
     private final Side side;
     private final OrderType orderType;
     private final Instant createdAt;
 
-    public Order(Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
-        this.orderId = UUID.randomUUID();
+    public Order(UUID orderId, Long initialQuantity, Long remainingQuantity, Long price, Long executedValue, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+        this.orderId = orderId;
         this.initialQuantity = initialQuantity;
         this.remainingQuantity = remainingQuantity;
+        this.price = price;
+        this.executedValue = executedValue;
         this.ticker = ticker;
         this.side = side;
         this.orderType = orderType;
@@ -26,10 +30,36 @@ public class Order {
         this.createdAt = createdAt;
     }
 
-    public Order(UUID orderId, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+    public Order(Long initialQuantity, Long remainingQuantity, Long price, Long executedValue, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+        this.orderId = UUID.randomUUID();
+        this.initialQuantity = initialQuantity;
+        this.remainingQuantity = remainingQuantity;
+        this.price = price;
+        this.executedValue = executedValue;
+        this.ticker = ticker;
+        this.side = side;
+        this.orderType = orderType;
+        this.userId = userId;
+        this.createdAt = createdAt;
+    }
+
+    public Order(Long initialQuantity, Long remainingQuantity, Long executedValue, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
+        this.orderId = UUID.randomUUID();
+        this.initialQuantity = initialQuantity;
+        this.remainingQuantity = remainingQuantity;
+        this.executedValue = executedValue;
+        this.ticker = ticker;
+        this.side = side;
+        this.orderType = orderType;
+        this.userId = userId;
+        this.createdAt = createdAt;
+    }
+
+    public Order(UUID orderId, Long initialQuantity, Long remainingQuantity, Long executedValue, String ticker, Side side, OrderType orderType, UUID userId, Instant createdAt) {
         this.orderId = orderId;
         this.initialQuantity = initialQuantity;
         this.remainingQuantity = remainingQuantity;
+        this.executedValue = executedValue;
         this.ticker = ticker;
         this.side = side;
         this.orderType = orderType;
@@ -65,11 +95,20 @@ public class Order {
         return remainingQuantity;
     }
 
-    public void fill(Long fillQuantity) {
+    public Long getExecutedValue() {
+        return executedValue;
+    }
+
+    public Long getPrice() {
+        return price;
+    }
+
+    public void fill(Long fillQuantity, Long fillPrice) {
         if (fillQuantity > remainingQuantity) {
             throw new IllegalArgumentException("Fill quantity exceeds remaining quantity");
         }
         remainingQuantity -= fillQuantity;
+        executedValue += fillPrice * fillQuantity;
     }
 
     public boolean isFilled() {

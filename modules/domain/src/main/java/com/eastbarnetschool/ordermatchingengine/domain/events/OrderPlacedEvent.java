@@ -2,11 +2,9 @@ package com.eastbarnetschool.ordermatchingengine.domain.events;
 
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 
-// OrderEvent.java
-public class OrderEvent {
+public class OrderPlacedEvent {
     private final Order order;
-    // You can add additional fields (like fill details) if needed.
-    public OrderEvent(Order order) {
+    public OrderPlacedEvent(Order order) {
         this.order = order;
     }
     public Order getOrder() {

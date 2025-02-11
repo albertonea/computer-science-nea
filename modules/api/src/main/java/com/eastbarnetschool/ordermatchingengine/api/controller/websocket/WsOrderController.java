@@ -69,37 +69,7 @@ public class WsOrderController {
             }
         }
 
-        MatchingEngineResponse response = orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
-        // change balance for user that placed order
-        // place order in order book
-
-        Order placedOrder = response.getPlacedOrder();
-        OrderEntity placedOrderEntity = new OrderEntity(Timestamp.from(placedOrder.getCreatedAt()), placedOrder.getPrice(), placedOrder.getTicker(), placedOrder.getRemainingQuantity(), placedOrder.getInitialQuantity(),  placedOrder.getUserId(), placedOrder.getOrderId(), placedOrder.getSide());
-
-        // return order opened
-        messagingTemplate.convertAndSend("/stream/openOrders/" + user.getUserId(), placedOrderEntity);
-        ordersService.insertOrUpdate(placedOrderEntity);
-
-        for ( Trade trade : response.getTrades() ) {
-            // change balances
-            Long cost = (long) Math.toIntExact(trade.getQuantity() * trade.getPrice());
-            balancesService.updateOrCreateBalance(trade.getSellerId(), trade.getTicker(), 0L, -trade.getQuantity());
-            balancesService.updateOrCreateBalance(trade.getSellerId(), "USD", cost, 0L);
-
-            balancesService.updateOrCreateBalance(trade.getBuyerId(), trade.getTicker(), trade.getQuantity(), 0L);
-            balancesService.updateOrCreateBalance(trade.getBuyerId(), "USD", 0L, -cost);
-
-            // return trades for ticker
-            messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), tradeMapper.toTradeDto(trade));
-            tradeService.insert(new TradeEntity(trade.getSellerId(), trade.getTicker(), trade.getBuyerId(), trade.getQuantity(), trade.getPrice(), Timestamp.from(trade.getTradeTime()), trade.getTradeId()));
-        }
-
-        for ( Order filledOrder : response.getFilledOrders() ) {
-            messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), new FilledOrderResponse(filledOrder.getOrderId(), filledOrder.getPrice(), filledOrder.getInitialQuantity(), filledOrder.getRemainingQuantity(), filledOrder.getTicker(), filledOrder.getSide(), filledOrder.getOrderType(), filledOrder.getCreatedAt()));
-            ordersService.insertOrUpdate(new OrderEntity(Timestamp.from(filledOrder.getCreatedAt()), filledOrder.getPrice(), filledOrder.getTicker(), filledOrder.getRemainingQuantity(), filledOrder.getInitialQuantity(), filledOrder.getUserId(), filledOrder.getOrderId(), filledOrder.getSide()));
-
-            // return filled and partially filled orders
-        }
+        orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
     }
 
     @Scheduled(fixedRate = 5000)
