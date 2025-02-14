@@ -7,7 +7,7 @@ create table order_history (
    remaining_quantity bigint not null,
    initial_quantity bigint not null,
    price bigint,
-   order_type varchar(10) not null check (side in ('MARKET', 'LIMIT', 'STOPLIMIT', 'STOPMARKET')),
+   order_type varchar(10) not null check (order_type in ('MARKET', 'LIMIT', 'STOPLIMIT', 'STOPMARKET')),
    created_at timestamp not null
 );
 

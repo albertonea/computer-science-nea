@@ -87,6 +87,7 @@ public class OrderEntity {
                 "initialQuantity", this.getInitialQuantity(),
                 "executedValue", this.getExecutedValue(),
                 "price", this.getPrice(),
+                "orderType", this.getOrderType().name(),
                 "createdAt", this.getCreatedAt()
         );
     }

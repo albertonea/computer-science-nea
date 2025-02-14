@@ -5,6 +5,7 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookLevelDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.StopOrderEntity;
+import com.eastbarnetschool.ordermatchingengine.api.repository.OrderHistoryRepository;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OrdersRepository;
 import com.eastbarnetschool.ordermatchingengine.api.repository.StopOrdersRepository;
 import com.eastbarnetschool.ordermatchingengine.api.repository.impl.StopOrdersRepositoryImpl;
@@ -18,10 +19,12 @@ import java.util.stream.Collectors;
 public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final StopOrdersRepository stopOrdersRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
 
-    public OrdersService(OrdersRepository ordersRepository, StopOrdersRepository stopOrdersRepository) {
+    public OrdersService(OrdersRepository ordersRepository, StopOrdersRepository stopOrdersRepository, OrderHistoryRepository orderHistoryRepository) {
         this.ordersRepository = ordersRepository;
         this.stopOrdersRepository = stopOrdersRepository;
+        this.orderHistoryRepository = orderHistoryRepository;
     }
 
     public List<OrderEntity> getOpenOrders(UUID userId, String ticker) {
@@ -65,7 +68,8 @@ public class OrdersService {
     }
 
     public void moveToHistory(UUID orderId) {
-        ordersRepository.delete(orderId);
+        OrderEntity order = ordersRepository.delete(orderId);
+        orderHistoryRepository.insert(order);
     }
 
     public void deleteStopOrder(UUID id) {

@@ -19,8 +19,8 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
     public void insert(OrderEntity orderEntity) {
         template.update(
             """
-                insert into order_history(order_id, user_id, side, ticker, remaining_quantity, initial_quantity, executed_value, price, order_type, created_at)
-                values (:orderId, :userId, :side, :ticker, :remainingQuantity, :initialQuantity, :price, :orderType, :executedValue, :createdAt)
+                insert into order_history(order_id, user_id, side, ticker, executed_value, remaining_quantity, initial_quantity, price, order_type, created_at)
+                values (:orderId, :userId, :side, :ticker, :executedValue, :remainingQuantity, :initialQuantity, :price, :orderType, :createdAt)
                 """,
                 orderEntity.toQueryParameters()
         );

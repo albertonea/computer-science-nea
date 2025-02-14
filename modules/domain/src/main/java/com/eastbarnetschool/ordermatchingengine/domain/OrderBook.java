@@ -135,7 +135,9 @@ public class OrderBook {
                 }
                 sellSide.add(new PriceLevel(order.getPrice(), order));
             }
-        } else {
+        }
+
+        if (order.getOrderType() == OrderType.MARKET) {
             filledOrders.add(order);
         }
 

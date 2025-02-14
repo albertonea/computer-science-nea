@@ -7,6 +7,7 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.StopOrderRequestDt
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.mapper.OrderMapper;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.TradeMapper;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
@@ -32,13 +33,15 @@ public class WsOrderController {
     private final OrdersService ordersService;
     private final BalancesService balancesService;
     private final UserService userService;
+    private final OrderMapper orderMapper;
 
-    WsOrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, OrdersService ordersService, BalancesService balancesService, UserService userService) {
+    WsOrderController(OrderGateway orderGateway, SimpMessagingTemplate messagingTemplate, OrdersService ordersService, BalancesService balancesService, UserService userService, OrderMapper orderMapper) {
         this.orderGateway = orderGateway;
         this.messagingTemplate = messagingTemplate;
         this.ordersService = ordersService;
         this.balancesService = balancesService;
         this.userService = userService;
+        this.orderMapper = orderMapper;
     }
 
     @MessageMapping("/order.place")
@@ -67,7 +70,7 @@ public class WsOrderController {
             }
         }
 
-        orderGateway.placeOrder(new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now()));
+        orderGateway.placeOrder(orderMapper.toOrder(order, user.getUserId()));
     }
 
     @MessageMapping("/stopOrder.place")

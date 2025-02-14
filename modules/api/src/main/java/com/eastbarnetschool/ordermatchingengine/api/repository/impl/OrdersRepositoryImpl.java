@@ -26,7 +26,7 @@ public class OrdersRepositoryImpl implements OrdersRepository {
                 """
                     delete from open_orders
                     where order_id = :orderId
-                    returning order_id, order_type, side, ticker, remaining_quantity, initial_quantity, price, order_type, created_at, executed_value
+                    returning order_id, user_id, side, ticker, executed_value, remaining_quantity, initial_quantity, price, order_type, created_at
                     """,
                 Map.of("orderId", orderId),
                 new OrderRowMapper()
@@ -37,7 +37,7 @@ public class OrdersRepositoryImpl implements OrdersRepository {
     public void insertOrUpdate(OrderEntity order) {
         template.update(
             """
-                insert into open_orders (order_id, user_id, side, ticker, remaining_quantity, initial_quantity, executed_value, order_type, price, created_at)
+                insert into open_orders (order_id, user_id, side, ticker, remaining_quantity, initial_quantity, price, executed_value, created_at, order_type)
                 values (:orderId, :userId, :side, :ticker, :remainingQuantity, :initialQuantity, :price, :executedValue, :createdAt, :orderType)
                 on conflict (order_id)
                 do update set remaining_quantity = :remainingQuantity, executed_value = :executedValue
