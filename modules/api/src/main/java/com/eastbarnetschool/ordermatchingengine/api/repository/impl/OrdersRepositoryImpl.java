@@ -21,13 +21,15 @@ public class OrdersRepositoryImpl implements OrdersRepository {
     }
 
     @Override
-    public void delete(UUID orderId) {
-        template.update(
+    public OrderEntity delete(UUID orderId) {
+        return template.queryForObject(
                 """
                     delete from open_orders
-                    where order_id = :orderID
+                    where order_id = :orderId
+                    returning order_id, order_type, side, ticker, remaining_quantity, initial_quantity, price, order_type, created_at, executed_value
                     """,
-                Map.of("orderID", orderId)
+                Map.of("orderId", orderId),
+                new OrderRowMapper()
         );
     }
 
@@ -35,10 +37,10 @@ public class OrdersRepositoryImpl implements OrdersRepository {
     public void insertOrUpdate(OrderEntity order) {
         template.update(
             """
-                insert into open_orders (order_id, user_id, side, ticker, remaining_quantity, initial_quantity, price, created_at)
-                values (:orderId, :userId, :side, :ticker, :remainingQuantity, :initialQuantity, :price, :createdAt)
+                insert into open_orders (order_id, user_id, side, ticker, remaining_quantity, initial_quantity, executed_value, order_type, price, created_at)
+                values (:orderId, :userId, :side, :ticker, :remainingQuantity, :initialQuantity, :price, :executedValue, :createdAt, :orderType)
                 on conflict (order_id)
-                do update set remaining_quantity = :remainingQuantity
+                do update set remaining_quantity = :remainingQuantity, executed_value = :executedValue
                 """,
                 order.toQueryParameters()
         );
@@ -54,7 +56,7 @@ public class OrdersRepositoryImpl implements OrdersRepository {
                     user_id = :userId
                     and
                     ticker = :ticker
-                    and 
+                    and
                     remaining_quantity > 0
                 """,
                 Map.of("userId", userId, "ticker", ticker),

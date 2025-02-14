@@ -60,7 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const newAuthTokens = await refreshToken(auth.refreshToken)
             setStoredAuth(mergeLeft(newAuthTokens, auth))
         } else {
-            window.alert('session expired, please login again')
             await logoutAndDeleteLocalstorage()
         }
     }, [])

@@ -23,11 +23,9 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final BalancesService balancesService;
 
-    public UserController(UserService userService, BalancesService balancesService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.balancesService = balancesService;
     }
 
     @GetMapping("/dashboard")

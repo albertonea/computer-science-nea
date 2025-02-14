@@ -1,6 +1,7 @@
 package com.eastbarnetschool.ordermatchingengine.api.model.entity.rowmapper;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
+import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
@@ -19,7 +20,9 @@ public class OrderRowMapper implements RowMapper<OrderEntity> {
                 rs.getObject("initial_quantity", Long.class),
                 rs.getObject("user_id", UUID.class),
                 rs.getObject("order_id", UUID.class),
-                Side.valueOf(rs.getString("side").toUpperCase())
+                Side.valueOf(rs.getString("side").toUpperCase()),
+                rs.getObject("executed_value", Long.class),
+                OrderType.valueOf(rs.getString("order_type").toUpperCase())
         );
     }
 }

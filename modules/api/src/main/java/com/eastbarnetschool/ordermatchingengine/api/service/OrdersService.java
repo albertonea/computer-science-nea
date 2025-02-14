@@ -3,9 +3,11 @@ package com.eastbarnetschool.ordermatchingengine.api.service;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookEntryDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookLevelDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookResponseDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
+import com.eastbarnetschool.ordermatchingengine.api.model.entity.StopOrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OrdersRepository;
+import com.eastbarnetschool.ordermatchingengine.api.repository.StopOrdersRepository;
+import com.eastbarnetschool.ordermatchingengine.api.repository.impl.StopOrdersRepositoryImpl;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +17,11 @@ import java.util.stream.Collectors;
 @Service
 public class OrdersService {
     private final OrdersRepository ordersRepository;
+    private final StopOrdersRepository stopOrdersRepository;
 
-    public OrdersService(OrdersRepository ordersRepository) {
+    public OrdersService(OrdersRepository ordersRepository, StopOrdersRepository stopOrdersRepository) {
         this.ordersRepository = ordersRepository;
-    }
-
-    public void delete(UUID orderId) {
-        ordersRepository.delete(orderId);
+        this.stopOrdersRepository = stopOrdersRepository;
     }
 
     public List<OrderEntity> getOpenOrders(UUID userId, String ticker) {
@@ -62,5 +62,17 @@ public class OrdersService {
         }
 
         return orderBook;
+    }
+
+    public void moveToHistory(UUID orderId) {
+        ordersRepository.delete(orderId);
+    }
+
+    public void deleteStopOrder(UUID id) {
+        stopOrdersRepository.delete(id);
+    }
+
+    public void insertStopOrder(StopOrderEntity stopOrder) {
+        stopOrdersRepository.insert(stopOrder);
     }
 }

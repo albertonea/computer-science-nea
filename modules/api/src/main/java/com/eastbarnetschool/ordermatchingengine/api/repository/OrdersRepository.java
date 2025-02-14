@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface OrdersRepository {
-    void delete(UUID orderId);
+    OrderEntity delete(UUID orderId);
     void insertOrUpdate(OrderEntity order);
     List<OrderEntity> getOpenOrders(UUID userId, String ticker);
     List<OrderEntity> getAllOpenOrders();

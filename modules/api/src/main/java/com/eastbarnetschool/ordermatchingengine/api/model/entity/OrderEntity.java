@@ -20,9 +20,11 @@ public class OrderEntity {
     private final Long remainingQuantity;
     private final String ticker;
     private final Long price;
+    private final Long executedValue;
+    private final OrderType orderType;
     private final Timestamp createdAt;
 
-    public OrderEntity(Timestamp createdAt, Long price, String ticker, Long remainingQuantity, Long initialQuantity, UUID userId, UUID orderId, Side side) {
+    public OrderEntity(Timestamp createdAt, Long price, String ticker, Long remainingQuantity, Long initialQuantity, UUID userId, UUID orderId, Side side, Long executedValue, OrderType orderType) {
         this.createdAt = createdAt;
         this.price = price;
         this.ticker = ticker;
@@ -31,6 +33,16 @@ public class OrderEntity {
         this.side = side;
         this.userId = userId;
         this.orderId = orderId;
+        this.executedValue = executedValue;
+        this.orderType = orderType;
+    }
+
+    public Long getExecutedValue() {
+        return executedValue;
+    }
+
+    public OrderType getOrderType() {
+        return orderType;
     }
 
     public Side getSide() {
@@ -73,6 +85,7 @@ public class OrderEntity {
                 "ticker", this.getTicker(),
                 "remainingQuantity", this.getRemainingQuantity(),
                 "initialQuantity", this.getInitialQuantity(),
+                "executedValue", this.getExecutedValue(),
                 "price", this.getPrice(),
                 "createdAt", this.getCreatedAt()
         );

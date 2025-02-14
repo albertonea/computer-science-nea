@@ -115,6 +115,16 @@ public class Order {
         return remainingQuantity == 0;
     }
 
+    public boolean isStopOrder() {
+        return orderType == OrderType.STOPLIMIT ||
+                orderType == OrderType.STOPMARKET;
+    }
+
+    public boolean isMarketOrder() {
+        return orderType == OrderType.MARKET ||
+                orderType == OrderType.STOPMARKET;
+    }
+
     public OrderType getOrderType() {
         return orderType;
     }
