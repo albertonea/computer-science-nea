@@ -3,28 +3,29 @@ import {TextTabs, TextTabsList, TextTabsTrigger} from "@/components/ui/text-tabs
 import {ChangeEvent, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
-import {Slider} from "@/components/ui/slider.tsx";
-import {useStompClient, useSubscription} from "react-stomp-hooks";
+import {useStompClient} from "react-stomp-hooks";
 import {Button} from "@/components/ui/button.tsx";
 import {useAuth} from "@/auth.tsx";
+import {useTradingContext} from "@/context/trading-provider.tsx";
 
 export default function InterfaceTrading() {
     const [side, setSide] = useState("SELL")
-    const [orderType, setOrderType] = useState("limit")
+    const [orderType, setOrderType] = useState("LIMIT")
     const [quantity, setQuantity] = useState("0")
-    const [price, setPrice] = useState("0.00")
-    const [availableBalance, setAvailableBalance] = useState(1000)
-    const [marketPrice, setMarketPrice] = useState(98000.00)
+    const [price, setPrice] = useState("")
+    const [executionPrice, setExecutionPrice] = useState("")
+    const {balances, ticker, marketPrice} = useTradingContext()
+    const [availableBalance, setAvailableBalance] = useState(0)
     const stompClient = useStompClient()
     const auth = useAuth()
 
     useEffect(() => {
-        const regex = /^\d*\.?\d{0,2}$/
-
-        if (regex.test(marketPrice.toString())) {
-            setPrice(marketPrice.toString())
+        if (side === "SELL" && balances && balances[ticker]) {
+            setAvailableBalance(balances[ticker].balance)
+        } else if (side === "BUY" && balances && balances["USD"]) {
+            setAvailableBalance(balances["USD"].balance)
         }
-    }, [marketPrice])
+    }, [balances, side, ticker]);
 
     const handleAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value
@@ -44,6 +45,15 @@ export default function InterfaceTrading() {
         }
     }
 
+    const handleExecutionPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value
+        const regex = /^\d*\.?\d{0,2}$/
+
+        if (regex.test(input)) {
+            setExecutionPrice(input)
+        }
+    }
+
     const sendMessage = () => {
         if (stompClient && auth.auth?.user.userId) {
             stompClient.publish({
@@ -52,9 +62,10 @@ export default function InterfaceTrading() {
                     price: price,
                     userId: auth.auth.user.userId,
                     quantity: quantity,
-                    ticker: 'AAPL',
+                    ticker: ticker,
                     side: side,
-                    orderType: 'LIMIT'
+                    orderType: orderType,
+                    executionPrice: executionPrice
                 })
             })
         }
@@ -69,10 +80,12 @@ export default function InterfaceTrading() {
                     <TabsTrigger className="w-full data-[state=active]:text-white data-[state=active]:bg-red-500" value="SELL">Sell</TabsTrigger>
                 </TabsList>
             </Tabs>
-            <TextTabs defaultValue="limit" value={orderType} onValueChange={setOrderType}>
+            <TextTabs defaultValue="LIMIT" value={orderType} onValueChange={setOrderType}>
                 <TextTabsList>
-                    <TextTabsTrigger value="limit">Limit</TextTabsTrigger>
-                    <TextTabsTrigger value="market">Market</TextTabsTrigger>
+                    <TextTabsTrigger value="LIMIT">Limit</TextTabsTrigger>
+                    <TextTabsTrigger value="MARKET">Market</TextTabsTrigger>
+                    <TextTabsTrigger value="STOPLIMIT">Stop Limit</TextTabsTrigger>
+                    <TextTabsTrigger value="STOPMARKET">Stop Market</TextTabsTrigger>
                 </TextTabsList>
             </TextTabs>
         </div>
@@ -82,15 +95,25 @@ export default function InterfaceTrading() {
                     Avbl
                 </span>
                 <span className="font-bold text-sm text-foreground">
-                    {availableBalance} USD
+                    {availableBalance} {side === "SELL" ? ticker : "USD"}
                 </span>
             </div>
-            <Label htmlFor="price-input">Price</Label>
-            <Input id="price-input" value={price} onChange={handlePriceChange} name="price" type="number" step="0.01" placeholder="Price" required/>
-
             <Label htmlFor="amount-input">Amount</Label>
             <Input id="amount-input" value={quantity} onChange={handleAmountChange}  name="amount" type="number" step="0.01" placeholder="Price" required/>
-            <Slider min={0} max={availableBalance}></Slider>
+
+            {(orderType === "LIMIT" || orderType === "STOPLIMIT") && (
+                <>
+                    <Label htmlFor="price-input">Price</Label>
+                    <Input id="price-input" value={price} onChange={handlePriceChange} name="price" type="number" step="0.01" placeholder={marketPrice?.toString()} required/>
+                </>
+            )}
+
+            {(orderType === "STOPMARKET" || orderType === "STOPLIMIT") && (
+                <>
+                    <Label htmlFor="execution-input">Execution Price</Label>
+                    <Input id="execution-input" value={executionPrice} onChange={handleExecutionPriceChange} name="execution" type="number" step="0.01" placeholder={marketPrice?.toString()} required/>
+                </>
+            )}
         </div>
         <Button onClick={sendMessage}>Test</Button>
     </div>

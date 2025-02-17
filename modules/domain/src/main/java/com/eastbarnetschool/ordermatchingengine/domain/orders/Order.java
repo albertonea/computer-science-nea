@@ -125,6 +125,11 @@ public class Order {
                 orderType == OrderType.STOPMARKET;
     }
 
+    public boolean isLimitOrder() {
+        return orderType == OrderType.LIMIT ||
+                orderType == OrderType.STOPLIMIT;
+    }
+
     public OrderType getOrderType() {
         return orderType;
     }

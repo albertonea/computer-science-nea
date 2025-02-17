@@ -1,17 +1,11 @@
 package com.eastbarnetschool.ordermatchingengine.api.controller.websocket;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderRequestDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.StopOrderRequestDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
-import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.OrderMapper;
-import com.eastbarnetschool.ordermatchingengine.api.model.mapper.TradeMapper;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
-import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import com.eastbarnetschool.ordermatchingengine.domain.*;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
@@ -22,7 +16,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 
@@ -53,55 +46,35 @@ public class WsOrderController {
         }
         UserEntity user = userService.getByUsername(username);
 
-        if (order.getSide() == Side.BUY && order.getOrderType() == OrderType.LIMIT) {
-            Long cost = (long) Math.toIntExact(order.getQuantity() * order.getPrice());
-            if (balancesService.checkIfHasEnoughBalance(user.getUserId(), "USD", cost)) {
-                balancesService.updateOrCreateBalance(user.getUserId(), "USD", -cost, cost);
-            } else {
-                messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Not enough balance. Ticker: " + order.getTicker() + " Balance Required: " + cost);
-                return;
-            }
-        } else {
-            if (balancesService.checkIfHasEnoughBalance(user.getUserId(), order.getTicker(), order.getQuantity())) {
-                balancesService.updateOrCreateBalance(user.getUserId(), order.getTicker(), -order.getQuantity(), order.getQuantity());
-            } else {
-                messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Not enough balance. Ticker: " + order.getTicker() + " Balance Required: " + order.getQuantity());
-                return;
-            }
-        }
+        Side side = order.getSide();
+        OrderType orderType = order.getOrderType();
 
-        orderGateway.placeOrder(orderMapper.toOrder(order, user.getUserId()));
-    }
-
-    @MessageMapping("/stopOrder.place")
-    public void placeStopOrder(StopOrderRequestDto order, SimpMessageHeaderAccessor headerAccessor) {
-        String username = (String) headerAccessor.getSessionAttributes().get("user");
-
-        if (username == null) {
-            return;
-        }
-        UserEntity user = userService.getByUsername(username);
-
-        if (order.getSide() == Side.BUY && order.getOrderType() == OrderType.STOPLIMIT) {
-            Long cost = (long) Math.toIntExact(order.getQuantity() * order.getPrice());
-            if (balancesService.checkIfHasEnoughBalance(user.getUserId(), "USD", cost)) {
-                balancesService.updateOrCreateBalance(user.getUserId(), "USD", -cost, cost);
+        if (orderType == OrderType.LIMIT || orderType == OrderType.STOPLIMIT) {
+            if (side == Side.BUY) {
+                Long cost = (long) Math.toIntExact(order.getQuantity() * order.getPrice() * 100);
+                if (balancesService.checkIfHasEnoughBalance(user.getUserId(), "USD", cost)) {
+                    balancesService.updateOrCreateBalance(user.getUserId(), "USD", -cost, cost);
+                } else {
+                    messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Not enough balance. Ticker: " + order.getTicker() + " Balance Required: " + cost);
+                    return;
+                }
             } else {
-                messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Not enough balance. Ticker: " + order.getTicker() + " Balance Required: " + cost);
-                return;
-            }
-        } else {
-            if (balancesService.checkIfHasEnoughBalance(user.getUserId(), order.getTicker(), order.getQuantity())) {
-                balancesService.updateOrCreateBalance(user.getUserId(), order.getTicker(), -order.getQuantity(), order.getQuantity());
-            } else {
-                messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Not enough balance. Ticker: " + order.getTicker() + " Balance Required: " + order.getQuantity());
-                return;
+                if (balancesService.checkIfHasEnoughBalance(user.getUserId(), order.getTicker(), order.getQuantity())) {
+                    balancesService.updateOrCreateBalance(user.getUserId(), order.getTicker(), -order.getQuantity(), order.getQuantity());
+                } else {
+                    messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Not enough balance. Ticker: " + order.getTicker() + " Balance Required: " + order.getQuantity());
+                    return;
+                }
             }
         }
 
-        Order newOrder = new Order(order.getPrice(), order.getQuantity(), order.getQuantity(), order.getTicker(), order.getSide(), order.getOrderType(), user.getUserId(), Instant.now());
+        if (orderType == OrderType.LIMIT || orderType == OrderType.MARKET) {
+            orderGateway.placeOrder(orderMapper.toOrder(order, user.getUserId()));
+        }
 
-        orderGateway.placeStopOrder(new StopOrder(order.getExecutionPrice(), newOrder));
+        if (orderType == OrderType.STOPLIMIT || orderType == OrderType.STOPMARKET) {
+            orderGateway.placeStopOrder(new StopOrder(order.getExecutionPrice() * 100, orderMapper.toOrder(order, user.getUserId())));
+        }
     }
 
     @Scheduled(fixedRate = 5000)

@@ -1,6 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.model.mapper;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderRequestDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
@@ -31,7 +31,7 @@ public class OrderMapper {
         return new Order(
                 orderRequestDto.getQuantity(),
                 orderRequestDto.getQuantity(),
-                orderRequestDto.getPrice(),
+                orderRequestDto.getPrice() * 100,
                 0L,
                 orderRequestDto.getTicker(),
                 orderRequestDto.getSide(),
@@ -41,8 +41,8 @@ public class OrderMapper {
         );
     }
 
-    public FilledOrderResponse toFilledOrderResponse(Order order) {
-        return new FilledOrderResponse(
+    public OrderDto toOrderDto(Order order) {
+        return new OrderDto(
                 order.getOrderId(),
                 order.getPrice(),
                 order.getInitialQuantity(),
@@ -50,7 +50,8 @@ public class OrderMapper {
                 order.getTicker(),
                 order.getSide(),
                 order.getOrderType(),
-                order.getCreatedAt()
+                Timestamp.from(order.getCreatedAt()),
+                order.getExecutedValue()
         );
     }
 }

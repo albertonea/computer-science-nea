@@ -28,4 +28,15 @@ public class TradeMapper {
         );
     }
 
+    public TradeEntity toTradeEntity(Trade trade) {
+        return new TradeEntity(
+                trade.getSellOrder().getUserId(),
+                trade.getTicker(),
+                trade.getBuyOrder().getUserId(),
+                trade.getQuantity(),
+                trade.getPrice(),
+                Timestamp.from(trade.getTradeTime()),
+                trade.getTradeId()
+        );
+    }
 }

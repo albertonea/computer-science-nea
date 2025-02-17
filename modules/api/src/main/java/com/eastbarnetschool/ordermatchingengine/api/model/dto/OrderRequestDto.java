@@ -12,13 +12,19 @@ public class OrderRequestDto {
     private final String ticker;
     private final Side side;
     private final OrderType orderType;
+    private final Long executionPrice;
 
-    public OrderRequestDto(Long price, Long quantity, String ticker, Side side, OrderType orderType) {
+    public OrderRequestDto(Long executionPrice, Long price, Long quantity, String ticker, Side side, OrderType orderType) {
+        this.executionPrice = executionPrice;
         this.price = price;
         this.quantity = quantity;
         this.ticker = ticker;
         this.side = side;
         this.orderType = orderType;
+    }
+
+    public Long getExecutionPrice() {
+        return executionPrice;
     }
 
     public Long getPrice() {

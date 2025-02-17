@@ -1,7 +1,7 @@
 import {createContext, ReactNode, useContext, useState} from "react";
-import {filter, props, map} from "ramda";
+import {filter, props, map, reduce} from "ramda";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
-import {Balance, getBalances} from "@/api/balances.ts";
+import {getBalances} from "@/api/balances.ts";
 import {useSubscription} from "react-stomp-hooks";
 import {useAuth} from "@/auth.tsx";
 import {Trade} from "@/api/trades.ts";
@@ -34,8 +34,17 @@ type OrderBook = {
     sellSide: OrderBookLevel[];
 }
 
+type TransformedBalances = {
+    [key: string]: {
+        balance:number,
+        lockedBalance:number
+    }
+}
+
 type TradingProviderState = {
-    balances: Balance[] | undefined
+    balances: TransformedBalances | undefined
+    ticker: string
+    marketPrice: number | undefined
     openOrders: OpenOrder[]
     trades: Trade[]
     orderBook: OrderBook | undefined
@@ -48,16 +57,27 @@ export function TradingProvider({children, ticker, tradeHistory, orders}: Tradin
     const [openOrders, setOpenOrders] = useState<OpenOrder[]>(orders)
     const [trades, setTrades] = useState<Trade[]>(tradeHistory)
     const [orderBook, setOrderBook] = useState<OrderBook>()
+    const [marketPrice, setMarketPrice] = useState<number | undefined>(tradeHistory.length ? tradeHistory[tradeHistory.length - 1].price/100 : undefined)
     const auth = useAuth();
 
     const queryClient = useQueryClient();
-    // balances refetch when orders are filled
+
+
+
     const {data:balances} = useQuery({
         queryKey: ['balances'],
-        queryFn: getBalances
+        queryFn: getBalances,
+        select: (b):TransformedBalances => {
+            const filteredTickers = filter((x) => x.ticker === "USD" || x.ticker === ticker ,b)
+            return reduce((a, b) => {
+                if (b.ticker === "USD") {
+                    return {...a, [b.ticker]: {balance:b.balance/100, lockedBalance:b.lockedBalance/100}}
+                }
+                return {...a, [b.ticker]: {balance:b.balance, lockedBalance:b.lockedBalance}}
+            }, {}, filteredTickers)
+        },
     })
 
-    // orders, change array when orders get filled
     useSubscription(`/stream/openOrders/${auth.auth?.user.userId}`,
         (message) => {
             setOpenOrders([...openOrders, JSON.parse(message.body)])
@@ -102,10 +122,11 @@ export function TradingProvider({children, ticker, tradeHistory, orders}: Tradin
     useSubscription(`/stream/trades/${ticker}`, (message) => {
         const trade = JSON.parse(message.body)
         setTrades([trade, ...trades])
+        setMarketPrice(trade.price/100)
     })
 
     return (
-        <TradingProviderContext.Provider {...props} value={{balances, openOrders, trades, orderBook}}>
+        <TradingProviderContext.Provider {...props} value={{balances, ticker, marketPrice, openOrders, trades, orderBook}}>
             {children}
         </TradingProviderContext.Provider>
     );

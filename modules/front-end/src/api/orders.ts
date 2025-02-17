@@ -1,7 +1,7 @@
 import ky from "ky";
 import {authHttpOptions} from "@/api/httpOptions.ts";
 
-type Order = {
+export type Order = {
     orderId: string;
     userId: string;
     side: 'BUY' | 'SELL'
@@ -10,6 +10,7 @@ type Order = {
     ticker: string;
     price: number;
     createdAt: string;
+    executedValue: number;
 }
 
 export function getOpenOrders(ticker: string):Promise<Order[]> {

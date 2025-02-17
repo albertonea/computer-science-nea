@@ -16,10 +16,11 @@ public class OrderDto {
     private Side side;
     private OrderType orderType;
     private Timestamp createdAt;
+    private Long executedValue;
 
     public OrderDto() {}
 
-    public OrderDto(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, Timestamp createdAt) {
+    public OrderDto(UUID orderId, Long price, Long initialQuantity, Long remainingQuantity, String ticker, Side side, OrderType orderType, Timestamp createdAt, Long executedValue) {
         this.orderId = orderId;
         this.price = price;
         this.initialQuantity = initialQuantity;
@@ -28,6 +29,7 @@ public class OrderDto {
         this.side = side;
         this.orderType = orderType;
         this.createdAt = createdAt;
+        this.executedValue = executedValue;
     }
 
     public UUID getOrderId() {
@@ -60,6 +62,10 @@ public class OrderDto {
 
     public Long getRemainingQuantity() {
         return remainingQuantity;
+    }
+
+    public Long getExecutedValue() {
+        return executedValue;
     }
 }
 

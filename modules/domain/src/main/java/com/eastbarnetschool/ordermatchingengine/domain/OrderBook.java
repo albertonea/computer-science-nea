@@ -24,7 +24,13 @@ public class OrderBook {
     }
 
     public Boolean canMatch(Order order) {
-        if (order.getOrderType() == OrderType.LIMIT) {
+        if (order.isMarketOrder()) {
+            if (order.getSide() == Side.BUY) {
+                return !sellSide.isEmpty();
+            } else {
+                return !buySide.isEmpty();
+            }
+        } else {
             if (order.getSide() == Side.BUY) {
                 if (sellSide.isEmpty()) return false;
                 PriceLevel sellSide = this.sellSide.peek();
@@ -32,13 +38,7 @@ public class OrderBook {
             } else {
                 if (buySide.isEmpty()) return false;
                 PriceLevel buySide = this.buySide.peek();
-                return buySide.getPrice() >= order.getPrice();
-            }
-        } else {
-            if (order.getSide() == Side.BUY) {
-                return !sellSide.isEmpty();
-            } else {
-                return !buySide.isEmpty();
+                return buySide.getPrice() <= order.getPrice();
             }
         }
     }
@@ -78,9 +78,9 @@ public class OrderBook {
                     if (!Objects.equals(price, lastPrice)) setLastPrice(price);
 
                     if (order.getSide() == Side.BUY) {
-                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, order.getUserId(), bookOrder.getUserId(), order.getTicker()));
+                        trades.add(new Trade(Instant.now(), price, quantity, order, bookOrder, order.getTicker()));
                     } else {
-                        trades.add(new Trade(Instant.now(), bookOrder.getPrice(), quantity, bookOrder.getUserId(), order.getUserId(), order.getTicker()));
+                        trades.add(new Trade(Instant.now(), price, quantity, bookOrder, order, order.getTicker()));
                     }
 
                     if (bookOrder.isFilled() && order.isFilled()) {
@@ -114,31 +114,33 @@ public class OrderBook {
             }
         }
 
-        if (!order.isFilled() && order.getOrderType() == OrderType.LIMIT) {
-            if (order.getInitialQuantity() > order.getRemainingQuantity()) {
+        if (!order.isFilled()) {
+            if (order.isLimitOrder()) {
+                if (order.getInitialQuantity() > order.getRemainingQuantity()) {
+                    filledOrders.add(order);
+                }
+                if (order.getSide() == Side.BUY) {
+                    for (PriceLevel level : buySide) {
+                        if (Objects.equals(level.getPrice(), order.getPrice())) {
+                            level.addOrder(order);
+                            return new MatchingResponse(trades, filledOrders);
+                        }
+                    }
+                    buySide.add(new PriceLevel(order.getPrice(), order));
+                } else {
+                    for (PriceLevel level : sellSide) {
+                        if (Objects.equals(level.getPrice(), order.getPrice())) {
+                            level.addOrder(order);
+                            return new MatchingResponse(trades, filledOrders);
+                        }
+                    }
+                    sellSide.add(new PriceLevel(order.getPrice(), order));
+                }
+            }
+
+            if (order.isMarketOrder()) {
                 filledOrders.add(order);
             }
-            if (order.getSide() == Side.BUY) {
-                for (PriceLevel level : buySide) {
-                    if (Objects.equals(level.getPrice(), order.getPrice())) {
-                        level.addOrder(order);
-                        return new MatchingResponse(trades, filledOrders);
-                    }
-                }
-                buySide.add(new PriceLevel(order.getPrice(), order));
-            } else {
-                for (PriceLevel level : sellSide) {
-                    if (Objects.equals(level.getPrice(), order.getPrice())) {
-                        level.addOrder(order);
-                        return new MatchingResponse(trades, filledOrders);
-                    }
-                }
-                sellSide.add(new PriceLevel(order.getPrice(), order));
-            }
-        }
-
-        if (order.getOrderType() == OrderType.MARKET) {
-            filledOrders.add(order);
         }
 
         return new MatchingResponse(trades, filledOrders);

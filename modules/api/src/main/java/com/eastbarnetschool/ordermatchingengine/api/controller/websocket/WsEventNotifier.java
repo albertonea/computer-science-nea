@@ -1,14 +1,13 @@
 package com.eastbarnetschool.ordermatchingengine.api.controller.websocket;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.FilledOrderResponse;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
-import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.OrderMapper;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.StopOrderMapper;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.TradeMapper;
 import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
 import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;
+import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import com.eastbarnetschool.ordermatchingengine.domain.Trade;
 import com.eastbarnetschool.ordermatchingengine.domain.events.*;
 import com.eastbarnetschool.ordermatchingengine.domain.listeners.TradingEventListener;
@@ -16,8 +15,6 @@ import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
-
-import java.sql.Timestamp;
 
 @Component
 public class WsEventNotifier implements TradingEventListener {
@@ -42,16 +39,28 @@ public class WsEventNotifier implements TradingEventListener {
     @Override
     public void onTrade(TradeEvent event) {
         Trade trade = event.getTrade();
-        // change balances
+        Order buyOrder = trade.getBuyOrder();
+        Order sellOrder = trade.getSellOrder();
+
         Long cost = (long) Math.toIntExact(trade.getQuantity() * trade.getPrice());
-        balancesService.updateOrCreateBalance(trade.getSellerId(), trade.getTicker(), 0L, -trade.getQuantity());
-        balancesService.updateOrCreateBalance(trade.getSellerId(), "USD", cost, 0L);
+        if (buyOrder.getOrderType() == OrderType.MARKET) {
+            balancesService.updateOrCreateBalance(buyOrder.getUserId(), trade.getTicker(), trade.getQuantity(), 0L);
+            balancesService.updateOrCreateBalance(buyOrder.getUserId(), "USD", -cost, 0L);
+        } else {
+            balancesService.updateOrCreateBalance(buyOrder.getUserId(), trade.getTicker(), trade.getQuantity(), 0L);
+            balancesService.updateOrCreateBalance(buyOrder.getUserId(), "USD", 0L, -cost);
+        }
 
-        balancesService.updateOrCreateBalance(trade.getBuyerId(), trade.getTicker(), trade.getQuantity(), 0L);
-        balancesService.updateOrCreateBalance(trade.getBuyerId(), "USD", 0L, -cost);
+        if (sellOrder.getOrderType() == OrderType.MARKET) {
+            balancesService.updateOrCreateBalance(sellOrder.getUserId(), trade.getTicker(), -trade.getQuantity(), 0L);
+            balancesService.updateOrCreateBalance(sellOrder.getUserId(), "USD", cost, 0L);
+        } else {
+            balancesService.updateOrCreateBalance(sellOrder.getUserId(), trade.getTicker(), 0L, -trade.getQuantity());
+            balancesService.updateOrCreateBalance(sellOrder.getUserId(), "USD", cost, 0L);
+        }
 
-        // return trades for ticker
-        tradeService.insert(new TradeEntity(trade.getSellerId(), trade.getTicker(), trade.getBuyerId(), trade.getQuantity(), trade.getPrice(), Timestamp.from(trade.getTradeTime()), trade.getTradeId()));
+
+        tradeService.insert(tradeMapper.toTradeEntity(trade));
         messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), tradeMapper.toTradeDto(trade));
     }
 
@@ -64,7 +73,7 @@ public class WsEventNotifier implements TradingEventListener {
             ordersService.moveToHistory(filledOrder.getOrderId());
         }
 
-        messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), orderMapper.toFilledOrderResponse(filledOrder));
+        messagingTemplate.convertAndSend("/stream/filledOrders/" + filledOrder.getUserId(), orderMapper.toOrderDto(filledOrder));
     }
 
     @Override
@@ -73,7 +82,7 @@ public class WsEventNotifier implements TradingEventListener {
         OrderEntity placedOrderEntity = orderMapper.toEntity(placedOrder);
 
         ordersService.insertOrUpdate(placedOrderEntity);
-        messagingTemplate.convertAndSend("/stream/openOrders/" + placedOrder.getUserId(), placedOrderEntity);
+        messagingTemplate.convertAndSend("/stream/openOrders/" + placedOrder.getUserId(), orderMapper.toOrderDto(placedOrder));
     }
 
     @Override
@@ -82,10 +91,11 @@ public class WsEventNotifier implements TradingEventListener {
         OrderEntity underlyingOrder = orderMapper.toEntity(stopOrder.getOrder());
         ordersService.insertOrUpdate(underlyingOrder);
         ordersService.insertStopOrder(stopOrderMapper.toEntity(stopOrder));
+        messagingTemplate.convertAndSend("/stream/errors/" + event.getStopOrder().getOrder().getUserId(), "Stop order queued");
     }
 
     @Override
     public void onStopOrderExecutedEvent(StopOrderExecutedEvent event) {
-
+        messagingTemplate.convertAndSend("/stream/errors/" + event.getStopOrder().getOrder().getUserId(), "Stop order executed");
     }
 }

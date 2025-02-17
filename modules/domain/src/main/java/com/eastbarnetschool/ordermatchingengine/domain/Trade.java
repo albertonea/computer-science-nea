@@ -1,5 +1,7 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
+import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -8,17 +10,17 @@ public class Trade {
     private final Instant tradeTime;
     private final Long price;
     private final Long quantity;
-    private final UUID buyerId;
-    private final UUID sellerId;
+    private final Order buyOrder;
+    private final Order sellOrder;
     private final String ticker;
 
-    public Trade(Instant tradeTime, Long price, Long quantity, UUID buyerId, UUID sellerId, String ticker) {
+    public Trade(Instant tradeTime, Long price, Long quantity, Order buyOrder, Order sellOrder, String ticker) {
         this.tradeId = UUID.randomUUID();
         this.tradeTime = tradeTime;
         this.price = price;
         this.quantity = quantity;
-        this.buyerId = buyerId;
-        this.sellerId = sellerId;
+        this.buyOrder = buyOrder;
+        this.sellOrder = sellOrder;
         this.ticker = ticker;
     }
 
@@ -38,12 +40,11 @@ public class Trade {
         return quantity;
     }
 
-    public UUID getBuyerId() {
-        return buyerId;
+    public Order getBuyOrder() {
+        return buyOrder;
     }
-
-    public UUID getSellerId() {
-        return sellerId;
+    public Order getSellOrder() {
+        return sellOrder;
     }
 
     public String getTicker() {

@@ -58,20 +58,13 @@ public class OrderQueue implements PriceUpdateListener {
 
     public void placeStopOrder(StopOrder stopOrder) {
         if (stopOrder.getOrder().getSide() == Side.BUY) {
-            if (stopOrder.getExecutionPrice() <= orderBook.getLastPrice()) {
-                placeOrder(stopOrder.getOrder());
-            } else {
-                eventPublisher.publishStopOrderQueuedEvent(new StopOrderQueuedEvent(stopOrder));
-                stopBuyOrders.add(stopOrder);
-            }
+            eventPublisher.publishStopOrderQueuedEvent(new StopOrderQueuedEvent(stopOrder));
+            stopBuyOrders.add(stopOrder);
         } else {
-            if (stopOrder.getExecutionPrice() >= orderBook.getLastPrice()) {
-                placeOrder(stopOrder.getOrder());
-            } else {
-                eventPublisher.publishStopOrderQueuedEvent(new StopOrderQueuedEvent(stopOrder));
-                stopSellOrders.add(stopOrder);
-            }
+            eventPublisher.publishStopOrderQueuedEvent(new StopOrderQueuedEvent(stopOrder));
+            stopSellOrders.add(stopOrder);
         }
+        updateStopOrders();
     }
 
     public void placeOrder(Order order) {
