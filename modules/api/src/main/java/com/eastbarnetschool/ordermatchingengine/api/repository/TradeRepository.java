@@ -6,6 +6,7 @@ import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TradeRepository {

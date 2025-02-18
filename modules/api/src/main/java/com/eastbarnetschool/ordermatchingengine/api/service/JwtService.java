@@ -22,7 +22,7 @@ public class JwtService {
     }
 
     public String generateToken(final String username) {
-        final var claimsSet = JwtClaimsSet.builder()
+        JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .subject(username)
                 .issuer(issuer)
                 .expiresAt(Instant.now().plus(ttl))

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class WsOrderController {
@@ -44,7 +45,13 @@ public class WsOrderController {
         if (username == null) {
             return;
         }
-        UserEntity user = userService.getByUsername(username);
+        Optional<UserEntity> optionalUser = userService.getByUsername(username);
+        if (optionalUser.isEmpty()) {
+            messagingTemplate.convertAndSend("/stream/errors/" + username, "User not found");
+            return;
+        }
+
+        UserEntity user = optionalUser.get();
 
         Side side = order.getSide();
         OrderType orderType = order.getOrderType();

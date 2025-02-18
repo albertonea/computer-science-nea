@@ -72,8 +72,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public UserDashboardDto getUserWithOrdersAndBalances(String username) {
-    return template.queryForObject(
+    public Optional<UserDashboardDto> getUserWithOrdersAndBalances(String username) {
+    return Optional.ofNullable(template.queryForObject(
             """
                  SELECT
                      u.user_id as user_id,
@@ -158,12 +158,12 @@ public class UserRepositoryImpl implements UserRepository {
                         trades
                     );
                 }
-        );
+        ));
     }
 
     @Override
-    public UserEntity getById(UUID userId) {
-        return (template.queryForObject(
+    public Optional<UserEntity> getById(UUID userId) {
+        return Optional.ofNullable(template.queryForObject(
                 """
                     select * from users where user_id = :userId
                     """,

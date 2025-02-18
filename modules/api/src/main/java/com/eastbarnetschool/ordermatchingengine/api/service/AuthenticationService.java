@@ -20,6 +20,7 @@ import javax.naming.AuthenticationException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,34 +42,45 @@ public class AuthenticationService {
         this.userMapper = userMapper;
     }
 
-    public AuthenticationResponseDto authenticate(final AuthenticationRequestDto request) {
-        try {
-            final var authToken = UsernamePasswordAuthenticationToken.unauthenticated(request.getUsername(), request.getPassword());
-            authenticationManager.authenticate(authToken);
+    public Optional<AuthenticationResponseDto> authenticate(final AuthenticationRequestDto request) {
+        UsernamePasswordAuthenticationToken authToken = UsernamePasswordAuthenticationToken.unauthenticated(request.getUsername(), request.getPassword());
+        authenticationManager.authenticate(authToken);
 
-            final var token = jwtService.generateToken(request.getUsername());
+        String token = jwtService.generateToken(request.getUsername());
 
-            final UserEntity user = userService.getByUsername(request.getUsername());
+        Optional<UserEntity> optionalUser = userService.getByUsername(request.getUsername());
 
-            RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity(
-                    user.getUserId(),
-                    Timestamp.from(Instant.now().plus(refreshTokenTtl))
-            );
-
-            refreshTokensService.save(refreshTokenEntity);
-
-            return new AuthenticationResponseDto(token, refreshTokenEntity.getId(), refreshTokenEntity.getExpiresAt().toInstant(), userMapper.toUserDto(user));
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid username or password");
+        if (optionalUser.isEmpty()) {
+            return Optional.empty();
         }
+
+        UserEntity user = optionalUser.get();
+
+        RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity(
+                user.getUserId(),
+                Timestamp.from(Instant.now().plus(refreshTokenTtl))
+        );
+
+        refreshTokensService.save(refreshTokenEntity);
+
+        return Optional.of(new AuthenticationResponseDto(token, refreshTokenEntity.getId(), refreshTokenEntity.getExpiresAt().toInstant(), userMapper.toUserDto(user)));
     }
 
-    public RefreshTokenResponseDto refreshToken(UUID refreshToken) {
-        final var refreshTokenEntity = refreshTokensService.findByIdAndUnexpired(refreshToken);
-        final var user = userService.getById(refreshTokenEntity.getUserId());
+    public Optional<RefreshTokenResponseDto> refreshToken(UUID refreshToken) {
+        Optional<RefreshTokenEntity> optionalRefreshToken = refreshTokensService.findByIdAndUnexpired(refreshToken);
+        if (optionalRefreshToken.isEmpty()) {
+            return Optional.empty();
+        }
+        RefreshTokenEntity refreshTokenEntity = optionalRefreshToken.get();
 
-        final var newAccessToken = jwtService.generateToken(user.getUsername());
-        return new RefreshTokenResponseDto(newAccessToken, refreshToken);
+        Optional<UserEntity> optionalUser = userService.getById(refreshTokenEntity.getUserId());
+        if (optionalUser.isEmpty()) {
+            return Optional.empty();
+        }
+        UserEntity user = optionalUser.get();
+
+        String newAccessToken = jwtService.generateToken(user.getUsername());
+        return Optional.of(new RefreshTokenResponseDto(newAccessToken, refreshToken));
     }
 
     public void revokeRefreshToken(UUID refreshToken) {

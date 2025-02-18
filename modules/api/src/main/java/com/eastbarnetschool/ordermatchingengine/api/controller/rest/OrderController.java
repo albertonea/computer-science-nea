@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/orders")
@@ -28,7 +29,12 @@ public class OrderController {
 
     @GetMapping("/open-orders/{ticker}")
     public ResponseEntity<List<OrderEntity>> getOpenOrders(@PathVariable String ticker, Authentication authentication) {
-        UserEntity user = userService.getByUsername(authentication.getName());
+        Optional<UserEntity> optionalUser = userService.getByUsername(authentication.getName());
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        UserEntity user = optionalUser.get();
         return ResponseEntity.ok(ordersService.getOpenOrders(user.getUserId(), ticker));
     }
 }

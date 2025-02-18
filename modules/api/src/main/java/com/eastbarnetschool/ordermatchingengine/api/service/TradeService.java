@@ -7,6 +7,7 @@ import com.eastbarnetschool.ordermatchingengine.api.repository.TradeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TradeService {

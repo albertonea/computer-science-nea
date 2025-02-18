@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -30,8 +31,11 @@ public class UserController {
 
     @GetMapping("/dashboard")
     public ResponseEntity<UserDashboardDto> getUserByUsername(final Authentication authentication) {
-        final var user = userService.getDashboard(authentication.getName());
-        return ResponseEntity.ok(user);
-    }
+        Optional<UserDashboardDto> optionalDashboard = userService.getDashboard(authentication.getName());
+        if (optionalDashboard.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
+        return ResponseEntity.ok(optionalDashboard.get());
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,24 +23,36 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDto> authenticate(@RequestBody final AuthenticationRequestDto authenticationRequestDto) {
-        return ResponseEntity.ok(authenticationService.authenticate(authenticationRequestDto));
+        Optional<AuthenticationResponseDto> optionalAuthRequest = authenticationService.authenticate(authenticationRequestDto);
+        if (optionalAuthRequest.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(optionalAuthRequest.get());
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody final RegistrationRequestDto registrationRequestDto) {
-        userService.registerUser(registrationRequestDto);
+        boolean created = userService.registerUser(registrationRequestDto);
+        if (created) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @PostMapping("/refresh-token")
     public ResponseEntity<RefreshTokenResponseDto> refreshToken(@RequestParam UUID refreshToken) {
-        return ResponseEntity.ok(authenticationService.refreshToken(refreshToken));
+        Optional<RefreshTokenResponseDto> optionalRefreshToken = authenticationService.refreshToken(refreshToken);
+        if (optionalRefreshToken.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(optionalRefreshToken.get());
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> revokeToken(@RequestParam UUID refreshToken) {
         authenticationService.revokeRefreshToken(refreshToken);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok().build();
     }
 }

@@ -30,7 +30,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 return null;
             }
 
-            String token = authHeader.substring(7); // Extract token
+            String token = authHeader.substring(7);
 
             try {
                 Jwt jwt = jwtDecoder.decode(token);

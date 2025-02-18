@@ -14,6 +14,6 @@ public interface UserRepository {
     Optional<UserEntity> getByUsername(String username);
     boolean exists(String username);
     void create(UserEntity userEntity);
-    UserDashboardDto getUserWithOrdersAndBalances(String username);
-    UserEntity getById(UUID userId);
+    Optional<UserDashboardDto> getUserWithOrdersAndBalances(String username);
+    Optional<UserEntity> getById(UUID userId);
 }

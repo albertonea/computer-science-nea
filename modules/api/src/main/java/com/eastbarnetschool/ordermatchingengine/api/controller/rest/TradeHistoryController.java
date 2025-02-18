@@ -1,5 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.controller.rest;
 
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeHistoryResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.service.TradeService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,11 @@ public class TradeHistoryController {
 
     @GetMapping("/{ticker}")
     public ResponseEntity<List<TradeHistoryResponseDto>> getTradeHistory(@PathVariable String ticker) {
-        return ResponseEntity.ok(tradeService.getTradeHistory(ticker));
-    }
+        List<TradeHistoryResponseDto> trades = tradeService.getTradeHistory(ticker);
+        if (trades.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
+        return ResponseEntity.ok(trades);
+    }
 }

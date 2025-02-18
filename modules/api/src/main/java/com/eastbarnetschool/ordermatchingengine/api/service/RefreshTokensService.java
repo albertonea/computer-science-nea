@@ -5,6 +5,7 @@ import com.eastbarnetschool.ordermatchingengine.api.repository.RefreshTokensRepo
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,9 +20,8 @@ public class RefreshTokensService {
         refreshTokensRepository.save(refreshTokenEntity);
     }
 
-    public RefreshTokenEntity findByIdAndUnexpired(UUID refreshToken) {
-        return refreshTokensRepository.findByIdAndUnexpired(refreshToken)
-                .orElseThrow(() -> new BadCredentialsException("Invalid or expired refresh token"));
+    public Optional<RefreshTokenEntity> findByIdAndUnexpired(UUID refreshToken) {
+        return refreshTokensRepository.findByIdAndUnexpired(refreshToken);
     }
 
     public void deleteById(UUID refreshToken) {

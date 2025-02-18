@@ -1,25 +1,22 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
-import com.eastbarnetschool.ordermatchingengine.api.exception.ValidationException;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.RegistrationRequestDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.RegistrationResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserDashboardDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.UserWithBalancesResponse;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.UserMapper;
 import com.eastbarnetschool.ordermatchingengine.api.repository.UserRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -33,30 +30,38 @@ public class UserService {
         return userRepository.getUserWithBalances(username);
     }
 
-    public UserDashboardDto getDashboard(String username) {
+    public Optional<UserDashboardDto> getDashboard(String username) {
         return userRepository.getUserWithOrdersAndBalances(username);
     }
 
-    public UserEntity getByUsername(String username) {
-        return userRepository.getByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public Optional<UserEntity> getByUsername(String username) {
+        return userRepository.getByUsername(username);
     }
 
-    public void registerUser(RegistrationRequestDto registrationRequestDto) {
-        final var errors = new HashMap<String, String>();
+    public boolean registerUser(RegistrationRequestDto registrationRequestDto) {
 
         if (userRepository.exists(registrationRequestDto.getUsername())) {
-            errors.put("username", "Username [%s] is already taken".formatted(registrationRequestDto.getUsername()));
+            return false;
         }
 
-        if (!errors.isEmpty()) {
-            throw new ValidationException(CONFLICT, errors);
-        }
-        final var userEntity = userMapper.toUserEntity(registrationRequestDto);
+        UserEntity userEntity = userMapper.toUserEntity(registrationRequestDto);
         userRepository.create(userEntity);
+        return true;
     }
 
-    public UserEntity getById(UUID userId) {
+    public Optional<UserEntity> getById(UUID userId) {
         return userRepository.getById(userId);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        UserEntity user = getByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username [%s] not found"));
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.emptyList()
+        );
     }
 }

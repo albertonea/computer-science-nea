@@ -6,9 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class BalancesRepositoryImpl implements BalancesRepository {
@@ -37,8 +35,8 @@ public class BalancesRepositoryImpl implements BalancesRepository {
     }
 
     @Override
-    public ArrayList<BalanceEntity> get(UUID userId) {
-        return (ArrayList<BalanceEntity>) template.query(
+    public List<BalanceEntity> get(UUID userId) {
+        return template.query(
                 """
                     select *
                     from balances
@@ -51,23 +49,19 @@ public class BalancesRepositoryImpl implements BalancesRepository {
 
     @Override
     public Boolean checkIfHasEnoughBalance(UUID userId, String ticker, Long requiredBalance) {
-        try {
-            Long balance = template.queryForObject(
-                """
-                    select balance
-                    from balances
-                    where
-                        user_id = :userId
-                        and
-                        ticker = :ticker
-                    """,
-                    Map.of("userId", userId, "ticker", ticker),
-                    Long.class
-            );
+        Optional<Long> balance = Optional.ofNullable(template.queryForObject(
+            """
+                select balance
+                from balances
+                where
+                    user_id = :userId
+                    and
+                    ticker = :ticker
+                """,
+                Map.of("userId", userId, "ticker", ticker),
+                Long.class
+        ));
 
-            return balance != null && balance >= requiredBalance;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
+        return balance.isPresent();
     }
 }
