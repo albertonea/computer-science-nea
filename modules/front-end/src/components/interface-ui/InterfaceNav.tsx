@@ -1,16 +1,18 @@
 import {Separator} from "../ui/separator.tsx";
 import {ScrollArea, ScrollBar} from "../ui/scroll-area.tsx";
 import {Route} from "@/routes/_auth/trade/$ticker";
+import {useTradingContext} from "@/context/trading-provider.tsx";
 
 export default function InterfaceNav() {
     const {ticker} = Route.useParams()
+    const {marketPrice} = useTradingContext()
 
     return (
       <div className="py-2 px-4 flex h-full items-center">
         <div className="gap-4 flex h-full items-center pr-8">
           <div className="text-xl">{ticker}/USD</div>
           <Separator orientation="vertical" />
-          <div className="text-lg text-positive">68,372.56</div>
+          <div className="text-lg text-positive">{marketPrice}</div>
         </div>
         <ScrollArea type="hover">
             <div className="flex items-center gap-4 flex-nowrap text-nowrap">

@@ -8,7 +8,6 @@ import com.eastbarnetschool.ordermatchingengine.api.service.BalancesService;
 import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;
 import com.eastbarnetschool.ordermatchingengine.api.service.UserService;
 import com.eastbarnetschool.ordermatchingengine.domain.*;
-import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -16,7 +15,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,10 +75,10 @@ public class WsOrderController {
 
         if (orderType == OrderType.LIMIT || orderType == OrderType.MARKET) {
             orderGateway.placeOrder(orderMapper.toOrder(order, user.getUserId()));
-        }
-
-        if (orderType == OrderType.STOPLIMIT || orderType == OrderType.STOPMARKET) {
+        } else if (orderType == OrderType.STOPLIMIT || orderType == OrderType.STOPMARKET) {
             orderGateway.placeStopOrder(new StopOrder(order.getExecutionPrice() * 100, orderMapper.toOrder(order, user.getUserId())));
+        } else {
+            messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Incorrect order type");
         }
     }
 

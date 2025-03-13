@@ -6,17 +6,11 @@ import com.eastbarnetschool.ordermatchingengine.api.model.dto.RefreshTokenRespon
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.RefreshTokenEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.mapper.UserMapper;
-import com.eastbarnetschool.ordermatchingengine.api.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;

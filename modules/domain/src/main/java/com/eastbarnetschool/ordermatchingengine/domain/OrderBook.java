@@ -58,7 +58,10 @@ public class OrderBook {
     public MatchingResponse executeMatchingLogic(Order order) {
         List<Trade> trades = new ArrayList<>();
         List<Order> filledOrders = new ArrayList<>();
+        // keep looping until you can't match the order
+        // or the order is filled
         while (canMatch(order) && !order.isFilled()) {
+            //get the next best price level
             PriceLevel priceLevel;
             if (order.getSide() == Side.BUY) {
                 priceLevel = sellSide.peek();
@@ -66,23 +69,34 @@ public class OrderBook {
                 priceLevel = buySide.peek();
             }
 
+            //get the price levels price
             Long price = priceLevel.getPrice();
 
+            //loop until the price level is empty
             while (!priceLevel.isEmpty()) {
                 Order bookOrder = priceLevel.peek();
+                //get the smallest quantity from either the placed
+                // order or the book order
                 Long quantity = Math.min(bookOrder.getRemainingQuantity(), order.getRemainingQuantity());
+
+                //fill both orders with this quantity
                 bookOrder.fill(quantity, price);
                 order.fill(quantity, price);
 
+
                 if (order.isFilled() | bookOrder.isFilled()) {
+                    //set new price
                     if (!Objects.equals(price, lastPrice)) setLastPrice(price);
 
+                    //generate trades
                     if (order.getSide() == Side.BUY) {
                         trades.add(new Trade(Instant.now(), price, quantity, order, bookOrder, order.getTicker()));
                     } else {
                         trades.add(new Trade(Instant.now(), price, quantity, bookOrder, order, order.getTicker()));
                     }
 
+                    //add to filled orders, break if the placed
+                    //order is filled
                     if (bookOrder.isFilled() && order.isFilled()) {
                         filledOrders.add(order);
                         filledOrders.add(bookOrder);
@@ -115,6 +129,8 @@ public class OrderBook {
         }
 
         if (!order.isFilled()) {
+            //order is not filled, and it's a limit order
+            // add it to the ledger
             if (order.isLimitOrder()) {
                 if (order.getInitialQuantity() > order.getRemainingQuantity()) {
                     filledOrders.add(order);
@@ -138,11 +154,14 @@ public class OrderBook {
                 }
             }
 
+            //if the order is a market order
+            //it get treated as if its been filled
             if (order.isMarketOrder()) {
                 filledOrders.add(order);
             }
         }
 
+        //return trades and filled orders
         return new MatchingResponse(trades, filledOrders);
     }
 

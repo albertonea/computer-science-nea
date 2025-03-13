@@ -99,7 +99,7 @@ export default function InterfaceTrading() {
                 </span>
             </div>
             <Label htmlFor="amount-input">Amount</Label>
-            <Input id="amount-input" value={quantity} onChange={handleAmountChange}  name="amount" type="number" step="0.01" placeholder="Price" required/>
+            <Input id="amount-input" value={quantity} onChange={handleAmountChange}  name="amount" type="number" step="0.01" placeholder="Amount" required/>
 
             {(orderType === "LIMIT" || orderType === "STOPLIMIT") && (
                 <>

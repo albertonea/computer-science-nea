@@ -8,7 +8,6 @@ import com.eastbarnetschool.ordermatchingengine.api.model.entity.StopOrderEntity
 import com.eastbarnetschool.ordermatchingengine.api.repository.OrderHistoryRepository;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OrdersRepository;
 import com.eastbarnetschool.ordermatchingengine.api.repository.StopOrdersRepository;
-import com.eastbarnetschool.ordermatchingengine.api.repository.impl.StopOrdersRepositoryImpl;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 import org.springframework.stereotype.Service;
 

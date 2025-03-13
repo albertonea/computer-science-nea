@@ -2,7 +2,6 @@ package com.eastbarnetschool.ordermatchingengine.api.service;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.RefreshTokenEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.RefreshTokensRepository;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

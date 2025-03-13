@@ -1,7 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookEntryDto;
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderBookLevelDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.rowmapper.OrderRowMapper;
 import com.eastbarnetschool.ordermatchingengine.api.repository.OrdersRepository;

@@ -91,11 +91,11 @@ public class WsEventNotifier implements TradingEventListener {
         OrderEntity underlyingOrder = orderMapper.toEntity(stopOrder.getOrder());
         ordersService.insertOrUpdate(underlyingOrder);
         ordersService.insertStopOrder(stopOrderMapper.toEntity(stopOrder));
-        messagingTemplate.convertAndSend("/stream/errors/" + event.getStopOrder().getOrder().getUserId(), "Stop order queued");
+        messagingTemplate.convertAndSend("/stream/stopOrders/" + event.getStopOrder().getOrder().getUserId(), "Stop order queued");
     }
 
     @Override
     public void onStopOrderExecutedEvent(StopOrderExecutedEvent event) {
-        messagingTemplate.convertAndSend("/stream/errors/" + event.getStopOrder().getOrder().getUserId(), "Stop order executed");
+        messagingTemplate.convertAndSend("/stream/stopOrders/" + event.getStopOrder().getOrder().getUserId(), "Stop order executed");
     }
 }

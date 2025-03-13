@@ -1,6 +1,5 @@
 package com.eastbarnetschool.ordermatchingengine.api.controller.rest;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.OrderDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.OrderEntity;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.UserEntity;
 import com.eastbarnetschool.ordermatchingengine.api.service.OrdersService;

@@ -11,7 +11,6 @@ import {OpenOrder, useTradingContext} from "@/context/trading-provider.tsx";
 export default function InterfaceOpenOrders() {
     const [tab, setTab] = useState("openOrders")
     const {openOrders} = useTradingContext()
-    console.log(openOrders)
 
     const columns: ColumnDef<OpenOrder>[] = [
         {

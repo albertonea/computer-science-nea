@@ -23,10 +23,6 @@ public class OrderGateway {
         listeners.add(listener);
     }
 
-    public void removeTradingEventListener(TradingEventListener listener) {
-        listeners.remove(listener);
-    }
-
     public void publishTradeEvent(TradeEvent event) {
         for (TradingEventListener listener : listeners) {
             listener.onTrade(event);

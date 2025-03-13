@@ -17,7 +17,7 @@ public class OrderQueue implements PriceUpdateListener {
     private volatile boolean running;
     private final PriorityQueue<StopOrder> stopBuyOrders;
     private final PriorityQueue<StopOrder> stopSellOrders;
-    private final OrderGateway eventPublisher; // to publish events
+    private final OrderGateway eventPublisher;
 
     public OrderQueue(String ticker, OrderGateway eventPublisher) {
         this.ticker = ticker;

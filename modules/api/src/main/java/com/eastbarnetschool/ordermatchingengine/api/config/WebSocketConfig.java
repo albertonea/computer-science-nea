@@ -1,6 +1,5 @@
 package com.eastbarnetschool.ordermatchingengine.api.config;
 
-import com.eastbarnetschool.ordermatchingengine.api.service.JwtService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

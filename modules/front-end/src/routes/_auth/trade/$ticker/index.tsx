@@ -76,14 +76,6 @@ function Interface() {
           >
             <InterfaceOpenOrders/>
           </div>
-          {/*<div*/}
-          {/*    className="bg-card"*/}
-          {/*    key="d"*/}
-          {/*    style={{zIndex: 10}}*/}
-          {/*    data-grid={{x: 15, y: 0, w: 5, h: 10}}*/}
-          {/*>*/}
-          {/*  <InterfaceOrderbook/>*/}
-          {/*</div>*/}
           <div
               className="bg-card overflow-scroll scrollbar-hide"
               key="e"

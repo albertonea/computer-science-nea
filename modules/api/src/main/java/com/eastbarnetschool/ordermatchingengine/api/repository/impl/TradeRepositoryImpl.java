@@ -1,19 +1,13 @@
 package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
-import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeHistoryResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.TradeRepository;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository

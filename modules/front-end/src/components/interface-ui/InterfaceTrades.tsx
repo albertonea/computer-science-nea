@@ -1,8 +1,7 @@
-import {useSubscription} from "react-stomp-hooks";
 import {useState} from "react";
 import {TextTabs, TextTabsList, TextTabsTrigger} from "@/components/ui/text-tabs.tsx";
 import {TabsContent} from "@/components/ui/tabs.tsx";
-import {mergeLeft, sort} from "ramda";
+import {sort} from "ramda";
 import {useTradingContext} from "@/context/trading-provider.tsx";
 import {format} from "date-fns";
 

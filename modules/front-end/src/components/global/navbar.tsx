@@ -31,27 +31,12 @@ export default function Navbar() {
                     <NavigationMenuList>
                         <NavigationMenuItem>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
-                                <Link to="/">Home</Link>
+                                <Link to="/dashboard">Dashboard</Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
                             <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
-                                <Link to="/trade">trade</Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
-                                <Link to="/dashboard">dashboard</Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
-                                <Link to="/trade/hello">trade/hello</Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
-                        <NavigationMenuItem>
-                            <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild>
-                                <Link to="/trade/start">trade/start</Link>
+                                <Link to="/trade/AAPL">AAPL</Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                     </NavigationMenuList>

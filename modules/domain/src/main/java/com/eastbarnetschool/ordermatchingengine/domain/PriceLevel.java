@@ -1,7 +1,6 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
-import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

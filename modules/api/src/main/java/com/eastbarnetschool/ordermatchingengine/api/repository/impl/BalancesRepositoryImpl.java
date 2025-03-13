@@ -2,7 +2,6 @@ package com.eastbarnetschool.ordermatchingengine.api.repository.impl;
 
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.BalanceEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.BalancesRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +61,9 @@ public class BalancesRepositoryImpl implements BalancesRepository {
                 Long.class
         ));
 
-        return balance.isPresent();
+        if (balance.isPresent()) {
+            return balance.get() >= requiredBalance;
+        };
+        return false;
     }
 }

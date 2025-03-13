@@ -25,7 +25,7 @@ function Register() {
       const usernameFieldValue = data.get('username')
       const passwordFieldValue = data.get('password')
       const confirmPasswordFieldValue = data.get('confirmPassword')
-      console.log(usernameFieldValue, passwordFieldValue, confirmPasswordFieldValue)
+
       if (!usernameFieldValue || !passwordFieldValue || !confirmPasswordFieldValue) return
       const username = usernameFieldValue.toString()
       const password = passwordFieldValue.toString()

@@ -203,6 +203,4 @@ public class UserRepositoryImpl implements UserRepository {
         balancesService.updateOrCreateBalance(userId, "USD", 1000000L, 0L);
         balancesService.updateOrCreateBalance(userId, "AAPL", 1000L, 0L);
     }
-
-
 }
