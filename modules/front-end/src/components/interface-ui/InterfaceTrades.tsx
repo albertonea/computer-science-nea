@@ -30,7 +30,7 @@ export default function InterfaceTrades() {
                     <div className="flex flex-col py-1">
                         {sort((t1, t2) => new Date(t2.tradeTime).getTime() - new Date(t1.tradeTime).getTime() ,trades).map((trade) => (
                             <div key={trade.tradeId} className="flex justify-between px-2 w-full">
-                                <span className="w-[30%]">{trade.price}</span>
+                                <span className="w-[30%]">{trade.price/100}</span>
                                 <span className="w-[30%]">{trade.quantity}</span>
                                 <span className="w-[40%] text-end">{format(new Date(trade.tradeTime), "k:m:s")}</span>
                             </div>

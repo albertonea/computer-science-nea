@@ -47,9 +47,9 @@ public class OrderGateway {
         }
     }
 
-    public void publishStopOrderExecutedEvent(StopOrderExecutedEvent event) {
+    public void publishStopOrderTriggeredEvent(StopOrderTriggeredEvent event) {
         for (TradingEventListener listener : listeners) {
-            listener.onStopOrderExecutedEvent(event);
+            listener.onStopOrderTriggeredEvent(event);
         }
     }
 

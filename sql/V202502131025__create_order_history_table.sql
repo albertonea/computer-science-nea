@@ -13,6 +13,6 @@ create table order_history (
 
 create table stop_orders (
     id uuid primary key default uuid_generate_v4(),
-    execution_price bigint not null,
+    trigger_price bigint not null,
     order_id uuid not null references open_orders(order_id) on delete cascade
 )

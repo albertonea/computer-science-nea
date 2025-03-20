@@ -20,9 +20,9 @@ public class StopOrdersRepositoryImpl implements StopOrdersRepository {
     public void insert(StopOrderEntity stopOrder) {
         template.update(
                 """
-                insert into stop_orders(id, execution_price, order_id) values(:id, :executionPrice, :orderId)
+                insert into stop_orders(id, trigger_price, order_id) values(:id, :triggerPrice, :orderId)
                 """,
-                Map.of("id", stopOrder.getId(), "executionPrice", stopOrder.getExecutionPrice(), "orderId", stopOrder.getOrderId())
+                Map.of("id", stopOrder.getId(), "executionPrice", stopOrder.getTriggerPrice(), "orderId", stopOrder.getOrderId())
         );
     }
 

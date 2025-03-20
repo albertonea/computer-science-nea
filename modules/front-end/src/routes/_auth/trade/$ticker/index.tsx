@@ -8,7 +8,7 @@ import InterfaceTrading from '@/components/interface-ui/InterfaceTrading.tsx'
 import InterfaceTrades from "@/components/interface-ui/InterfaceTrades.tsx";
 import {TradingProvider} from "@/context/trading-provider.tsx";
 import {useQuery} from "@tanstack/react-query";
-import {getTradeHistory} from "@/api/trades.ts";
+import {getCandlesticks} from "@/api/candlestick.ts";
 import {getOpenOrders} from "@/api/orders.ts";
 import {map} from "ramda";
 
@@ -20,11 +20,7 @@ function Interface() {
   const {ticker} = Route.useParams()
   const ResponsiveGridLayout = useMemo(() => WidthProvider(Responsive), [])
 
-  const {data:tradeHistory} = useQuery({
-    queryKey: ['tradeHistory', ticker],
-    queryFn: () => getTradeHistory(ticker),
-    staleTime: 0
-  })
+
 
   const {data:openOrders} = useQuery({
     queryKey: ['openOrders', ticker],
@@ -43,8 +39,8 @@ function Interface() {
     staleTime: 0
   })
 
-  if (openOrders && tradeHistory) return (
-      <TradingProvider tradeHistory={tradeHistory} orders={openOrders} ticker={ticker}>
+  if (openOrders) return (
+      <TradingProvider orders={openOrders} ticker={ticker}>
         <ResponsiveGridLayout
             className="layout overflow-hidden bg-muted"
             breakpoints={{xxs: 0}}

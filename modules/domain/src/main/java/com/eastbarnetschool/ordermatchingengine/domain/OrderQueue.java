@@ -1,7 +1,8 @@
 package com.eastbarnetschool.ordermatchingengine.domain;
 import com.eastbarnetschool.ordermatchingengine.domain.events.OrderPlacedEvent;
-import com.eastbarnetschool.ordermatchingengine.domain.events.StopOrderExecutedEvent;
+import com.eastbarnetschool.ordermatchingengine.domain.events.StopOrderTriggeredEvent;
 import com.eastbarnetschool.ordermatchingengine.domain.events.StopOrderQueuedEvent;
+import com.eastbarnetschool.ordermatchingengine.domain.events.StopOrderTriggeredEvent;
 import com.eastbarnetschool.ordermatchingengine.domain.listeners.PriceUpdateListener;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
@@ -25,8 +26,8 @@ public class OrderQueue implements PriceUpdateListener {
         this.orderBook = new OrderBook(this, eventPublisher);
         this.orderQueue = new LinkedBlockingQueue<>();
         this.running = true;
-        this.stopSellOrders = new PriorityQueue<>(Comparator.comparing(StopOrder::getExecutionPrice).reversed());
-        this.stopBuyOrders = new PriorityQueue<>(Comparator.comparing(StopOrder::getExecutionPrice));
+        this.stopSellOrders = new PriorityQueue<>(Comparator.comparing(StopOrder::getTriggerPrice).reversed());
+        this.stopBuyOrders = new PriorityQueue<>(Comparator.comparing(StopOrder::getTriggerPrice));
         startOrderProcessor();
     }
 
@@ -34,8 +35,8 @@ public class OrderQueue implements PriceUpdateListener {
         while (!stopSellOrders.isEmpty()) {
             StopOrder stopOrder = stopSellOrders.peek();
             Order order = stopOrder.getOrder();
-            if (stopOrder.getExecutionPrice() >= orderBook.getLastPrice()) {
-                eventPublisher.publishStopOrderExecutedEvent(new StopOrderExecutedEvent(stopOrder));
+            if (stopOrder.getTriggerPrice() >= orderBook.getLastPrice()) {
+                eventPublisher.publishStopOrderTriggeredEvent(new StopOrderTriggeredEvent(stopOrder));
                 stopSellOrders.poll();
                 placeOrder(order);
             } else {
@@ -46,8 +47,8 @@ public class OrderQueue implements PriceUpdateListener {
         while (!stopBuyOrders.isEmpty()) {
             StopOrder stopOrder = stopBuyOrders.peek();
             Order order = stopOrder.getOrder();
-            if (stopOrder.getExecutionPrice() <= orderBook.getLastPrice()) {
-                eventPublisher.publishStopOrderExecutedEvent(new StopOrderExecutedEvent(stopOrder));
+            if (stopOrder.getTriggerPrice() <= orderBook.getLastPrice()) {
+                eventPublisher.publishStopOrderTriggeredEvent(new StopOrderTriggeredEvent(stopOrder));
                 stopBuyOrders.poll();
                 placeOrder(order);
             } else {

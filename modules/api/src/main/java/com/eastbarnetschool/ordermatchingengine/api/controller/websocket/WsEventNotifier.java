@@ -95,7 +95,7 @@ public class WsEventNotifier implements TradingEventListener {
     }
 
     @Override
-    public void onStopOrderExecutedEvent(StopOrderExecutedEvent event) {
-        messagingTemplate.convertAndSend("/stream/stopOrders/" + event.getStopOrder().getOrder().getUserId(), "Stop order executed");
+    public void onStopOrderTriggeredEvent(StopOrderTriggeredEvent event) {
+        messagingTemplate.convertAndSend("/stream/stopOrders/" + event.getStopOrder().getOrder().getUserId(), "Stop order triggered");
     }
 }

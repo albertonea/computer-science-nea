@@ -1,10 +1,10 @@
 import {useEffect, useRef} from "react";
 import {createChart, CrosshairMode} from "lightweight-charts";
-import {map, mergeLeft, omit, pick, values} from "ramda";
+import {map, mergeLeft, mergeRight, omit, pick, sort, sortBy, values} from "ramda";
 import {useTheme} from "@/context/theme-provider.tsx";
-import { Candles } from "@/lib/chart";
+import {Candlestick} from "@/api/candlestick.ts";
 
-export default function Chart({candles}:{candles: Candles[]}) {
+export default function Chart({candles}:{candles: Candlestick[]}) {
     const chartContainerRef = useRef<any>();
     const chart = useRef<any>();
     const theme = useTheme();
@@ -69,8 +69,20 @@ export default function Chart({candles}:{candles: Candles[]}) {
             wickDownColor: '#ef5350',
         });
 
+        candleSeries.priceScale().applyOptions({
+            scaleMargins: {
+                top: 0.1,
+                bottom: 0.3
+            }
+        })
+        const formattedCandles = map(p => {
+                const a = pick(['open', 'high', 'low', 'close', 'intervalStart'], p)
+                return {open:a.open, high:a.high, low: a.low, close: a.close, time: new Date(a.intervalStart).getTime()/1000}
+            }, candles)
+
+        console.log(formattedCandles)
         candleSeries.setData(
-            map(p => pick(['open', 'high', 'low', 'close', 'time'], p), candles)
+            sort((a, b) => a.time - b.time, formattedCandles)
         );
 
         const volumeSeries = chart.current.addHistogramSeries({
@@ -82,19 +94,18 @@ export default function Chart({candles}:{candles: Candles[]}) {
 
         volumeSeries.priceScale().applyOptions({
             scaleMargins: {
-                top: 0.7, // highest point of the series will be 70% away from the top
+                top: 0.8, // highest point of the series will be 70% away from the top
                 bottom: 0,
             },
         });
 
         const volume = map(p => {
-            const addColor = mergeLeft(p, {color: p.close > p.open ? '#03786e' : '#ce4242'})
+            const addColor = mergeRight(p, {time: new Date(p.intervalStart).getTime()/1000 ,color: p.close > p.open ? '#03786e' : '#ce4242'})
             const volume = pick(['volume', 'time', 'color'], addColor)
-            const value = values(pick(['volume'], volume))
-            return mergeLeft({value: value[0]}, omit(['volume'], volume))
+            return {value: volume.volume, time: volume.time, color: volume.color}
         }, candles)
 
-        volumeSeries.setData(volume);
+        volumeSeries.setData(sort((a, b) => a.time - b.time,volume));
 
         return () => {
             chart.current.remove();
@@ -106,6 +117,7 @@ export default function Chart({candles}:{candles: Candles[]}) {
     }, [theme.className]);
 
     return (
+
         <div ref={chartContainerRef} className="w-full h-[calc(100%-50px)]" />
     )
 }

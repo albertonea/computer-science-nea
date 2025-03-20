@@ -7,5 +7,5 @@ public interface TradingEventListener {
     void onOrderFilledEvent(OrderFilledEvent event);
     void onOrderPlacedEvent(OrderPlacedEvent event);
     void onStopOrderQueuedEvent(StopOrderQueuedEvent event);
-    void onStopOrderExecutedEvent(StopOrderExecutedEvent event);
+    void onStopOrderTriggeredEvent(StopOrderTriggeredEvent event);
 }

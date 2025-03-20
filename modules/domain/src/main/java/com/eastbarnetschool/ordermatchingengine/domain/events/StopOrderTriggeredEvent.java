@@ -2,9 +2,9 @@ package com.eastbarnetschool.ordermatchingengine.domain.events;
 
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
 
-public class StopOrderExecutedEvent {
+public class StopOrderTriggeredEvent {
     private final StopOrder stopOrder;
-    public StopOrderExecutedEvent(StopOrder stopOrder) {
+    public StopOrderTriggeredEvent(StopOrder stopOrder) {
         this.stopOrder = stopOrder;
     }
 

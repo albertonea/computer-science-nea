@@ -1,11 +1,14 @@
 package com.eastbarnetschool.ordermatchingengine.api.service;
 
+import com.eastbarnetschool.ordermatchingengine.api.model.TimeInterval;
+import com.eastbarnetschool.ordermatchingengine.api.model.dto.CandlestickDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.dto.TradeHistoryResponseDto;
 import com.eastbarnetschool.ordermatchingengine.api.model.entity.TradeEntity;
 import com.eastbarnetschool.ordermatchingengine.api.repository.TradeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TradeService {
@@ -18,7 +21,7 @@ public class TradeService {
     public void insert(TradeEntity trade) {
         tradeRepository.insert(trade);
     }
-    public List<TradeHistoryResponseDto> getTradeHistory(String ticker) {
-        return tradeRepository.getWeekHistory(ticker);
+    public Optional<List<CandlestickDto>> getCandlesticks(String ticker, TimeInterval timeInterval) {
+        return tradeRepository.getCandlesticks(ticker, timeInterval);
     }
 }

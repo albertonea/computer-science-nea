@@ -10,7 +10,7 @@ public class StopOrderMapper {
         return new StopOrderEntity(
                 stopOrder.getOrderId(),
                 stopOrder.getOrder().getOrderId(),
-                stopOrder.getExecutionPrice()
+                stopOrder.getTriggerPrice()
         );
     }
 }

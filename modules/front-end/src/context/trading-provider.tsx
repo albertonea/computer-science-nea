@@ -1,15 +1,15 @@
-import {createContext, ReactNode, useContext, useState} from "react";
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {filter, props, map, reduce} from "ramda";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {getBalances} from "@/api/balances.ts";
 import {useSubscription} from "react-stomp-hooks";
 import {useAuth} from "@/auth.tsx";
-import {Trade} from "@/api/trades.ts";
+import {Candlestick, getCandlesticks, Interval} from "@/api/candlestick.ts";
+import {intervalToMs} from "@/lib/utils.ts";
 
 type TradingProviderProps = {
     children: ReactNode
     ticker: string
-    tradeHistory: Trade[]
     orders: OpenOrder[]
 }
 
@@ -41,27 +41,39 @@ type TransformedBalances = {
     }
 }
 
+type Trade = {
+    tradeId: string
+    side: string
+    price: number
+    quantity: number
+    ticker: string
+    tradeTime: string
+}
+
 type TradingProviderState = {
     balances: TransformedBalances | undefined
     ticker: string
     marketPrice: number | undefined
     openOrders: OpenOrder[]
-    trades: Trade[]
+    candlesticks: Candlestick[]
     orderBook: OrderBook | undefined
+    interval: Interval
+    setInterval: (interval: Interval) => void
+    trades: Trade[]
 }
-
 
 const TradingProviderContext = createContext<TradingProviderState | undefined>(undefined)
 
-export function TradingProvider({children, ticker, tradeHistory, orders}: TradingProviderProps){
+export function TradingProvider({children, ticker, orders}: TradingProviderProps){
     const [openOrders, setOpenOrders] = useState<OpenOrder[]>(orders)
-    const [trades, setTrades] = useState<Trade[]>(tradeHistory)
+    const [candlesticks, setCandlesticks] = useState<Candlestick[]>([])
     const [orderBook, setOrderBook] = useState<OrderBook>()
-    const [marketPrice, setMarketPrice] = useState<number | undefined>(tradeHistory.length ? tradeHistory[tradeHistory.length - 1].price/100 : undefined)
+    const [trades, setTrades] = useState<Trade[]>([])
+    const [interval, setInterval] = useState<Interval>("FIFTEEN_MINUTES")
+    const [marketPrice, setMarketPrice] = useState<number | undefined>(candlesticks.length ? candlesticks[candlesticks.length - 1].close : undefined)
     const auth = useAuth();
 
     const queryClient = useQueryClient();
-
 
 
     const {data:balances} = useQuery({
@@ -77,6 +89,25 @@ export function TradingProvider({children, ticker, tradeHistory, orders}: Tradin
             }, {}, filteredTickers)
         },
     })
+
+    const {data:candlesticksResponse} = useQuery({
+        queryKey: ['tradeHistory', ticker],
+        queryFn: () => getCandlesticks(ticker, interval),
+        staleTime: 0
+    })
+
+    useEffect(() => {
+        if (candlesticksResponse) {
+            console.log("candlesticks", candlesticks)
+            setCandlesticks(candlesticksResponse)
+        }
+    }, [candlesticksResponse])
+
+    useEffect(() => {
+        queryClient.invalidateQueries({
+            queryKey: ['tradeHistory', ticker]
+        })
+    }, [interval]);
 
     useSubscription(`/stream/openOrders/${auth.auth?.user.userId}`,
         (message) => {
@@ -121,12 +152,57 @@ export function TradingProvider({children, ticker, tradeHistory, orders}: Tradin
     //trades data, update list and update chart
     useSubscription(`/stream/trades/${ticker}`, (message) => {
         const trade = JSON.parse(message.body)
-        setTrades([trade, ...trades])
+
+        const tradeTime = new Date(trade.tradeTime).getTime();
+        const intervalMs = intervalToMs[interval];
+        const intervalStartMs = Math.floor(tradeTime / intervalMs) * intervalMs;
+        const intervalStart = new Date(intervalStartMs).toISOString().replace('Z', '+00:00')
+        setTrades((prevTrades) => [...prevTrades, trade]);
+        setCandlesticks((prevCandlesticks) => {
+            console.log(intervalStart)
+            console.log(prevCandlesticks)
+            const existingCandleIndex = prevCandlesticks.findIndex(
+                (candle) => candle.intervalStart === intervalStart
+            );
+            console.log(existingCandleIndex)
+
+            const tradePrice = trade.price;
+            const tradeQuantity = trade.quantity;
+
+            if (existingCandleIndex >= 0) {
+                // Update existing candlestick
+                const updatedCandlesticks = [...prevCandlesticks];
+                const candle = updatedCandlesticks[existingCandleIndex];
+
+                candle.high = Math.max(candle.high, tradePrice);
+                candle.low = Math.min(candle.low, tradePrice);
+                candle.close = tradePrice; // Last trade price becomes the close
+                candle.volume += tradeQuantity;
+
+                return updatedCandlesticks;
+            } else {
+                // Create new candlestick
+                const newCandle: Candlestick = {
+                    ticker: trade.ticker,
+                    intervalStart: intervalStart,
+                    open: tradePrice, // First trade price is the open
+                    high: tradePrice,
+                    low: tradePrice,
+                    close: tradePrice,
+                    volume: tradeQuantity,
+                };
+                return [...prevCandlesticks, newCandle];
+            }
+        });
         setMarketPrice(trade.price/100)
     })
 
+    useEffect(() => {
+        setOpenOrders(filter((o) => o.remainingQuantity > 0 ,openOrders))
+    }, [openOrders]);
+
     return (
-        <TradingProviderContext.Provider {...props} value={{balances, ticker, marketPrice, openOrders, trades, orderBook}}>
+        <TradingProviderContext.Provider {...props} value={{balances, ticker, marketPrice,trades, openOrders, candlesticks, orderBook, interval, setInterval}}>
             {children}
         </TradingProviderContext.Provider>
     );

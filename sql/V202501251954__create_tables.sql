@@ -1,7 +1,7 @@
 create table users (
    user_id uuid primary key default uuid_generate_v4(),
    username varchar(50) not null unique,
-   password varchar(255) not null,
+   password varchar(97) not null,
    created_at timestamp default now()
 );
 

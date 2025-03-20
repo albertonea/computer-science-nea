@@ -10,12 +10,12 @@ public class StopOrderEntity {
     @Id
     private UUID id;
     private UUID orderId;
-    private Long executionPrice;
+    private Long triggerPrice;
 
-    public StopOrderEntity(UUID id, UUID orderId, Long executionPrice) {
+    public StopOrderEntity(UUID id, UUID orderId, Long triggerPrice) {
         this.id = id;
         this.orderId = orderId;
-        this.executionPrice = executionPrice;
+        this.triggerPrice = triggerPrice;
     }
 
     public UUID getId() {
@@ -26,7 +26,7 @@ public class StopOrderEntity {
         return orderId;
     }
 
-    public Long getExecutionPrice() {
-        return executionPrice;
+    public Long getTriggerPrice() {
+        return triggerPrice;
     }
 }

@@ -76,7 +76,7 @@ public class WsOrderController {
         if (orderType == OrderType.LIMIT || orderType == OrderType.MARKET) {
             orderGateway.placeOrder(orderMapper.toOrder(order, user.getUserId()));
         } else if (orderType == OrderType.STOPLIMIT || orderType == OrderType.STOPMARKET) {
-            orderGateway.placeStopOrder(new StopOrder(order.getExecutionPrice() * 100, orderMapper.toOrder(order, user.getUserId())));
+            orderGateway.placeStopOrder(new StopOrder(order.getTriggerPrice() * 100, orderMapper.toOrder(order, user.getUserId())));
         } else {
             messagingTemplate.convertAndSend("/stream/errors/" + user.getUserId(), "Incorrect order type");
         }

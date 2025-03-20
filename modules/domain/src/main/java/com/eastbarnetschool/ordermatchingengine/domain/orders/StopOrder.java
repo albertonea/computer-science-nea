@@ -3,12 +3,12 @@ package com.eastbarnetschool.ordermatchingengine.domain.orders;
 import java.util.UUID;
 
 public class StopOrder {
-    private final Long executionPrice;
+    private final Long triggerPrice;
     private final UUID orderId;
     private final Order order;
 
-    public StopOrder(Long executionPrice, Order order) {
-        this.executionPrice = executionPrice;
+    public StopOrder(Long triggerPrice, Order order) {
+        this.triggerPrice = triggerPrice;
         this.orderId = UUID.randomUUID();
         this.order = order;
     }
@@ -21,7 +21,7 @@ public class StopOrder {
         return order;
     }
 
-    public Long getExecutionPrice() {
-        return executionPrice;
+    public Long getTriggerPrice() {
+        return triggerPrice;
     }
 }
