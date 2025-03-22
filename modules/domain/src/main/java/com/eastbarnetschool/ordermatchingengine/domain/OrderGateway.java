@@ -53,6 +53,8 @@ public class OrderGateway {
         }
     }
 
+    // gets the order queue for a given ticker or
+    // creates one if it doesn't exist
     public OrderQueue getOrderQueue(String ticker) {
         OrderQueue orderQueue = orderQueues.get(ticker);
         if (orderQueue == null) {
@@ -62,10 +64,12 @@ public class OrderGateway {
         return orderQueue;
     }
 
+    // places a limit or market order
     public void placeOrder(Order order) {
         getOrderQueue(order.getTicker()).placeOrder(order);
     }
 
+    // places a stop order
     public void placeStopOrder(StopOrder order) {
         getOrderQueue(order.getOrder().getTicker()).placeStopOrder(order);
     }

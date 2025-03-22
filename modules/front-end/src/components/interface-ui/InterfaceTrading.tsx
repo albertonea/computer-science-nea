@@ -13,7 +13,7 @@ export default function InterfaceTrading() {
     const [orderType, setOrderType] = useState("LIMIT")
     const [quantity, setQuantity] = useState("0")
     const [price, setPrice] = useState("")
-    const [executionPrice, setExecutionPrice] = useState("")
+    const [triggerPrice, setTriggerPrice] = useState("")
     const {balances, ticker, marketPrice} = useTradingContext()
     const [availableBalance, setAvailableBalance] = useState(0)
     const stompClient = useStompClient()
@@ -50,7 +50,7 @@ export default function InterfaceTrading() {
         const regex = /^\d*\.?\d{0,2}$/
 
         if (regex.test(input)) {
-            setExecutionPrice(input)
+            setTriggerPrice(input)
         }
     }
 
@@ -65,7 +65,7 @@ export default function InterfaceTrading() {
                     ticker: ticker,
                     side: side,
                     orderType: orderType,
-                    executionPrice: executionPrice
+                    triggerPrice: triggerPrice ? triggerPrice : "0",
                 })
             })
         }
@@ -110,8 +110,8 @@ export default function InterfaceTrading() {
 
             {(orderType === "STOPMARKET" || orderType === "STOPLIMIT") && (
                 <>
-                    <Label htmlFor="execution-input">Execution Price</Label>
-                    <Input id="execution-input" value={executionPrice} onChange={handleExecutionPriceChange} name="execution" type="number" step="0.01" placeholder={marketPrice?.toString()} required/>
+                    <Label htmlFor="execution-input">Trigger Price</Label>
+                    <Input id="execution-input" value={triggerPrice} onChange={handleExecutionPriceChange} name="execution" type="number" step="0.01" placeholder={marketPrice?.toString()} required/>
                 </>
             )}
         </div>

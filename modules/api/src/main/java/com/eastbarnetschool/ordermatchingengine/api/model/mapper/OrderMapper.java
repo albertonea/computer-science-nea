@@ -31,7 +31,7 @@ public class OrderMapper {
         return new Order(
                 orderRequestDto.getQuantity(),
                 orderRequestDto.getQuantity(),
-                orderRequestDto.getPrice() * 100,
+                orderRequestDto.getPrice(),
                 0L,
                 orderRequestDto.getTicker(),
                 orderRequestDto.getSide(),

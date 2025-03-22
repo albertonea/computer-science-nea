@@ -4,6 +4,7 @@ import com.eastbarnetschool.ordermatchingengine.domain.OrderType;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class OrderRequestDto {
@@ -12,16 +13,17 @@ public class OrderRequestDto {
     private final String ticker;
     private final Side side;
     private final OrderType orderType;
-    private final Long triggerPrice;
+    private Long triggerPrice;
 
-    public OrderRequestDto(Long triggerPrice, Long price, Long quantity, String ticker, Side side, OrderType orderType) {
-        this.triggerPrice = triggerPrice;
-        this.price = price;
+    public OrderRequestDto(BigDecimal triggerPrice, BigDecimal price, Long quantity, String ticker, Side side, OrderType orderType) {
+        this.triggerPrice = triggerPrice.multiply(new BigDecimal(100)).longValueExact();
+        this.price = price.multiply(new BigDecimal(100)).longValueExact();
         this.quantity = quantity;
         this.ticker = ticker;
         this.side = side;
         this.orderType = orderType;
     }
+
 
     public Long getTriggerPrice() {
         return triggerPrice;

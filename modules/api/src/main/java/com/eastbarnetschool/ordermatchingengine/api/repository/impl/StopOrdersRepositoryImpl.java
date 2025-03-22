@@ -22,7 +22,7 @@ public class StopOrdersRepositoryImpl implements StopOrdersRepository {
                 """
                 insert into stop_orders(id, trigger_price, order_id) values(:id, :triggerPrice, :orderId)
                 """,
-                Map.of("id", stopOrder.getId(), "executionPrice", stopOrder.getTriggerPrice(), "orderId", stopOrder.getOrderId())
+                Map.of("id", stopOrder.getId(), "triggerPrice", stopOrder.getTriggerPrice(), "orderId", stopOrder.getOrderId())
         );
     }
 

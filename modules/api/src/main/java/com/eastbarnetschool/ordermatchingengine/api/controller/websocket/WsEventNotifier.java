@@ -15,6 +15,7 @@ import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class WsEventNotifier implements TradingEventListener {
@@ -36,6 +37,7 @@ public class WsEventNotifier implements TradingEventListener {
         this.stopOrderMapper = stopOrderMapper;
     }
 
+    @Transactional
     @Override
     public void onTrade(TradeEvent event) {
         Trade trade = event.getTrade();

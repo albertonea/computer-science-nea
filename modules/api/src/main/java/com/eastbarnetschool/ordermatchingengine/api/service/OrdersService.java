@@ -10,6 +10,7 @@ import com.eastbarnetschool.ordermatchingengine.api.repository.OrdersRepository;
 import com.eastbarnetschool.ordermatchingengine.api.repository.StopOrdersRepository;
 import com.eastbarnetschool.ordermatchingengine.domain.Side;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,6 +67,7 @@ public class OrdersService {
         return orderBook;
     }
 
+    @Transactional
     public void moveToHistory(UUID orderId) {
         OrderEntity order = ordersRepository.delete(orderId);
         orderHistoryRepository.insert(order);

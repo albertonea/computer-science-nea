@@ -29,7 +29,7 @@ export default function InterfaceOpenOrders() {
             accessorKey: "price",
             header: "Price",
             cell: ({row}) =>  (
-                <a>{row.original.price /100}</a>
+                <a>{row.original.price/100}</a>
             )
         },
         {

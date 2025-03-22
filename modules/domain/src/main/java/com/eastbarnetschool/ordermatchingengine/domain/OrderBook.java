@@ -6,7 +6,9 @@ import com.eastbarnetschool.ordermatchingengine.domain.listeners.PriceUpdateList
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class OrderBook {
     private final PriorityQueue<PriceLevel> sellSide;
@@ -16,14 +18,19 @@ public class OrderBook {
     private Long lastPrice;
 
     public OrderBook(PriceUpdateListener priceUpdateListener, OrderGateway eventPublisher) {
-        sellSide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice).reversed());
-        buySide = new PriorityQueue<>(Comparator.comparingLong(PriceLevel::getPrice));
+        // sell side queue with priority on price ascending
+        sellSide = new PriorityQueue<>(PriorityQueueOrder.ASC);
+        // buy side queue with priority on price descending
+        buySide = new PriorityQueue<>(PriorityQueueOrder.DESC);
         lastPrice = Long.MAX_VALUE;
         this.priceUpdateListener = priceUpdateListener;
         this.eventPublisher = eventPublisher;
     }
 
+    // function to check if an order can be matched
+    // with any in the orderbook
     public Boolean canMatch(Order order) {
+        // if it's a market order, checking the other side is not empty
         if (order.isMarketOrder()) {
             if (order.getSide() == Side.BUY) {
                 return !sellSide.isEmpty();
@@ -31,6 +38,8 @@ public class OrderBook {
                 return !buySide.isEmpty();
             }
         } else {
+            // if it's a limit order check side is empty
+            // and the prices can be matched
             if (order.getSide() == Side.BUY) {
                 if (sellSide.isEmpty()) return false;
                 PriceLevel sellSide = this.sellSide.peek();
@@ -43,18 +52,24 @@ public class OrderBook {
         }
     }
 
+    // function to place the order
     public void placeOrder(Order order) {
+        // calls execute matching logic to match the order
+        // returns trades and filled orders in the response
         MatchingResponse response = executeMatchingLogic(order);
 
+        // loop through trades and send event
         for (Trade trade : response.getTrades()) {
             eventPublisher.publishTradeEvent(new TradeEvent(trade));
         }
 
+        // loop through filled orders and send event
         for (Order filledOrder : response.getFilledOrders()) {
             eventPublisher.publishOrderFilledEvent(new OrderFilledEvent(filledOrder));
         }
     }
 
+    // function to execute the matching logic
     public MatchingResponse executeMatchingLogic(Order order) {
         List<Trade> trades = new ArrayList<>();
         List<Order> filledOrders = new ArrayList<>();
@@ -100,13 +115,13 @@ public class OrderBook {
                     if (bookOrder.isFilled() && order.isFilled()) {
                         filledOrders.add(order);
                         filledOrders.add(bookOrder);
-                        priceLevel.poll();
+                        priceLevel.dequeue();
                         break;
                     }
 
                     if (bookOrder.isFilled()) {
                         filledOrders.add(bookOrder);
-                        priceLevel.poll();
+                        priceLevel.dequeue();
                     }
 
                     if (order.isFilled()) {
@@ -121,9 +136,9 @@ public class OrderBook {
 
             if (priceLevel.isEmpty()) {
                 if (order.getSide() == Side.BUY) {
-                    sellSide.poll();
+                    sellSide.dequeue();
                 } else {
-                    buySide.poll();
+                    buySide.dequeue();
                 }
             }
         }
@@ -136,26 +151,26 @@ public class OrderBook {
                     filledOrders.add(order);
                 }
                 if (order.getSide() == Side.BUY) {
-                    for (PriceLevel level : buySide) {
-                        if (Objects.equals(level.getPrice(), order.getPrice())) {
-                            level.addOrder(order);
-                            return new MatchingResponse(trades, filledOrders);
-                        }
+                    PriceLevel level = buySide.findByPriority(order.getPrice().intValue());
+                    if (level != null) {
+                        level.enqueue(order);
+                        return new MatchingResponse(trades, filledOrders);
+                    } else {
+                        buySide.enqueue(new PriceLevel(order.getPrice(), order), order.getPrice().intValue());
                     }
-                    buySide.add(new PriceLevel(order.getPrice(), order));
                 } else {
-                    for (PriceLevel level : sellSide) {
-                        if (Objects.equals(level.getPrice(), order.getPrice())) {
-                            level.addOrder(order);
-                            return new MatchingResponse(trades, filledOrders);
-                        }
+                    PriceLevel level = sellSide.findByPriority(order.getPrice().intValue());
+                    if (level != null) {
+                        level.enqueue(order);
+                        return new MatchingResponse(trades, filledOrders);
+                    } else {
+                        sellSide.enqueue(new PriceLevel(order.getPrice(), order), order.getPrice().intValue());
                     }
-                    sellSide.add(new PriceLevel(order.getPrice(), order));
                 }
             }
 
             //if the order is a market order
-            //it get treated as if its been filled
+            //it get treated as if it's been filled
             if (order.isMarketOrder()) {
                 filledOrders.add(order);
             }

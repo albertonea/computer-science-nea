@@ -7,28 +7,29 @@ import java.util.PriorityQueue;
 
 public class PriceLevel {
     private final Long price;
-    private final PriorityQueue<Order> orders;
+    private final Queue<Order> orders;
 
     public PriceLevel(Long price, Order order) {
         this.price = price;
-        this.orders = new PriorityQueue<>(Comparator.comparing(Order::getCreatedAt));
-        orders.add(order);
+        // priority queue on the orders with the oldest taking priority
+        this.orders = new Queue<>();
+        orders.enqueue(order);
     }
 
     public Long getPrice() {
         return price;
     }
 
-    public PriorityQueue<Order> getOrders() {
+    public Queue<Order> getOrders() {
         return orders;
     }
 
-    public void addOrder(Order order) {
-        orders.add(order);
+    public void enqueue(Order order) {
+        orders.enqueue(order);
     }
     
-    public Order poll() {
-        return orders.poll();
+    public Order dequeue() {
+        return orders.dequeue();
     }
 
     public Order peek() {
