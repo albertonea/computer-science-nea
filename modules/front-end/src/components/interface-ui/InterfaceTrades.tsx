@@ -11,8 +11,6 @@ export default function InterfaceTrades() {
     const {trades} = useTradingContext()
     const [tab, setTab] = useState('trades')
 
-
-
     return (
             <TextTabs defaultValue="openOrders" value={tab} onValueChange={setTab}>
                 <div className="sticky top-0 w-full flex flex-col bg-card pb-1">
@@ -41,5 +39,5 @@ export default function InterfaceTrades() {
                     My Trades
                 </TabsContent>
             </TextTabs>
-)
+        )
 }

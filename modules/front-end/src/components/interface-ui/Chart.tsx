@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "react";
 import {createChart, CrosshairMode} from "lightweight-charts";
-import {map, mergeLeft, mergeRight, omit, pick, sort, sortBy, values} from "ramda";
+import {map, mergeRight, pick, sort } from "ramda";
 import {useTheme} from "@/context/theme-provider.tsx";
 import {Candlestick} from "@/api/candlestick.ts";
 

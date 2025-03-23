@@ -8,7 +8,6 @@ import InterfaceTrading from '@/components/interface-ui/InterfaceTrading.tsx'
 import InterfaceTrades from "@/components/interface-ui/InterfaceTrades.tsx";
 import {TradingProvider} from "@/context/trading-provider.tsx";
 import {useQuery} from "@tanstack/react-query";
-import {getCandlesticks} from "@/api/candlestick.ts";
 import {getOpenOrders} from "@/api/orders.ts";
 import {map} from "ramda";
 

@@ -15,6 +15,7 @@ import java.util.UUID;
 @Repository
 public class OrdersRepositoryImpl implements OrdersRepository {
     private final NamedParameterJdbcTemplate template;
+
     public OrdersRepositoryImpl(NamedParameterJdbcTemplate template) {
         this.template = template;
     }

@@ -84,7 +84,7 @@ public class OrderBook {
                 priceLevel = buySide.peek();
             }
 
-            //get the price levels price
+            //get the priceLevel objects price
             Long price = priceLevel.getPrice();
 
             //loop until the price level is empty

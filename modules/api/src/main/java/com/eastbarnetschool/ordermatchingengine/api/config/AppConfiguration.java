@@ -1,6 +1,5 @@
 package com.eastbarnetschool.ordermatchingengine.api.config;
 
-
 import com.eastbarnetschool.ordermatchingengine.api.controller.websocket.WsEventNotifier;
 import com.eastbarnetschool.ordermatchingengine.domain.OrderGateway;
 import org.springframework.context.annotation.Bean;

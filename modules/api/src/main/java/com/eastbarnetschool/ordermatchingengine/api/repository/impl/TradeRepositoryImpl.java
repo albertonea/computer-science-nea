@@ -44,27 +44,27 @@ public class TradeRepositoryImpl implements TradeRepository {
     public Optional<List<CandlestickDto>> getCandlesticks(String ticker, TimeInterval timeInterval) {
         return Optional.of(template.query(
                 """
-with trade_buckets as (
-    select
-        ticker,
-        date_bin(cast(:interval as interval), trade_time, '2025-01-01 00:00:00') as interval_start,
-        price,
-        quantity,
-        trade_time
-    from trades
-)
-select
-    ticker,
-    interval_start as "intervalStart",
-    (array_agg(price order by trade_time asc))[1] as open,
-    max(price) as high,
-    min(price) as low,
-    (array_agg(price order by trade_time desc))[1] as close,
-    sum(quantity) as volume
-from trade_buckets
-where ticker = :ticker
-group by interval_start, ticker
-order by interval_start asc;
+                    with trade_buckets as (
+                        select
+                            ticker,
+                            date_bin(cast(:interval as interval), trade_time, '2025-01-01 00:00:00') as interval_start,
+                            price,
+                            quantity,
+                            trade_time
+                        from trades
+                        where ticker = :ticker
+                    )
+                    select
+                        ticker,
+                        interval_start as "intervalStart",
+                        (array_agg(price order by trade_time asc))[1] as open,
+                        max(price) as high,
+                        min(price) as low,
+                        (array_agg(price order by trade_time desc))[1] as close,
+                        sum(quantity) as volume
+                    from trade_buckets
+                    group by interval_start, ticker
+                    order by interval_start asc;
                     """,
                     Map.of("interval", getIntervalString(timeInterval), "ticker", ticker),
                     new BeanPropertyRowMapper<>(CandlestickDto.class)

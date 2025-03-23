@@ -6,7 +6,6 @@ import com.eastbarnetschool.ordermatchingengine.domain.listeners.PriceUpdateList
 import com.eastbarnetschool.ordermatchingengine.domain.orders.Order;
 import com.eastbarnetschool.ordermatchingengine.domain.orders.StopOrder;
 
-import java.util.Comparator;
 import java.util.concurrent.*;
 
 public class OrderQueue implements PriceUpdateListener {

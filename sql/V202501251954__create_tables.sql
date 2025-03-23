@@ -32,6 +32,6 @@ create table open_orders (
      remaining_quantity bigint not null,
      initial_quantity bigint not null,
      price bigint,
-     order_type varchar(10) not null check (order_type in ('MARKET', 'LIMIT', 'STOPLIMIT', 'STOPMARKET')),
+     order_type varchar(10) not null check (order_type in ('LIMIT')),
      created_at timestamp default now()
 );

@@ -66,6 +66,7 @@ public class WsEventNotifier implements TradingEventListener {
         messagingTemplate.convertAndSend("/stream/trades/" + trade.getTicker(), tradeMapper.toTradeDto(trade));
     }
 
+    @Transactional
     @Override
     public void onOrderFilledEvent(OrderFilledEvent event) {
         Order filledOrder = event.getOrder();
@@ -87,6 +88,7 @@ public class WsEventNotifier implements TradingEventListener {
         messagingTemplate.convertAndSend("/stream/openOrders/" + placedOrder.getUserId(), orderMapper.toOrderDto(placedOrder));
     }
 
+    @Transactional
     @Override
     public void onStopOrderQueuedEvent(StopOrderQueuedEvent event) {
         StopOrder stopOrder = event.getStopOrder();
