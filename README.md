@@ -37,7 +37,3 @@ npm install
 ```
 npm run dev
 ```
-
-
-The frontend will be available at `http://localhost:5173` (or configured port), with hot-reloading for changes.[^13]
-
